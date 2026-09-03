@@ -5,7 +5,7 @@ Semua data di dalamnya **data demo**, bukan data produksi.
 
 - 7 grup menu / 31 layar
 - Acuan skema: 21 tabel (`bm_*`), revisi 2026-08-06
-- File utama: `budget-monitoring-mockup-v2.html` (satu file + folder `assets/`)
+- File utama: `index.html` (satu file + folder `assets/`)
 
 ## Membuka secara lokal
 
@@ -17,7 +17,7 @@ python -m http.server 8799        # atau
 npx --yes http-server -p 8799
 ```
 
-Lalu buka <http://localhost:8799/budget-monitoring-mockup-v2.html>
+Lalu buka <http://localhost:8799/>
 
 ## Menerbitkan ke GitLab Pages
 

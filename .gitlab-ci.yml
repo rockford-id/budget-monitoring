@@ -2,7 +2,7 @@
 # GitLab Pages — menerbitkan mockup Budget Monitoring sebagai halaman statis.
 # Tidak ada proses build: isinya HTML + aset, jadi CI hanya menyalin ke folder `public/`.
 #
-# Yang DITERBITKAN hanya budget-monitoring-mockup-v2.html + assets/.
+# Yang DITERBITKAN hanya index.html + assets/.
 # File backup (*.bak-*.html) dan mockup v1 SENGAJA tidak disalin.
 # ============================================================
 
@@ -12,10 +12,7 @@ pages:
   script:
     - mkdir -p public
     - cp -r assets public/
-    # index.html supaya URL-nya bisa dibuka tanpa menyebut nama file
-    - cp budget-monitoring-mockup-v2.html public/index.html
-    # nama aslinya tetap disediakan supaya tautan lama tidak mati
-    - cp budget-monitoring-mockup-v2.html public/
+    - cp index.html public/
     - echo "Terbit — cek URL di Deploy > Pages"
   artifacts:
     paths:
