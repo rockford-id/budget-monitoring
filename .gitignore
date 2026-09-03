@@ -1,0 +1,5 @@
+# hasil otomasi & backup — jangan ikut ter-commit / terbit
+.playwright-mcp/
+public/
+*.bak-*.html
+qa-*.png

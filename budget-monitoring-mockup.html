@@ -1,0 +1,1573 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Budget Monitoring — Mockup Demo (Portal v3 · Summarecon)</title>
+<style>
+  /* ============ TOKENS ============ */
+  :root{
+    --bg:#FAF8F5; --surface:#FFFFFF; --surface-2:#F5F2ED; --surface-3:#EFEAE2;
+    --border:#E8E2D9; --border-strong:#D8CFC2;
+    --ink:#22262E; --ink-2:#5B6472; --ink-3:#8A93A2;
+    --brand:#F97316; --brand-600:#EA580C; --brand-050:#FFF3EA;
+    --sage:#10B981; --sage-600:#059669; --sage-050:#E9F8F1;
+    --good:#10B981; --good-bg:#E9F8F1;
+    --warn:#F59E0B; --warn-bg:#FEF3E2;
+    --crit:#EF4444; --crit-bg:#FCEBEB;
+    --info:#3B82F6; --info-bg:#EAF1FE;
+    --slate:#94A3B8;
+    --sidebar-grad:linear-gradient(176deg,#FB8B3D 0%,#EA580C 48%,#B4410E 100%);
+    --shadow-sm:0 1px 2px rgba(40,30,15,.06),0 1px 3px rgba(40,30,15,.05);
+    --shadow-md:0 4px 14px rgba(40,30,15,.09);
+    --radius:14px; --radius-sm:10px;
+    --ff:"Segoe UI Variable","Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+    --fn:tabular-nums;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#14171C; --surface:#1B1F26; --surface-2:#222833; --surface-3:#2A313D;
+      --border:#2C333F; --border-strong:#3A424F;
+      --ink:#ECEFF3; --ink-2:#A5AEBC; --ink-3:#727C8B;
+      --brand:#FB923C; --brand-600:#F97316; --brand-050:#2A2016;
+      --sage:#34D399; --sage-600:#10B981; --sage-050:#122a22;
+      --good:#34D399; --good-bg:#122a22;
+      --warn:#FBBF24; --warn-bg:#2c2411;
+      --crit:#F87171; --crit-bg:#2c1717;
+      --info:#60A5FA; --info-bg:#16233b;
+      --slate:#64748B;
+      --shadow-sm:0 1px 2px rgba(0,0,0,.3); --shadow-md:0 6px 18px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+      --bg:#14171C; --surface:#1B1F26; --surface-2:#222833; --surface-3:#2A313D;
+      --border:#2C333F; --border-strong:#3A424F;
+      --ink:#ECEFF3; --ink-2:#A5AEBC; --ink-3:#727C8B;
+      --brand:#FB923C; --brand-600:#F97316; --brand-050:#2A2016;
+      --sage:#34D399; --sage-600:#10B981; --sage-050:#122a22;
+      --good:#34D399; --good-bg:#122a22; --warn:#FBBF24; --warn-bg:#2c2411;
+      --crit:#F87171; --crit-bg:#2c1717; --info:#60A5FA; --info-bg:#16233b; --slate:#64748B;
+      --shadow-sm:0 1px 2px rgba(0,0,0,.3); --shadow-md:0 6px 18px rgba(0,0,0,.35);
+  }
+  :root[data-theme="light"]{
+      --bg:#FAF8F5; --surface:#FFFFFF; --surface-2:#F5F2ED; --surface-3:#EFEAE2;
+      --border:#E8E2D9; --border-strong:#D8CFC2; --ink:#22262E; --ink-2:#5B6472; --ink-3:#8A93A2;
+      --brand:#F97316; --brand-600:#EA580C; --brand-050:#FFF3EA; --sage:#10B981; --sage-600:#059669;
+      --good:#10B981; --good-bg:#E9F8F1; --warn:#F59E0B; --warn-bg:#FEF3E2; --crit:#EF4444; --crit-bg:#FCEBEB;
+      --info:#3B82F6; --info-bg:#EAF1FE; --slate:#94A3B8;
+      --shadow-sm:0 1px 2px rgba(40,30,15,.06),0 1px 3px rgba(40,30,15,.05); --shadow-md:0 4px 14px rgba(40,30,15,.09);
+  }
+
+  /* ============ RESET ============ */
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:var(--ff);background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  button{font-family:inherit;cursor:pointer}
+  ::selection{background:var(--brand-050)}
+  h1,h2,h3,h4,p{margin:0}
+
+  /* ============ APP SHELL ============ */
+  .app{display:grid;grid-template-columns:296px 1fr;height:100vh;overflow:hidden}
+  .sidebar{background:var(--sidebar-grad);color:#fff;display:flex;flex-direction:column;overflow:hidden}
+  .brand{display:flex;align-items:center;gap:12px;padding:20px 22px 16px}
+  .brand .logo{width:40px;height:40px;border-radius:11px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-weight:800;font-size:19px;backdrop-filter:blur(4px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+  .brand .bt{font-weight:800;font-size:16px;letter-spacing:.2px;line-height:1.15}
+  .brand .bs{font-size:11px;opacity:.85;font-weight:500}
+  .nav{flex:1;overflow-y:auto;padding:6px 12px 24px}
+  .nav::-webkit-scrollbar{width:6px}.nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:4px}
+  .nav-group{margin-top:16px}
+  .nav-group>span{display:block;font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;opacity:.7;padding:0 12px 7px}
+  .nav a{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:#fff;text-decoration:none;font-weight:500;font-size:13.5px;opacity:.92;margin-bottom:2px;transition:background .12s,opacity .12s}
+  .nav a .ic{width:18px;text-align:center;font-size:15px;opacity:.95}
+  .nav a:hover{background:rgba(255,255,255,.13);opacity:1}
+  .nav a.active{background:rgba(255,255,255,.96);color:var(--brand-600);opacity:1;font-weight:650;box-shadow:var(--shadow-sm)}
+  .nav a.active .ic{opacity:1}
+  .nav .badge{margin-left:auto;background:rgba(255,255,255,.9);color:var(--brand-600);font-size:11px;font-weight:700;padding:1px 8px;border-radius:20px}
+  .nav a.active .badge{background:var(--brand);color:#fff}
+  .side-foot{padding:14px 20px;font-size:11px;opacity:.8;border-top:1px solid rgba(255,255,255,.16)}
+
+  /* ============ MAIN ============ */
+  .main{display:flex;flex-direction:column;overflow:hidden}
+  .topbar{display:flex;align-items:center;gap:16px;padding:14px 26px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+  .pagetitle{font-size:17px;font-weight:750;letter-spacing:-.01em}
+  .pagesub{font-size:12px;color:var(--ink-2);margin-top:1px}
+  .topbar .spacer{flex:1}
+  .yr{display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--border);padding:7px 13px;border-radius:10px;font-weight:600;font-size:13px}
+  .yr small{color:var(--ink-3);font-weight:600}
+  .pill{display:flex;align-items:center;gap:11px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:6px 8px 6px 14px}
+  .pill .who{line-height:1.25}
+  .pill .who b{font-size:13px;font-weight:700;display:block}
+  .pill .who span{font-size:11.5px;color:var(--ink-2)}
+  .pill .av{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--brand-600));color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px}
+  .icbtn{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--ink-2);font-size:16px;display:grid;place-items:center}
+  .icbtn:hover{color:var(--brand);border-color:var(--brand)}
+
+  .content{flex:1;overflow-y:auto;padding:24px 26px 60px}
+  .screen{display:none;animation:fade .25s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.screen,.screen.active{animation:none}}
+
+  /* ============ PRIMITIVES ============ */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm)}
+  .card-h{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--border)}
+  .card-h h3{font-size:14.5px;font-weight:700}
+  .card-h .sub{font-size:12px;color:var(--ink-2)}
+  .card-b{padding:18px}
+  .grid{display:grid;gap:18px}
+  .row{display:flex;gap:18px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);padding:8px 15px;border-radius:10px;font-weight:600;font-size:13px}
+  .btn:hover{border-color:var(--ink-3)}
+  .btn.pri{background:linear-gradient(135deg,var(--brand),var(--brand-600));border:none;color:#fff;box-shadow:0 2px 8px rgba(234,88,12,.28)}
+  .btn.pri:hover{filter:brightness(1.04)}
+  .btn.ok{background:var(--sage);border:none;color:#fff}
+  .btn.gh{background:transparent;border-color:transparent;color:var(--ink-2)}
+  .btn.sm{padding:5px 11px;font-size:12px}
+  .btn.dgr{color:var(--crit);border-color:var(--crit)}
+  .tag{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:650;padding:2px 9px;border-radius:20px;white-space:nowrap}
+  .tag.good{background:var(--good-bg);color:var(--sage-600)} :root[data-theme="dark"] .tag.good{color:var(--good)}
+  .tag.warn{background:var(--warn-bg);color:#B45309} :root[data-theme="dark"] .tag.warn{color:var(--warn)}
+  .tag.crit{background:var(--crit-bg);color:#B91C1C} :root[data-theme="dark"] .tag.crit{color:var(--crit)}
+  .tag.info{background:var(--info-bg);color:#1D4ED8} :root[data-theme="dark"] .tag.info{color:var(--info)}
+  .tag.mut{background:var(--surface-3);color:var(--ink-2)}
+  .tag.brand{background:var(--brand-050);color:var(--brand-600)}
+  .dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+  .muted{color:var(--ink-2)} .mut3{color:var(--ink-3)}
+  .num{font-variant-numeric:var(--fn);font-feature-settings:"tnum"}
+  .eyebrow{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+
+  /* ============ KPI TILES ============ */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
+  .kpi .lbl{font-size:12px;color:var(--ink-2);font-weight:600;display:flex;align-items:center;gap:7px}
+  .kpi .val{font-size:25px;font-weight:800;letter-spacing:-.02em;margin-top:9px;font-variant-numeric:var(--fn)}
+  .kpi .val small{font-size:14px;font-weight:700;color:var(--ink-3)}
+  .kpi .meta{margin-top:7px;font-size:12px;color:var(--ink-2);display:flex;align-items:center;gap:6px}
+  .kpi .stripe{position:absolute;left:0;top:0;bottom:0;width:4px}
+  .kpi .ic{position:absolute;right:15px;top:15px;font-size:18px;opacity:.5}
+
+  /* ============ TABLE ============ */
+  .twrap{overflow-x:auto}
+  table.t{width:100%;border-collapse:collapse;font-size:13px}
+  table.t th{text-align:left;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);font-weight:700;padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap;position:sticky;top:0;background:var(--surface)}
+  table.t td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+  table.t tr:last-child td{border-bottom:none}
+  table.t tbody tr:hover{background:var(--surface-2)}
+  table.t td.r,table.t th.r{text-align:right;font-variant-numeric:var(--fn)}
+  table.t td.c,table.t th.c{text-align:center}
+  .code{font-family:ui-monospace,"Cascadia Code",Consolas,monospace;font-size:12px;color:var(--ink-2);background:var(--surface-2);padding:1px 6px;border-radius:6px}
+
+  /* P&L breadcrumb — lebar tiap level dikunci sama agar sejajar antar baris */
+  .plmap{display:grid;grid-template-columns:repeat(4,210px) 150px;font-size:11.5px;line-height:1.3;align-items:center;white-space:nowrap}
+  .plmap>span{padding-right:12px;position:relative;overflow:hidden;text-overflow:ellipsis}
+  .plmap>span.l1{color:var(--brand-600);font-weight:700}
+  :root[data-theme="dark"] .plmap>span.l1{color:var(--brand)}
+  .plmap>span.sep,.plmap>span.st{padding-left:14px}
+  .plmap>span.sep::before{content:"\203A";position:absolute;left:2px;color:var(--ink-3)}
+  .plmap>span.st::before{content:"\B7";position:absolute;left:5px;color:var(--ink-3)}
+  .plmap .na{color:var(--ink-3)}
+
+  /* modal */
+  .modal-ov{position:fixed;inset:0;background:rgba(25,18,8,.46);display:none;align-items:flex-start;justify-content:center;padding:56px 20px;z-index:100;overflow-y:auto}
+  .modal-ov.open{display:flex}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 24px 64px rgba(0,0,0,.32);width:100%;max-width:660px;animation:pop .18s ease}
+  @keyframes pop{from{opacity:0;transform:translateY(-8px) scale(.99)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.modal{animation:none}}
+  .modal-h{display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border)}
+  .modal-h h3{font-size:15.5px;font-weight:750}
+  .modal-x{margin-left:auto;border:none;background:var(--surface-2);width:30px;height:30px;border-radius:8px;color:var(--ink-2);font-size:13px}
+  .modal-x:hover{color:var(--crit);background:var(--crit-bg)}
+  .modal-b{padding:20px}
+  .modal-f{display:flex;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid var(--border);background:var(--surface-2);border-radius:0 0 16px 16px}
+  .fgrid2{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
+  .fgrid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px 16px}
+  .fgrid5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px 16px}
+  .fgrid6{display:grid;grid-template-columns:repeat(6,1fr);gap:14px 16px}
+  @media (max-width:1100px){.fgrid5,.fgrid6{grid-template-columns:repeat(2,1fr)}}
+  .plpanel{margin-top:18px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:16px 16px 18px}
+  .panel-title{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-bottom:13px}
+  .panel-title b{font-size:13px;font-weight:750}
+  .panel-title span{font-size:11.5px;color:var(--ink-3);font-weight:500}
+  .modal-b .fld label{margin-bottom:6px}
+  .fcol{display:grid;grid-template-columns:1fr;gap:12px}
+  .inp.err{border-color:var(--crit);background:var(--crit-bg)}
+  /* toast */
+  .toast-wrap{position:fixed;right:22px;bottom:22px;display:flex;flex-direction:column;gap:10px;z-index:200}
+  .toast{display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--sage);border-radius:11px;box-shadow:var(--shadow-md);padding:12px 16px;font-size:13px;font-weight:600;min-width:260px;transition:opacity .3s,transform .3s;animation:slidein .25s ease}
+  @keyframes slidein{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+  .toast .tc{width:22px;height:22px;border-radius:50%;background:var(--sage);color:#fff;display:grid;place-items:center;font-size:12px;flex-shrink:0}
+  /* Rencana Realisasi — tabel ringkas */
+  #ibRealTable td{padding-top:6px;padding-bottom:6px;vertical-align:middle}
+  #ibRealTable .inp,#ibRealTable .mi{font-size:12px}
+
+  /* progress bar */
+  .bar{height:8px;border-radius:6px;background:var(--surface-3);overflow:hidden;min-width:90px}
+  .bar>i{display:block;height:100%;border-radius:6px}
+  .barwrap{display:flex;align-items:center;gap:9px}
+  .barwrap .pct{font-size:12px;font-weight:700;font-variant-numeric:var(--fn);min-width:42px;text-align:right}
+
+  /* PL report */
+  table.pl{width:100%;border-collapse:collapse;font-size:13px}
+  table.pl th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3);font-weight:700;padding:9px 14px;border-bottom:2px solid var(--border-strong);white-space:nowrap}
+  table.pl th.r,table.pl td.r{text-align:right;font-variant-numeric:var(--fn)}
+  table.pl td{padding:8px 14px;border-bottom:1px solid var(--border)}
+  table.pl tr.lvl1>td{font-weight:800;background:var(--surface-2)}
+  table.pl tr.lvl2>td:first-child{padding-left:30px;font-weight:650}
+  table.pl tr.lvl3>td:first-child{padding-left:48px;color:var(--ink-2)}
+  table.pl tr.sub>td{font-weight:800;border-top:2px solid var(--border-strong);border-bottom:2px solid var(--border-strong)}
+  table.pl tr.grand>td{font-weight:800;background:var(--brand-050);color:var(--brand-600);border-bottom:none}
+  table.pl tr.rev td{color:var(--ink-3)}
+  table.pl .vpos{color:var(--sage-600);font-weight:650} :root[data-theme="dark"] table.pl .vpos{color:var(--good)}
+  table.pl .vneg{color:var(--crit);font-weight:650}
+
+  /* mini bar chart */
+  .chart{display:flex;align-items:flex-end;gap:14px;height:190px;padding:10px 4px 0}
+  .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+  .col .stack{display:flex;align-items:flex-end;gap:4px;height:100%;width:100%;justify-content:center}
+  .col .b1,.col .b2{width:14px;border-radius:5px 5px 0 0;transition:height .3s}
+  .col .b1{background:var(--slate)}
+  .col .b2{background:var(--brand)}
+  .col .xl{font-size:10.5px;color:var(--ink-3);font-weight:600}
+  .legend{display:flex;gap:18px;align-items:center;font-size:12px;color:var(--ink-2);font-weight:600}
+  .legend i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:6px;vertical-align:-1px}
+
+  /* donut */
+  .donut{width:150px;height:150px;border-radius:50%;display:grid;place-items:center;position:relative}
+  .donut::after{content:"";position:absolute;inset:22px;background:var(--surface);border-radius:50%}
+  .donut .dc{position:relative;z-index:1;text-align:center}
+  .donut .dc b{font-size:26px;font-weight:800;font-variant-numeric:var(--fn)}
+  .donut .dc span{font-size:11px;color:var(--ink-2);font-weight:600}
+
+  /* approval chain */
+  .chain{display:flex;align-items:center;gap:0;flex-wrap:wrap}
+  .step{display:flex;align-items:center;gap:9px}
+  .step .cn{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;flex-shrink:0}
+  .step.done .cn{background:var(--sage);color:#fff}
+  .step.now .cn{background:var(--brand);color:#fff;box-shadow:0 0 0 4px var(--brand-050)}
+  .step.wait .cn{background:var(--surface-3);color:var(--ink-3)}
+  .step .sl{font-size:12px;line-height:1.2}
+  .step .sl b{font-weight:700;display:block;font-size:12.5px}
+  .step .sl span{color:var(--ink-3);font-size:11px}
+  .lnk{flex:1;height:2px;background:var(--border-strong);min-width:26px;margin:0 10px}
+  .lnk.done{background:var(--sage)}
+
+  /* form */
+  .fgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 18px}
+  .fld label{font-size:11.5px;font-weight:650;color:var(--ink-2);display:block;margin-bottom:5px}
+  .inp{width:100%;padding:8px 11px;border:1px solid var(--border-strong);border-radius:9px;background:var(--surface-2);color:var(--ink);font-size:13px;font-family:inherit}
+  .inp:focus{outline:2px solid var(--brand);outline-offset:0;border-color:var(--brand);background:var(--surface)}
+  select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--ink-3) 50%),linear-gradient(135deg,var(--ink-3) 50%,transparent 50%);background-position:calc(100% - 16px) 15px,calc(100% - 11px) 15px;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+  .month-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}
+  .mcell label{font-size:10.5px;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+  .mcell .mi{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);font-size:12px;font-variant-numeric:var(--fn);text-align:right;color:var(--ink)}
+  .mcell.bu .mi{border-left:3px solid var(--brand)}
+  .mcell.f .mi{border-left:3px solid var(--slate);color:var(--ink-2)}
+
+  /* tabs */
+  .tabs{display:flex;gap:4px;background:var(--surface-2);padding:4px;border-radius:11px;border:1px solid var(--border)}
+  .tabs button{border:none;background:transparent;color:var(--ink-2);padding:7px 15px;border-radius:8px;font-weight:650;font-size:13px}
+  .tabs button.on{background:var(--surface);color:var(--brand-600);box-shadow:var(--shadow-sm)}
+  :root[data-theme="dark"] .tabs button.on{color:var(--brand)}
+
+  .banner{display:flex;align-items:flex-start;gap:11px;padding:12px 15px;border-radius:11px;font-size:12.5px;line-height:1.45}
+  .banner.info{background:var(--info-bg);color:#1D4ED8;border:1px solid #C7D9FA} :root[data-theme="dark"] .banner.info{color:var(--info);border-color:#243a5e}
+  .banner.warn{background:var(--warn-bg);color:#92400E;border:1px solid #F5D9A8} :root[data-theme="dark"] .banner.warn{color:var(--warn);border-color:#4a3a15}
+  .banner b{font-weight:750}
+
+  .flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--ink-2)}
+  .flow .n{background:var(--surface-2);border:1px solid var(--border);padding:5px 12px;border-radius:20px;font-weight:650;color:var(--ink)}
+  .flow .n.on{background:var(--brand-050);border-color:var(--brand);color:var(--brand-600)}
+  .flow .ar{color:var(--ink-3);font-weight:800}
+
+  .sect-title{display:flex;align-items:center;gap:12px;margin:26px 2px 14px}
+  .sect-title h2{font-size:15px;font-weight:750}
+  .sect-title .ln{flex:1;height:1px;background:var(--border)}
+
+  @media (max-width:1180px){.kpis{grid-template-columns:repeat(2,1fr)}.fgrid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:900px){.app{grid-template-columns:1fr}.sidebar{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">S</div>
+      <div><div class="bt">Budget Monitoring</div><div class="bs">Portal v3 · Summarecon</div></div>
+    </div>
+    <nav class="nav" id="nav">
+      <div class="nav-group"><span>Beranda</span>
+        <a data-s="dashboard" class="active"><span class="ic">▦</span> Dashboard</a>
+      </div>
+      <div class="nav-group"><span>A · Setting</span>
+        <a data-s="master-pl"><span class="ic">▨</span> Struktur P&amp;L Management Report</a>
+        <a data-s="item-pl"><span class="ic">◫</span> Item P&amp;L Management Report</a>
+        <a data-s="master"><span class="ic">☰</span> Master Item Anggaran</a>
+        <a data-s="mapping"><span class="ic">⇄</span> Mapping Item P&amp;L Unit</a>
+      </div>
+      <div class="nav-group"><span>B · Anggaran</span>
+        <a data-s="input"><span class="ic">✎</span> Input Budget Non Capex</a>
+        <a data-s="input-cx"><span class="ic">✎</span> Input Budget Capex</a>
+        <a data-s="approval"><span class="ic">✔</span> Approval Budget <span class="badge">3</span></a>
+      </div>
+      <div class="nav-group"><span>C · Realisasi</span>
+        <a data-s="kartu"><span class="ic">▤</span> Kartu Kontrol</a>
+      </div>
+      <div class="nav-group"><span>D · Laporan</span>
+        <a data-s="pl-unit"><span class="ic">▧</span> P&amp;L per Unit</a>
+        <a data-s="pl-lokasi"><span class="ic">◫</span> P&amp;L per Lokasi</a>
+        <a data-s="pl-konsol"><span class="ic">◨</span> P&amp;L Konsolidasi</a>
+      </div>
+    </nav>
+    <div class="side-foot">Mockup demo · bukan data produksi</div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="pagetitle" id="ptitle">Dashboard</div>
+        <div class="pagesub" id="psub">Ringkasan anggaran &amp; realisasi tahun berjalan</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="yr"><small>Tahun Anggaran</small> 2026 ▾</div>
+      <button class="icbtn" id="themeBtn" title="Ganti tema">◐</button>
+      <div class="pill">
+        <div class="who"><b>PT Summarecon Agung Tbk</b><span>SPCK · SPCK &nbsp;•&nbsp; Fahmi Rizal</span></div>
+        <div class="av">FR</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ================= DASHBOARD ================= -->
+      <section class="screen active" id="s-dashboard">
+        <div class="flow" style="margin-bottom:20px">
+          <span class="n on">Setting</span><span class="ar">→</span>
+          <span class="n">Input Budget</span><span class="ar">→</span>
+          <span class="n">Approval</span><span class="ar">→</span>
+          <span class="n">Realisasi</span><span class="ar">→</span>
+          <span class="n">Laporan P&amp;L</span>
+          <span style="margin-left:auto;color:var(--ink-3)">Alur proses budget monitoring</span>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi"><div class="stripe" style="background:var(--brand)"></div><div class="lbl">Total Budget 2026</div><div class="val">Rp 987,0<small> jt</small></div><div class="meta"><span class="tag mut">4 item anggaran aktif</span></div></div>
+          <div class="kpi"><div class="stripe" style="background:var(--sage)"></div><div class="lbl">Realisasi YTD</div><div class="val">Rp 211,4<small> jt</small></div><div class="meta vpos" style="color:var(--sage-600)">▲ +18,2 jt vs bln lalu</div></div>
+          <div class="kpi"><div class="stripe" style="background:var(--slate)"></div><div class="lbl">Sisa Budget</div><div class="val">Rp 775,6<small> jt</small></div><div class="meta">78,6% tersisa</div></div>
+          <div class="kpi"><div class="stripe" style="background:var(--warn)"></div><div class="lbl">Serapan</div><div class="val">21,4<small>%</small></div><div class="meta"><span class="tag warn">di bawah kurva</span></div></div>
+        </div>
+
+        <div class="grid" style="grid-template-columns:1.6fr 1fr;margin-top:18px">
+          <div class="card">
+            <div class="card-h"><h3>Budget vs Realisasi per Bulan</h3><span class="sub">2026 · seluruh item (juta Rp)</span>
+              <div style="margin-left:auto" class="legend"><span><i style="background:var(--slate)"></i>Budget</span><span><i style="background:var(--brand)"></i>Realisasi</span></div>
+            </div>
+            <div class="card-b">
+              <div class="chart" id="chart1"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-h"><h3>Status Pengajuan</h3></div>
+            <div class="card-b" style="display:flex;flex-direction:column;align-items:center;gap:14px">
+              <div class="donut" style="background:conic-gradient(var(--sage) 0 62%,var(--brand) 62% 82%,var(--slate) 82% 100%)">
+                <div class="dc"><b>18</b><span>pengajuan</span></div>
+              </div>
+              <div style="width:100%;display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;align-items:center;gap:9px;font-size:13px"><span class="dot" style="background:var(--sage)"></span>Approved <b style="margin-left:auto" class="num">11</b></div>
+                <div style="display:flex;align-items:center;gap:9px;font-size:13px"><span class="dot" style="background:var(--brand)"></span>Menunggu approval <b style="margin-left:auto" class="num">3</b></div>
+                <div style="display:flex;align-items:center;gap:9px;font-size:13px"><span class="dot" style="background:var(--slate)"></span>Draft <b style="margin-left:auto" class="num">4</b></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sect-title"><h2>Serapan per Unit</h2><div class="ln"></div></div>
+        <div class="card"><div class="twrap"><table class="t">
+          <thead><tr><th>Unit</th><th>Lokasi</th><th class="r">Budget</th><th class="r">Realisasi</th><th class="r">Sisa</th><th style="width:200px">Serapan</th></tr></thead>
+          <tbody>
+            <tr><td><b>SCGD</b></td><td class="muted">Serpong</td><td class="r num">687.000.000</td><td class="r num">165.400.000</td><td class="r num">521.600.000</td><td><div class="barwrap"><div class="bar"><i style="width:24%;background:var(--brand)"></i></div><span class="pct">24,1%</span></div></td></tr>
+            <tr><td><b>SBGR</b></td><td class="muted">Bekasi</td><td class="r num">210.000.000</td><td class="r num">38.200.000</td><td class="r num">171.800.000</td><td><div class="barwrap"><div class="bar"><i style="width:18%;background:var(--sage)"></i></div><span class="pct">18,2%</span></div></td></tr>
+            <tr><td><b>SMMK</b></td><td class="muted">Bandung</td><td class="r num">90.000.000</td><td class="r num">7.800.000</td><td class="r num">82.200.000</td><td><div class="barwrap"><div class="bar"><i style="width:9%;background:var(--sage)"></i></div><span class="pct">8,7%</span></div></td></tr>
+          </tbody>
+        </table></div></div>
+      </section>
+
+      <!-- ================= MASTER STRUKTUR P&L ================= -->
+      <section class="screen" id="s-master-pl">
+        <div class="banner info" style="margin-bottom:16px"><span>ⓘ</span><div>Master struktur <b>P&amp;L Management Report</b> per level (L1 → L4) beserta <b>Status 1</b> &amp; <b>Status 2</b>. Nilai di sini yang akan muncul sebagai pilihan saat menambah Item Anggaran. Di-setup oleh FA Corp.</div></div>
+        <div class="card" style="margin-bottom:16px"><div class="card-b" style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end">
+          <div class="fld" style="flex:1;min-width:230px"><label>Cari</label><input id="plmSearch" class="inp" placeholder="Cari nama level…"></div>
+          <div class="fld"><label>Level</label><select id="plmLevel" class="inp" style="width:150px"><option value="">Semua Level</option><option value="L1">L1</option><option value="L2">L2</option><option value="L3">L3</option><option value="L4">L4</option><option value="S1">Status 1</option><option value="S2">Status 2</option></select></div>
+          <div class="fld"><label>Segmen</label><select id="plmSeg" class="inp" style="width:130px"><option value="">Semua</option><option>PDV</option><option>IVP</option><option>All</option></select></div>
+        </div></div>
+        <div class="card">
+          <div class="card-h"><h3>Struktur P&amp;L Management Report</h3><span class="sub"><b id="plmCount">0</b> item</span>
+            <div style="margin-left:auto"><button class="btn pri sm" id="plmAddBtn">+ Item P&amp;L</button></div>
+          </div>
+          <div class="twrap"><table class="t" id="plmTable"><thead><tr><th style="width:130px">Level</th><th>Nama</th><th class="c" style="width:120px">Segmen</th><th class="c" style="width:100px">Aktif</th></tr></thead><tbody></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- ================= ITEM P&L MANAGEMENT REPORT ================= -->
+      <section class="screen" id="s-item-pl">
+        <div class="banner info" style="margin-bottom:16px"><span>ⓘ</span><div>Hasil <b>mapping kombinasi</b> struktur P&amp;L Management Report: tiap baris = satu jalur <b>L1 › L2 › L3 › L4</b> + flag <b>Status Standard</b> (Standard / Non Standard → disimpan sbg <b>attr.fg_standard</b> di tabel <b>bm_item_pl</b>). Pilihan level diambil dari master Struktur P&amp;L. Di-setup oleh FA Corp.</div></div>
+        <div class="card" style="margin-bottom:16px"><div class="card-b" style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end">
+          <div class="fld" style="flex:1;min-width:230px"><label>Cari</label><input id="ipSearch" class="inp" placeholder="Cari pos P&amp;L / detail…"></div>
+          <div class="fld"><label>Pos P&amp;L (L1)</label><select id="ipL1" class="inp" style="width:215px"><option value="">Semua</option></select></div>
+          <div class="fld"><label>Status Standard</label><select id="ipSt" class="inp" style="width:170px"><option value="">Semua</option><option>Standard</option><option>Non Standard</option></select></div>
+          <div class="fld"><label>Segmen</label><select id="ipSeg" class="inp" style="width:120px"><option value="">Semua</option><option>PDV</option><option>IVP</option><option>All</option></select></div>
+          <button class="btn sm" id="ipReset">↺ Reset</button>
+        </div></div>
+        <div class="card">
+          <div class="card-h"><h3>Item P&amp;L Management Report</h3><span class="sub"><b id="ipCount">0</b> mapping</span>
+            <div style="margin-left:auto"><button class="btn pri sm" id="ipAddBtn">+ Mapping P&amp;L</button></div>
+          </div>
+          <div class="twrap"><table class="t" id="ipTable">
+            <thead><tr><th style="min-width:820px">Pemetaan P&amp;L <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-3)">(L1 › L2 › L3 › L4)</span></th><th class="c" style="width:170px">Status Standard</th><th class="c" style="width:110px">Segmen</th><th class="c" style="width:100px">Aktif</th></tr></thead>
+            <tbody></tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <!-- ================= MASTER ITEM ANGGARAN ================= -->
+      <section class="screen" id="s-master">
+        <div class="banner info" style="margin-bottom:16px"><span>ⓘ</span><div>Item anggaran non-capex dipetakan ke struktur <b>P&amp;L Management Report</b> 4 level (L1 › L2 › L3 › L4 · Status). <b>Capex tidak punya pemetaan P&amp;L</b> (kolom "—"). Pemetaan Cash Flow Unit/Lokasi diatur di menu tersendiri. Di-setup oleh FA Corp.</div></div>
+
+        <!-- Filter & Search — komponen standar untuk semua layar daftar -->
+        <div class="card" style="margin-bottom:16px"><div class="card-b" style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end">
+          <div class="fld" style="flex:1;min-width:230px"><label>Cari</label><input id="mSearch" class="inp" placeholder="Cari item anggaran / pos P&amp;L…"></div>
+          <div class="fld"><label>Jenis</label><select id="mKat" class="inp" style="width:150px"><option value="">Semua</option><option>Capex</option><option>Non-Capex</option></select></div>
+          <div class="fld"><label>Pos P&amp;L (L1)</label><select id="mL1" class="inp" style="width:215px"><option value="">Semua</option><option>Selling Expense</option><option>Beban Umum dan Administrasi</option><option>GA Expense standard</option><option>Investing</option></select></div>
+          <div class="fld"><label>Segmen</label><select id="mSeg" class="inp" style="width:120px"><option value="">Semua</option><option>PDV</option><option>IVP</option><option>All</option></select></div>
+          <button class="btn sm" id="mReset">↺ Reset</button>
+        </div></div>
+
+        <div class="card">
+          <div class="card-h"><h3>Master Item Anggaran</h3><span class="sub"><b id="mCount">9</b> item ditampilkan</span>
+            <div style="margin-left:auto;display:flex;gap:9px"><button class="btn sm" id="mExport">⤓ Export</button><button class="btn pri sm" id="mAddBtn">+ Item Anggaran</button></div>
+          </div>
+          <div class="twrap"><table class="t" id="mTable">
+            <thead><tr><th>Item Anggaran</th><th style="width:130px">Jenis</th><th style="min-width:900px">Pemetaan P&amp;L <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-3)">(L1 › L2 › L3 › L4 · Status Standard)</span></th><th class="c">Segmen</th><th class="c">Aktif</th></tr></thead>
+            <tbody></tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <!-- ================= MAPPING COA -> PL ================= -->
+      <section class="screen" id="s-mapping">
+        <div class="banner info" style="margin-bottom:16px"><span>ⓘ</span><div><b>Jembatan konsolidasi.</b> Tiap COA milik unit dipetakan ke sebuah <b>item anggaran</b>, dan otomatis mengikuti <b>baris P&amp;L Unit</b> (laporan per unit) serta <b>baris P&amp;L Konsolidasi</b> (console all) dari item tersebut — sehingga COA berbeda antar unit bisa diringkas ke satu struktur P&amp;L bersama.</div></div>
+        <div class="card" style="margin-bottom:16px"><div class="card-b" style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end">
+          <div class="fld" style="flex:1;min-width:230px"><label>Cari</label><input id="cSearch" class="inp" placeholder="Cari no. COA / nama COA…"></div>
+          <div class="fld"><label>Unit</label><select id="cUnit" class="inp" style="width:140px"><option value="">Semua</option><option>SCGD</option><option>SBGR</option><option>SMMK</option></select></div>
+          <div class="fld"><label>Item Anggaran</label><select id="cItem" class="inp" style="width:210px"><option value="">Semua</option></select></div>
+          <button class="btn sm" id="cReset">↺ Reset</button>
+        </div></div>
+        <div class="card">
+          <div class="card-h"><h3>Mapping Item P&amp;L Unit</h3><span class="sub"><b id="cCount">0</b> COA terpetakan</span>
+            <div style="margin-left:auto"><button class="btn pri sm" id="cAddBtn">+ Mapping</button></div>
+          </div>
+          <div class="twrap"><table class="t" id="cTable">
+            <thead><tr><th style="width:70px">Unit</th><th>No. COA</th><th>Nama COA</th><th>Item Anggaran</th><th>→ P&amp;L Unit</th><th>→ P&amp;L Konsolidasi</th></tr></thead>
+            <tbody>
+              <tr data-unit="SCGD" data-item="Media promosi" data-name="6-1201-001 beban iklan & promosi"><td class="mut3">SCGD</td><td><span class="code">6-1201-001</span></td><td>Beban Iklan &amp; Promosi</td><td>Media promosi</td><td class="muted">Selling Exp › Media promosi</td><td class="muted">Selling Expense › Media promosi</td></tr>
+              <tr data-unit="SCGD" data-item="Beban gedung" data-name="6-1301-004 beban sewa gedung kantor"><td class="mut3">SCGD</td><td><span class="code">6-1301-004</span></td><td>Beban Sewa Gedung Kantor</td><td>Beban gedung</td><td class="muted">GA Other › Beban gedung</td><td class="muted">Beban Umum &amp; Adm › Beban gedung</td></tr>
+              <tr data-unit="SCGD" data-item="Beban asuransi" data-name="6-1305-002 premi asuransi bangunan"><td class="mut3">SCGD</td><td><span class="code">6-1305-002</span></td><td>Premi Asuransi Bangunan</td><td>Beban asuransi</td><td class="muted">GA Other › Beban asuransi</td><td class="muted">Beban Umum &amp; Adm › Beban asuransi</td></tr>
+              <tr data-unit="SCGD" data-item="Gaji tetap" data-name="6-1101-001 gaji karyawan tetap"><td class="mut3">SCGD</td><td><span class="code">6-1101-001</span></td><td>Gaji Karyawan Tetap</td><td>Gaji tetap</td><td class="muted">GA Employee › Gaji tetap</td><td class="muted">Beban Kepegawaian › Gaji tetap</td></tr>
+              <tr data-unit="SCGD" data-item="Event" data-name="6-1210-007 biaya penyelenggaraan event"><td class="mut3">SCGD</td><td><span class="code">6-1210-007</span></td><td>Biaya Penyelenggaraan Event</td><td>Event</td><td class="muted">Selling Exp › Event</td><td class="muted">Selling Expense › Event</td></tr>
+              <tr data-unit="SCGD" data-item="Beban kantor" data-name="6-1302-001 beban atk & rumah tangga"><td class="mut3">SCGD</td><td><span class="code">6-1302-001</span></td><td>Beban ATK &amp; Rumah Tangga</td><td>Beban kantor</td><td class="muted">GA Other › Beban kantor</td><td class="muted">Beban Umum &amp; Adm › Beban kantor</td></tr>
+              <tr data-unit="SBGR" data-item="Media promosi" data-name="6-1201-001 beban iklan bekasi"><td class="mut3">SBGR</td><td><span class="code">6-1201-001</span></td><td>Beban Iklan Bekasi</td><td>Media promosi</td><td class="muted">Selling Exp › Media promosi</td><td class="muted">Selling Expense › Media promosi</td></tr>
+              <tr data-unit="SBGR" data-item="Gaji tetap" data-name="6-1101-005 gaji karyawan bekasi"><td class="mut3">SBGR</td><td><span class="code">6-1101-005</span></td><td>Gaji Karyawan Bekasi</td><td>Gaji tetap</td><td class="muted">GA Employee › Gaji tetap</td><td class="muted">Beban Kepegawaian › Gaji tetap</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <!-- ================= INPUT BUDGET ================= -->
+      <section class="screen" id="s-input">
+        <div class="flow" style="margin-bottom:18px">
+          <span class="n">Draft</span><span class="ar">→</span><span class="n on">Diisi</span><span class="ar">→</span><span class="n">Diajukan</span><span class="ar">→</span><span class="n">Approval berjenjang</span>
+        </div>
+
+        <!-- Detail pengajuan terpilih -->
+        <div class="card" style="margin-bottom:18px">
+          <div class="card-h"><h3>Detail Pengajuan — <span id="ibDetNo">—</span></h3><span class="sub" id="ibStatus">Status: Draft</span>
+            <div style="margin-left:auto;display:flex;gap:9px"><button class="btn sm" id="ibPickBtn">🔭 Daftar Pengajuan</button><button class="btn sm" id="ibDraft">Simpan Draft</button><button class="btn pri sm" id="ibAjukan">Ajukan ▸</button></div>
+          </div>
+          <div class="card-b">
+            <div class="fgrid5">
+              <div class="fld"><label>Jenis Pengajuan <span style="font-weight:400;color:var(--ink-3)">(req_type)</span></label><select class="inp" id="ibhJenis"><option>Budget</option><option>Non Budget</option><option>Revised</option></select></div>
+              <div class="fld"><label>No. Pengajuan</label><input class="inp" id="ibhNo" readonly></div>
+              <div class="fld"><label>Tahun Pengajuan</label><select class="inp" id="ibhThn"><option>2026</option><option>2027</option></select></div>
+              <div class="fld"><label>Departemen HR</label><select class="inp" id="ibhDept"><option>HR&amp;GA</option><option>Marketing</option><option>Finance &amp; Accounting</option><option>IT</option><option>GA</option></select></div>
+              <div class="fld"><label>Departemen Budget</label><input class="inp" id="ibhDeptB" readonly></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:18px">
+          <div class="card-h"><h3>Rincian Item</h3><span class="sub">klik baris untuk mengisi rencana realisasi · <b id="ibKatLabel">—</b></span><button class="btn pri sm" style="margin-left:auto" id="ibAddBtn">+ Baris</button></div>
+          <div class="twrap"><table class="t" id="ibTable">
+            <thead><tr><th>Item Anggaran</th><th>Nama Item Budget</th><th class="r">Qty</th><th>Satuan</th><th class="r">Harga Satuan</th><th class="r">Total Setahun</th><th>Jenis</th><th>Keterangan</th></tr></thead>
+            <tbody></tbody>
+            <tfoot><tr><td colspan="5" style="text-align:right;font-weight:700;padding:12px">Total Pengajuan</td><td class="r num" id="ibTotal" style="font-weight:800;font-size:15px;color:var(--brand-600)">0</td><td></td><td></td></tr></tfoot>
+          </table></div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><h3>Rencana Realisasi — <span id="ibPhaseName">—</span></h3><span class="sub" id="ibPhaseSub">mengikuti rincian yang dipilih</span></div>
+          <div class="card-b">
+            <div class="twrap"><table class="t" id="ibRealTable" style="min-width:860px">
+              <thead><tr><th style="width:120px">Periode</th><th class="r" style="width:88px">Qty</th><th class="r" style="width:150px">Nilai (Rp)</th><th style="width:220px">Jenis <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-3)">(dari Rincian Item)</span></th></tr></thead>
+              <tbody></tbody>
+              <tfoot><tr><td style="font-weight:700;padding:12px">Total</td><td class="r num" id="ibRealQty" style="font-weight:700">0</td><td class="r num" id="ibRealTot" style="font-weight:800;color:var(--brand-600)">0</td><td></td></tr></tfoot>
+            </table></div>
+            <div class="banner warn" style="margin-top:16px"><span>⚠</span><div><b>Kontrol:</b> pengambilan budget hanya bisa <b>maju</b>, tidak boleh mundur ke bulan yang sudah lewat. Nilai = Qty × Harga Satuan (dari master). Kolom <b>Jenis</b> tiap bulan mengikuti <b>Jenis</b> item di Rincian (disimpan di <b>bm_budget_req_est.kd_item_jenis</b>).</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= INPUT BUDGET CAPEX ================= -->
+      <section class="screen" id="s-input-cx">
+        <div class="banner info" style="margin-bottom:16px"><span>ⓘ</span><div>Pengajuan anggaran <b>Capex</b> (investasi). Dipetakan ke <b>Cash Flow</b> (bukan P&amp;L), <b>Segmen = All</b>. Kolom <b>Jenis</b> = klasifikasi capex (Baru / Perbaikan-Penggantian / Efisiensi / Generate Revenue).</div></div>
+        <div class="flow" style="margin-bottom:18px">
+          <span class="n">Draft</span><span class="ar">→</span><span class="n on">Diisi</span><span class="ar">→</span><span class="n">Diajukan</span><span class="ar">→</span><span class="n">Approval berjenjang</span>
+        </div>
+        <div class="card" style="margin-bottom:18px">
+          <div class="card-h"><h3>Detail Pengajuan — <span id="cxDetNo">—</span></h3><span class="sub" id="cxStatus">Status: Draft</span>
+            <div style="margin-left:auto;display:flex;gap:9px"><button class="btn sm" id="cxPickBtn">🔭 Daftar Pengajuan</button><button class="btn sm" id="cxDraft">Simpan Draft</button><button class="btn pri sm" id="cxAjukan">Ajukan ▸</button></div>
+          </div>
+          <div class="card-b">
+            <div class="fgrid5">
+              <div class="fld"><label>Jenis Pengajuan <span style="font-weight:400;color:var(--ink-3)">(req_type)</span></label><select class="inp" id="cxhJenis"><option>Budget</option><option>Non Budget</option><option>Revised</option></select></div>
+              <div class="fld"><label>No. Pengajuan</label><input class="inp" id="cxhNo" readonly></div>
+              <div class="fld"><label>Tahun Pengajuan</label><select class="inp" id="cxhThn"><option>2026</option><option>2027</option></select></div>
+              <div class="fld"><label>Departemen HR</label><select class="inp" id="cxhDept"><option>HR&amp;GA</option><option>Marketing</option><option>Finance &amp; Accounting</option><option>IT</option><option>GA</option></select></div>
+              <div class="fld"><label>Departemen Budget</label><input class="inp" id="cxhDeptB" readonly></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:18px">
+          <div class="card-h"><h3>Rincian Item Capex</h3><span class="sub">klik baris untuk mengisi rencana realisasi · <b id="cxKatLabel">—</b></span><button class="btn pri sm" style="margin-left:auto" id="cxAddBtn">+ Baris</button></div>
+          <div class="twrap"><table class="t" id="cxTable">
+            <thead><tr><th>Item Anggaran <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-3)">(Kategori Barang)</span></th><th>Nama Item Budget</th><th class="r">Qty</th><th>Satuan</th><th class="r">Harga Satuan</th><th class="r">Total</th><th>Jenis</th><th>Keterangan</th></tr></thead>
+            <tbody></tbody>
+            <tfoot><tr><td colspan="5" style="text-align:right;font-weight:700;padding:12px">Total Pengajuan</td><td class="r num" id="cxTotal" style="font-weight:800;font-size:15px;color:var(--brand-600)">0</td><td></td><td></td></tr></tfoot>
+          </table></div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><h3>Rencana Realisasi — <span id="cxPhaseName">—</span></h3><span class="sub" id="cxPhaseSub">mengikuti rincian yang dipilih</span></div>
+          <div class="card-b">
+            <div class="twrap"><table class="t" id="cxRealTable" style="min-width:860px">
+              <thead><tr><th style="width:120px">Periode</th><th class="r" style="width:88px">Qty</th><th class="r" style="width:150px">Nilai (Rp)</th><th style="width:220px">Jenis <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-3)">(dari Rincian Item)</span></th></tr></thead>
+              <tbody></tbody>
+              <tfoot><tr><td style="font-weight:700;padding:12px">Total</td><td class="r num" id="cxRealQty" style="font-weight:700">0</td><td class="r num" id="cxRealTot" style="font-weight:800;color:var(--brand-600)">0</td><td></td></tr></tfoot>
+            </table></div>
+            <div class="banner warn" style="margin-top:16px"><span>⚠</span><div><b>Kontrol:</b> pengambilan budget hanya bisa <b>maju</b>. Nilai = Qty × Harga Satuan. Capex <b>tidak punya pemetaan P&amp;L</b> — penyusutan lewat depresiasi diurus aplikasi fixed-asset (di luar scope).</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= APPROVAL ================= -->
+      <section class="screen" id="s-approval">
+        <div class="row" style="margin-bottom:6px">
+          <div class="kpi" style="flex:1"><div class="lbl">Menunggu approval Anda</div><div class="val" id="apWait">3</div><div class="meta">sebagai FA Unit</div></div>
+          <div class="kpi" style="flex:1"><div class="lbl">Disetujui bulan ini</div><div class="val" id="apDone">11</div><div class="meta vpos" style="color:var(--sage-600)">Rp 4,2 M</div></div>
+          <div class="kpi" style="flex:1"><div class="lbl">Ditolak / dikembalikan</div><div class="val" id="apRej">2</div><div class="meta">perlu revisi unit</div></div>
+        </div>
+
+        <div class="sect-title"><h2>Antrian Persetujuan</h2><div class="ln"></div></div>
+
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-b">
+            <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap">
+              <div style="min-width:230px">
+                <div class="eyebrow">BR-2026-SCGD-0042</div>
+                <div style="font-weight:750;font-size:15px;margin:4px 0">Budget Tahunan HR&amp;GA</div>
+                <div class="muted" style="font-size:12.5px">SCGD · Serpong · Dept HR&amp;GA</div>
+                <div style="margin-top:8px;font-size:19px;font-weight:800" class="num">Rp 975.000.000</div>
+                <div class="muted" style="font-size:12px">3 item · diajukan 2 hari lalu</div>
+              </div>
+              <div style="flex:1;min-width:320px">
+                <div class="eyebrow" style="margin-bottom:12px">Alur Approval</div>
+                <div class="chain">
+                  <div class="step done"><div class="cn">✓</div><div class="sl"><b>Submit</b><span>Joni · 11 Jul</span></div></div>
+                  <div class="lnk done"></div>
+                  <div class="step done"><div class="cn">✓</div><div class="sl"><b>Kabag</b><span>Rudi · 12 Jul</span></div></div>
+                  <div class="lnk done"></div>
+                  <div class="step now" id="apStepFaUnit"><div class="cn">2</div><div class="sl"><b>FA Unit</b><span>Anda · menunggu</span></div></div>
+                  <div class="lnk" id="apLink2"></div>
+                  <div class="step wait" id="apStepFaCorp"><div class="cn">3</div><div class="sl"><b>FA Corp</b><span>—</span></div></div>
+                </div>
+                <div style="display:flex;gap:9px;margin-top:18px" id="apActions">
+                  <button class="btn ok sm" id="apApprove">✔ Setujui</button>
+                  <button class="btn dgr sm" id="apReturn">✕ Kembalikan</button>
+                  <button class="btn gh sm" id="apDetail">Lihat detail</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card"><div class="twrap"><table class="t" id="apTable">
+          <thead><tr><th>No. Pengajuan</th><th>Unit / Dept</th><th>Jenis</th><th class="r">Nilai</th><th>Status</th><th class="c">Aksi</th></tr></thead>
+          <tbody>
+            <tr><td><b>BR-2026-SCGD-0043</b></td><td>SCGD · Marketing</td><td><span class="tag brand">Tambahan</span></td><td class="r num">120.000.000</td><td><span class="tag warn">● FA Unit</span></td><td class="c"><button class="btn sm">Review</button></td></tr>
+            <tr><td><b>BR-2026-SBGR-0018</b></td><td>SBGR · Finance</td><td><span class="tag mut">Tahunan</span></td><td class="r num">210.000.000</td><td><span class="tag warn">● FA Unit</span></td><td class="c"><button class="btn sm">Review</button></td></tr>
+            <tr><td><b>BR-2026-SCGD-0041</b></td><td>SCGD · HR&amp;GA</td><td><span class="tag info">Forecast</span></td><td class="r num">88.000.000</td><td><span class="tag good">✓ Approved</span></td><td class="c"><button class="btn gh sm">Lihat</button></td></tr>
+            <tr><td><b>BR-2026-SMMK-0009</b></td><td>SMMK · GA</td><td><span class="tag mut">Tahunan</span></td><td class="r num">90.000.000</td><td><span class="tag crit">✕ Dikembalikan</span></td><td class="c"><button class="btn gh sm">Lihat</button></td></tr>
+          </tbody>
+        </table></div></div>
+      </section>
+
+      <!-- ================= KARTU KONTROL ================= -->
+      <section class="screen" id="s-kartu">
+        <div class="banner warn" style="margin-bottom:18px"><span>⚠</span><div><b>Aturan realisasi.</b> Saldo minus tidak bisa diproses. Dokumen mengalami <b>supersession</b>: begitu ada PO, PR gugur; begitu ada PJUM, UM gugur; Event: BU→BE→FA — agar realisasi tidak dihitung ganda.</div></div>
+
+        <div class="card" style="margin-bottom:18px">
+          <div class="card-h"><h3>Kartu Kontrol — Beban asuransi</h3><span class="sub">SCGD · Tahun 2026</span>
+            <div style="margin-left:auto;display:flex;gap:20px;align-items:center">
+              <div style="text-align:right"><div class="eyebrow">Budget</div><div class="num" style="font-weight:800">Rp 75.000.000</div></div>
+              <div style="text-align:right"><div class="eyebrow">Realisasi</div><div class="num" style="font-weight:800;color:var(--brand-600)">Rp 16.200.000</div></div>
+              <div style="text-align:right"><div class="eyebrow">Sisa</div><div class="num" style="font-weight:800;color:var(--sage-600)">Rp 58.800.000</div></div>
+            </div>
+          </div>
+          <div class="twrap"><table class="t">
+            <thead><tr><th>Periode</th><th class="r">Budget</th><th class="c">Sts</th><th class="r">Realisasi</th><th class="c">Dokumen</th><th>Referensi</th><th class="r">Balance</th></tr></thead>
+            <tbody>
+              <tr><td>Jan 2026</td><td class="r num">6.250.000</td><td class="c"><span class="tag brand">BU</span></td><td class="r num">900.000</td><td class="c"><span class="tag good">PO</span></td><td class="muted">1-xxx-2025 · 12 Jan</td><td class="r num">5.350.000</td></tr>
+              <tr><td>Feb 2026</td><td class="r num">6.250.000</td><td class="c"><span class="tag brand">BU</span></td><td class="r num">900.000</td><td class="c"><span class="tag good">PO</span></td><td class="muted">1-xxx-2025 · 10 Feb</td><td class="r num">10.700.000</td></tr>
+              <tr><td>Mar 2026</td><td class="r num">6.250.000</td><td class="c"><span class="tag brand">BU</span></td><td class="r num">1.100.000</td><td class="c"><span class="tag warn">PR</span></td><td class="muted">2-xxx-2026 · 05 Mar</td><td class="r num">15.850.000</td></tr>
+              <tr><td>Apr 2026</td><td class="r num">6.250.000</td><td class="c"><span class="tag brand">BU</span></td><td class="r num">1.100.000</td><td class="c"><span class="tag warn">PR</span></td><td class="muted">2-xxx-2026 · 03 Apr</td><td class="r num">21.000.000</td></tr>
+              <tr><td>Mei 2026</td><td class="r num">6.250.000</td><td class="c"><span class="tag brand">BU</span></td><td class="r num" style="color:var(--ink-3)">—</td><td class="c mut3">—</td><td class="muted">belum ada realisasi</td><td class="r num">27.250.000</td></tr>
+              <tr><td>Jun–Des</td><td class="r num">43.750.000</td><td class="c"><span class="tag mut">BU / F</span></td><td class="r num" style="color:var(--ink-3)">—</td><td class="c mut3">—</td><td class="muted">—</td><td class="r num">58.800.000</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><h3>Kartu Kontrol — Event (JFFF 2026)</h3><span class="sub">SCGD · Tahun 2026</span>
+            <div style="margin-left:auto;display:flex;gap:20px;align-items:center">
+              <div style="text-align:right"><div class="eyebrow">Budget</div><div class="num" style="font-weight:800">Rp 600.000.000</div></div>
+              <div style="text-align:right"><div class="eyebrow">Realisasi</div><div class="num" style="font-weight:800;color:var(--brand-600)">Rp 120.000.000</div></div>
+              <div style="text-align:right"><div class="eyebrow">Sisa</div><div class="num" style="font-weight:800;color:var(--sage-600)">Rp 480.000.000</div></div>
+            </div>
+          </div>
+          <div class="twrap"><table class="t">
+            <thead><tr><th>Periode</th><th class="r">Budget</th><th class="c">Sts</th><th class="r">Realisasi</th><th class="c">Dokumen</th><th>Referensi</th><th class="r">Balance</th></tr></thead>
+            <tbody>
+              <tr><td>Jan 2026</td><td class="r num">50.000.000</td><td class="c"><span class="tag brand">BU</span></td><td class="r num">20.000.000</td><td class="c"><span class="tag info">Event BU</span></td><td class="muted">JFFF 2026 · Dekor</td><td class="r num">30.000.000</td></tr>
+              <tr><td>Feb 2026</td><td class="r num">50.000.000</td><td class="c"><span class="tag brand">BU</span></td><td class="r num">50.000.000</td><td class="c"><span class="tag info">Event BU</span></td><td class="muted">JFFF 2026 · Sirkus</td><td class="r num">30.000.000</td></tr>
+              <tr><td>Mar 2026</td><td class="r num">50.000.000</td><td class="c"><span class="tag brand">BU</span></td><td class="r num">50.000.000</td><td class="c"><span class="tag info">Event BU</span></td><td class="muted">JFFF 2026 · Aktivasi</td><td class="r num">30.000.000</td></tr>
+              <tr><td>Apr–Des</td><td class="r num">450.000.000</td><td class="c"><span class="tag mut">BU</span></td><td class="r num" style="color:var(--ink-3)">—</td><td class="c mut3">—</td><td class="muted">—</td><td class="r num">480.000.000</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <!-- ================= P&L PER UNIT ================= -->
+      <section class="screen" id="s-pl-unit">
+        <div class="row" style="align-items:center;margin-bottom:16px">
+          <div class="tabs" id="plScope"><button class="on">Per Unit</button><button>Per Lokasi</button><button>Konsolidasi</button></div>
+          <select class="inp" style="width:auto" id="puUnit"><option value="SCGD">Unit: SCGD — Serpong</option><option value="SBGR">Unit: SBGR — Bekasi</option><option value="SMMK">Unit: SMMK — Bandung</option></select>
+          <select class="inp" style="width:auto" id="puPeriod"><option>YTD s/d Apr 2026</option><option>Full Year 2026</option></select>
+          <div class="spacer" style="flex:1"></div>
+          <button class="btn sm expbtn">⤓ Excel</button><button class="btn sm expbtn">⎙ PDF</button>
+        </div>
+        <div class="card">
+          <div class="card-h"><h3 id="puTitle">Laporan Laba Rugi (P&amp;L) — SCGD</h3><span class="sub">Management Report · YTD s/d April 2026 · dalam Rupiah</span></div>
+          <div class="twrap"><table class="pl">
+            <thead><tr><th>Pos P&amp;L</th><th class="r">Budget YTD</th><th class="r">Realisasi YTD</th><th class="r">Variance</th><th class="r">%</th><th class="r">Budget Setahun</th></tr></thead>
+            <tbody id="puBody"></tbody>
+          </table></div>
+          <div class="card-b" style="border-top:1px solid var(--border)">
+            <div class="banner info"><span>ⓘ</span><div>Baris <b>Revenue</b> &amp; <b>Payroll</b> ditampilkan sebagai slot — akan terisi otomatis saat modul diintegrasikan ke ERP Sales &amp; Payroll. Struktur P&amp;L sudah siap menampungnya.</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= P&L PER LOKASI ================= -->
+      <section class="screen" id="s-pl-lokasi">
+        <div class="row" style="align-items:center;margin-bottom:16px">
+          <div class="tabs"><button>Per Unit</button><button class="on">Per Lokasi</button><button>Konsolidasi</button></div>
+          <select class="inp" style="width:auto" id="plLok"><option value="Serpong">Lokasi: Serpong</option><option value="Bekasi">Lokasi: Bekasi</option><option value="Bandung">Lokasi: Bandung</option></select>
+          <div class="spacer" style="flex:1"></div>
+          <button class="btn sm expbtn">⤓ Excel</button>
+        </div>
+        <div class="card">
+          <div class="card-h"><h3 id="plTitle">Laporan P&amp;L — Lokasi Serpong</h3><span class="sub">Gabungan seluruh unit &amp; dept di lokasi · YTD s/d April 2026</span></div>
+          <div class="twrap"><table class="pl">
+            <thead><tr><th>Pos P&amp;L</th><th class="r">Budget YTD</th><th class="r">Realisasi YTD</th><th class="r">Variance</th><th class="r">Serapan</th></tr></thead>
+            <tbody id="plBody"></tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <!-- ================= P&L KONSOLIDASI ================= -->
+      <section class="screen" id="s-pl-konsol">
+        <div class="row" style="align-items:center;margin-bottom:16px">
+          <div class="tabs"><button>Per Unit</button><button>Per Lokasi</button><button class="on">Konsolidasi</button></div>
+          <select class="inp" style="width:auto"><option>Semua Unit (Console All)</option></select>
+          <select class="inp" style="width:auto" id="koPeriod"><option>YTD s/d Apr 2026</option><option>Full Year 2026</option></select>
+          <div class="spacer" style="flex:1"></div>
+          <button class="btn sm expbtn">⤓ Excel</button><button class="btn sm expbtn">⎙ PDF</button>
+        </div>
+        <div class="banner info" style="margin-bottom:16px"><span>◨</span><div><b>Console All.</b> COA berbeda tiap unit diringkas ke satu struktur P&amp;L konsolidasi via mapping <b>COA → P&amp;L Konsolidasi</b>. Kolom = unit, baris = pos P&amp;L bersama.</div></div>
+        <div class="card">
+          <div class="card-h"><h3>Laporan P&amp;L Konsolidasi</h3><span class="sub">Realisasi YTD s/d April 2026 · seluruh unit · dalam juta Rupiah</span></div>
+          <div class="twrap"><table class="pl">
+            <thead><tr><th>Pos P&amp;L</th><th class="r">SCGD</th><th class="r">SBGR</th><th class="r">SMMK</th><th class="r">Konsolidasi</th><th class="r">Budget</th><th class="r">Serapan</th></tr></thead>
+            <tbody>
+              <tr class="lvl1"><td>Selling Expense</td><td class="r num">120,0</td><td class="r num">22,5</td><td class="r num">4,0</td><td class="r num">146,5</td><td class="r num">300,0</td><td class="r">49%</td></tr>
+              <tr class="lvl3"><td>Event</td><td class="r num">120,0</td><td class="r num">15,0</td><td class="r num">0,0</td><td class="r num">135,0</td><td class="r num">225,0</td><td class="r">60%</td></tr>
+              <tr class="lvl3"><td>Media promosi</td><td class="r num">0,0</td><td class="r num">7,5</td><td class="r num">4,0</td><td class="r num">11,5</td><td class="r num">75,0</td><td class="r">15%</td></tr>
+              <tr class="lvl1"><td>Beban Umum &amp; Administrasi</td><td class="r num">45,4</td><td class="r num">15,7</td><td class="r num">3,8</td><td class="r num">64,9</td><td class="r num">210,0</td><td class="r">31%</td></tr>
+              <tr class="lvl3"><td>Beban gedung</td><td class="r num">28,0</td><td class="r num">9,0</td><td class="r num">2,0</td><td class="r num">39,0</td><td class="r num">120,0</td><td class="r">33%</td></tr>
+              <tr class="lvl3"><td>Beban asuransi</td><td class="r num">16,2</td><td class="r num">5,2</td><td class="r num">1,3</td><td class="r num">22,7</td><td class="r num">75,0</td><td class="r">30%</td></tr>
+              <tr class="lvl3"><td>Beban kantor</td><td class="r num">1,2</td><td class="r num">1,5</td><td class="r num">0,5</td><td class="r num">3,2</td><td class="r num">15,0</td><td class="r">21%</td></tr>
+              <tr class="sub"><td>Total Beban Operasional</td><td class="r num">165,4</td><td class="r num">38,2</td><td class="r num">7,8</td><td class="r num">211,4</td><td class="r num">510,0</td><td class="r">41%</td></tr>
+              <tr class="grand"><td>Total Realisasi Konsolidasi</td><td class="r num">165,4</td><td class="r num">38,2</td><td class="r num">7,8</td><td class="r num">211,4</td><td class="r num">987,0</td><td class="r">21%</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== Modal: Tambah Item Anggaran ===== -->
+<div class="modal-ov" id="mAddOv">
+  <div class="modal">
+    <div class="modal-h"><h3>Tambah Item Anggaran</h3><button class="modal-x" data-close title="Tutup">✕</button></div>
+    <div class="modal-b">
+      <div class="fld" style="margin-bottom:14px"><label>Nama Item Anggaran *</label><input class="inp" id="fName" placeholder="mis. Beban listrik &amp; air"></div>
+      <div class="fgrid3">
+        <div class="fld"><label>Jenis</label><select class="inp" id="fKat"><option>Non-Capex</option><option>Capex</option></select></div>
+        <div class="fld"><label>Segmen Bisnis</label><select class="inp" id="fSeg"><option>PDV</option><option>IVP</option><option>All</option></select></div>
+        <div class="fld"><label>Status</label><select class="inp" id="fAktif"><option>Aktif</option><option>Non-Aktif</option></select></div>
+      </div>
+      <div id="plFields" class="plpanel">
+        <div class="panel-title"><b>Pemetaan P&amp;L Management Report</b><span>pilih berurutan · L1 › L2 › L3 › L4 · Status Standard (auto)</span></div>
+        <div class="fcol">
+          <div class="fld"><label>1 · L1 Pos P&amp;L</label><select class="inp" id="fL1"></select></div>
+          <div class="fld"><label>2 · L2</label><select class="inp" id="fL2"></select></div>
+          <div class="fld"><label>3 · L3</label><select class="inp" id="fL3"></select></div>
+          <div class="fld"><label>4 · L4 Detail</label><select class="inp" id="fL4"></select></div>
+          <div class="fld"><label>5 · Status Standard <span style="font-weight:400;color:var(--ink-3)">(otomatis)</span></label><input class="inp" id="fStd" readonly tabindex="-1" style="opacity:.75;cursor:not-allowed" placeholder="ikuti kombinasi L1–L4"></div>
+        </div>
+      </div>
+      <div id="capexNote" class="banner info" style="display:none;margin-top:14px"><span>ⓘ</span><div><b>Capex</b> tidak punya pemetaan P&amp;L — kolom P&amp;L akan "—". Pemetaan Cash Flow diatur di menu tersendiri, dan Segmen otomatis <b>All</b>.</div></div>
+    </div>
+    <div class="modal-f"><button class="btn" data-close>Batal</button><button class="btn pri" id="fSave">✓ Simpan</button></div>
+  </div>
+</div>
+<!-- ===== Modal: Tambah Item Struktur P&L ===== -->
+<div class="modal-ov" id="mplOv">
+  <div class="modal" style="max-width:470px">
+    <div class="modal-h"><h3>Tambah Item Struktur P&amp;L</h3><button class="modal-x" data-close title="Tutup">✕</button></div>
+    <div class="modal-b"><div class="fgrid2">
+      <div class="fld"><label>Level *</label><select class="inp" id="pfLevel"><option value="L1">L1</option><option value="L2">L2</option><option value="L3">L3</option><option value="L4">L4</option><option value="S1">Status 1</option><option value="S2">Status 2</option></select></div>
+      <div class="fld"><label>Segmen Bisnis</label><select class="inp" id="pfSeg"><option>PDV</option><option>IVP</option><option>All</option></select></div>
+      <div class="fld" style="grid-column:1 / -1"><label>Nama *</label><input class="inp" id="pfName" placeholder="mis. Beban pemasaran digital"></div>
+      <div class="fld"><label>Status</label><select class="inp" id="pfAktif"><option>Aktif</option><option>Non-Aktif</option></select></div>
+    </div></div>
+    <div class="modal-f"><button class="btn" data-close>Batal</button><button class="btn pri" id="pfSave">✓ Simpan</button></div>
+  </div>
+</div>
+<!-- ===== Modal: Tambah Mapping Item P&L ===== -->
+<div class="modal-ov" id="ipOv">
+  <div class="modal" style="max-width:470px">
+    <div class="modal-h"><h3>Tambah Mapping Item P&amp;L</h3><button class="modal-x" data-close title="Tutup">✕</button></div>
+    <div class="modal-b">
+      <div id="ipPanel" class="plpanel">
+        <div class="panel-title"><b>Pemetaan P&amp;L Management Report</b><span>pilih berurutan · L1 › L2 › L3 › L4 · Status Standard</span></div>
+        <div class="fcol">
+          <div class="fld"><label>1 · L1 Pos P&amp;L</label><select class="inp" id="ipfL1"></select></div>
+          <div class="fld"><label>2 · L2</label><select class="inp" id="ipfL2"></select></div>
+          <div class="fld"><label>3 · L3</label><select class="inp" id="ipfL3"></select></div>
+          <div class="fld"><label>4 · L4 Detail</label><select class="inp" id="ipfL4"></select></div>
+          <div class="fld"><label>5 · Status Standard</label><select class="inp" id="ipfSt"><option>Standard</option><option>Non Standard</option></select></div>
+        </div>
+      </div>
+      <div class="fld" style="margin-top:14px"><label>Segmen Bisnis</label><select class="inp" id="ipfSeg" style="max-width:160px"><option>PDV</option><option>IVP</option><option>All</option></select></div>
+    </div>
+    <div class="modal-f"><button class="btn" data-close>Batal</button><button class="btn pri" id="ipfSave">✓ Simpan</button></div>
+  </div>
+</div>
+<!-- ===== Modal: Tambah Mapping Item P&L Unit ===== -->
+<div class="modal-ov" id="cAddOv">
+  <div class="modal">
+    <div class="modal-h"><h3>Tambah Mapping Item P&amp;L Unit</h3><button class="modal-x" data-close title="Tutup">✕</button></div>
+    <div class="modal-b">
+      <div class="fgrid2">
+        <div class="fld"><label>Unit *</label><select class="inp" id="cfUnit"><option>SCGD</option><option>SBGR</option><option>SMMK</option></select></div>
+        <div class="fld"><label>Item Anggaran *</label><select class="inp" id="cfItem"></select></div>
+        <div class="fld"><label>No. COA *</label><input class="inp" id="cfCoa" placeholder="mis. 6-1303-002"></div>
+        <div class="fld"><label>Nama COA *</label><input class="inp" id="cfNama" placeholder="mis. Beban Listrik &amp; Air"></div>
+      </div>
+      <div class="plpanel">
+        <div class="panel-title"><b>Pemetaan Baris P&amp;L</b><span>pilih baris P&amp;L unit &amp; konsolidasi (default mengikuti item, bisa diubah)</span></div>
+        <div class="fcol">
+          <div class="fld"><label>→ P&amp;L Unit *</label><select class="inp" id="cfPlUnit"></select></div>
+          <div class="fld"><label>→ P&amp;L Konsolidasi *</label><select class="inp" id="cfPlKons"></select></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-f"><button class="btn" data-close>Batal</button><button class="btn pri" id="cfSave">✓ Simpan</button></div>
+  </div>
+</div>
+<!-- ===== Modal: Tambah Baris Item (Input Budget) ===== -->
+<div class="modal-ov" id="ibAddOv">
+  <div class="modal">
+    <div class="modal-h"><h3>Tambah Baris Item</h3><button class="modal-x" data-close title="Tutup">✕</button></div>
+    <div class="modal-b">
+      <div class="fld" style="margin-bottom:14px"><label>Item Anggaran *</label><select class="inp" id="ibItem"></select></div>
+      <div class="fld" style="margin-bottom:14px"><label>Nama Item Budget</label><input class="inp" id="ibKet" placeholder="mis. Asuransi Gedung Kantor SPCK"></div>
+      <div class="fgrid3">
+        <div class="fld"><label>Qty</label><input class="inp" id="ibQty" type="number" min="0" value="12"></div>
+        <div class="fld"><label>Satuan</label><select class="inp" id="ibSat"><option>Bulan</option><option>Unit</option><option>Paket</option><option>Hari</option><option>Orang</option></select></div>
+        <div class="fld"><label>Jenis</label><select class="inp" id="ibJns"></select></div>
+      </div>
+      <div class="fgrid2" style="margin-top:14px">
+        <div class="fld"><label>Harga Satuan (Rp)</label><input class="inp" id="ibHarga" type="number" min="0" value="0"></div>
+        <div class="fld"><label>Keterangan</label><input class="inp" id="ibKetr" placeholder="Keterangan item (opsional)"></div>
+      </div>
+      <div class="fld" style="margin-top:14px"><label>Total Setahun</label><input class="inp" id="ibTot" readonly style="font-weight:700;background:var(--surface-3)"></div>
+    </div>
+    <div class="modal-f"><button class="btn" data-close>Batal</button><button class="btn pri" id="ibSave">✓ Tambah</button></div>
+  </div>
+</div>
+<!-- ===== Modal: Daftar Pengajuan Budget (teropong) ===== -->
+<div class="modal-ov" id="ibSubsOv">
+  <div class="modal" style="max-width:820px">
+    <div class="modal-h"><h3>Daftar Pengajuan Budget</h3><button class="modal-x" data-close title="Tutup">✕</button></div>
+    <div class="modal-b">
+      <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:14px">
+        <div class="fld" style="flex:1"><label>Cari</label><input id="ibSubSearch" class="inp" placeholder="Cari no. pengajuan / kategori / dept…"></div>
+        <button class="btn pri sm" id="ibNewBtn">+ Pengajuan Baru</button>
+      </div>
+      <div class="twrap"><table class="t" id="ibSubs">
+        <thead><tr><th>No. Pengajuan</th><th>Kategori Anggaran</th><th>Dept</th><th class="c">Tahun</th><th class="r">Total Pengajuan</th><th class="c">Status</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+<!-- ===== Modal: Tambah Baris Item (Input Budget Capex) ===== -->
+<div class="modal-ov" id="cxAddOv">
+  <div class="modal">
+    <div class="modal-h"><h3>Tambah Baris Item Capex</h3><button class="modal-x" data-close title="Tutup">✕</button></div>
+    <div class="modal-b">
+      <div class="fld" style="margin-bottom:14px"><label>Item Anggaran (Kategori Barang) *</label><select class="inp" id="cxItem"></select></div>
+      <div class="fld" style="margin-bottom:14px"><label>Nama Item Budget</label><input class="inp" id="cxKet" placeholder="mis. Mobil Operasional Toyota Innova"></div>
+      <div class="fgrid3">
+        <div class="fld"><label>Qty</label><input class="inp" id="cxQty" type="number" min="0" value="1"></div>
+        <div class="fld"><label>Satuan</label><select class="inp" id="cxSat"><option>Unit</option><option>Paket</option><option>Set</option><option>Lot</option></select></div>
+        <div class="fld"><label>Jenis</label><select class="inp" id="cxJns"></select></div>
+      </div>
+      <div class="fgrid2" style="margin-top:14px">
+        <div class="fld"><label>Harga Satuan (Rp)</label><input class="inp" id="cxHarga" type="number" min="0" value="0"></div>
+        <div class="fld"><label>Keterangan</label><input class="inp" id="cxKetr" placeholder="Keterangan item (opsional)"></div>
+      </div>
+      <div class="fld" style="margin-top:14px"><label>Total</label><input class="inp" id="cxTot" readonly style="font-weight:700;background:var(--surface-3)"></div>
+    </div>
+    <div class="modal-f"><button class="btn" data-close>Batal</button><button class="btn pri" id="cxSave">✓ Tambah</button></div>
+  </div>
+</div>
+<!-- ===== Modal: Daftar Pengajuan Capex ===== -->
+<div class="modal-ov" id="cxSubsOv">
+  <div class="modal" style="max-width:820px">
+    <div class="modal-h"><h3>Daftar Pengajuan Capex</h3><button class="modal-x" data-close title="Tutup">✕</button></div>
+    <div class="modal-b">
+      <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:14px">
+        <div class="fld" style="flex:1"><label>Cari</label><input id="cxSubSearch" class="inp" placeholder="Cari no. pengajuan / dept…"></div>
+        <button class="btn pri sm" id="cxNewBtn">+ Pengajuan Baru</button>
+      </div>
+      <div class="twrap"><table class="t" id="cxSubs">
+        <thead><tr><th>No. Pengajuan</th><th>Kategori</th><th>Dept</th><th class="c">Tahun</th><th class="r">Total Pengajuan</th><th class="c">Status</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+  // ---- screen router ----
+  var titles={
+    dashboard:["Dashboard","Ringkasan anggaran & realisasi tahun berjalan"],
+    "master-pl":["Struktur P&L Management Report","Setting · master level P&L (L1–L4, Status 1 & 2)"],
+    "item-pl":["Item P&L Management Report","Setting · hasil mapping kombinasi L1–L4 + Status Standard"],
+    master:["Master Item Anggaran","Setting · pemetaan item ke struktur P&L"],
+    mapping:["Mapping Item P&L Unit","Setting · jembatan konsolidasi per unit"],
+    input:["Input Budget Non Capex","Anggaran · pengajuan anggaran opex/non-capex"],
+    "input-cx":["Input Budget Capex","Anggaran · pengajuan anggaran capex (investasi)"],
+    approval:["Approval Budget","Anggaran · persetujuan berjenjang"],
+    kartu:["Kartu Kontrol","Realisasi · budget vs realisasi per item"],
+    "pl-unit":["Laporan P&L per Unit","Laporan · laba rugi management report"],
+    "pl-lokasi":["Laporan P&L per Lokasi","Laporan · gabungan per lokasi"],
+    "pl-konsol":["Laporan P&L Konsolidasi","Laporan · console all seluruh unit"]
+  };
+  var nav=document.getElementById('nav');
+  nav.addEventListener('click',function(e){
+    var a=e.target.closest('a[data-s]'); if(!a)return; e.preventDefault();
+    var s=a.getAttribute('data-s');
+    nav.querySelectorAll('a').forEach(function(x){x.classList.remove('active')});
+    a.classList.add('active');
+    document.querySelectorAll('.screen').forEach(function(x){x.classList.remove('active')});
+    document.getElementById('s-'+s).classList.add('active');
+    document.getElementById('ptitle').textContent=titles[s][0];
+    document.getElementById('psub').textContent=titles[s][1];
+    document.querySelector('.content').scrollTop=0;
+  });
+
+  // ---- P&L scope tabs jump to matching screen ----
+  document.querySelectorAll('.tabs').forEach(function(tb){
+    tb.addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b)return;
+      var map={'Per Unit':'pl-unit','Per Lokasi':'pl-lokasi','Konsolidasi':'pl-konsol'};
+      var t=map[b.textContent.trim()]; if(t){ nav.querySelector('a[data-s="'+t+'"]').click(); }
+    });
+  });
+
+  // ---- dashboard bar chart (budget vs realisasi, juta Rp) ----
+  var data=[[82,20],[82,50],[82,50],[82,22],[82,0],[82,0],[82,0],[82,0],[82,0],[82,0],[82,0],[82,0]];
+  var months=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+  var max=90, c=document.getElementById('chart1'), html='';
+  for(var i=0;i<12;i++){
+    html+='<div class="col"><div class="stack">'+
+      '<div class="b1" style="height:'+(data[i][0]/max*100)+'%" title="Budget '+data[i][0]+' jt"></div>'+
+      '<div class="b2" style="height:'+(data[i][1]/max*100)+'%" title="Realisasi '+data[i][1]+' jt"></div>'+
+      '</div><div class="xl">'+months[i]+'</div></div>';
+  }
+  c.innerHTML=html;
+
+  // ---- theme toggle ----
+  document.getElementById('themeBtn').addEventListener('click',function(){
+    var r=document.documentElement;
+    var cur=r.getAttribute('data-theme');
+    if(!cur){cur=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';}
+    r.setAttribute('data-theme',cur==='dark'?'light':'dark');
+  });
+
+  // ---- Setting: Master Struktur P&L + Master Item Anggaran (in-memory) ----
+  (function(){
+    function esc(s){return (s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+    function $(id){return document.getElementById(id);}
+    window.toast=function(msg){
+      var w=$('toastWrap');var t=document.createElement('div');t.className='toast';
+      t.innerHTML='<span class="tc">✓</span><span>'+esc(msg)+'</span>';w.appendChild(t);
+      setTimeout(function(){t.style.opacity='0';t.style.transform='translateX(24px)';setTimeout(function(){t.remove();},320);},2600);
+    };
+    // generic modal close (backdrop, [data-close], ESC)
+    document.addEventListener('click',function(e){var c=e.target.closest&&e.target.closest('[data-close]');if(c){var m=c.closest('.modal-ov');if(m)m.classList.remove('open');}});
+    [].forEach.call(document.querySelectorAll('.modal-ov'),function(ov){ov.addEventListener('click',function(e){if(e.target===ov)ov.classList.remove('open');});});
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'){[].forEach.call(document.querySelectorAll('.modal-ov.open'),function(m){m.classList.remove('open');});}});
+
+    // ===== shared master struktur P&L =====
+    var LV=[['L1','L1 · Pos P&L'],['L2','L2'],['L3','L3'],['L4','L4 · Detail'],['S1','Status 1'],['S2','Status 2']];
+    function lvShort(k){return k.charAt(0)==='S'?('Status '+k.charAt(1)):k;}
+    var plMaster={
+      L1:[{n:"GA Expense standard",s:"PDV"},{n:"Beban Umum dan Administrasi",s:"PDV"},{n:"Selling Expense",s:"PDV"},{n:"Revenue",s:"PDV"},{n:"CoS",s:"PDV"},{n:"Net Other Optg (Expense)/Income",s:"PDV"},{n:"Finance Income",s:"PDV"},{n:"Finance Cost",s:"PDV"},{n:"Taxation",s:"PDV"},{n:"Selisih cara bayar (net)",s:"PDV"},{n:"Management Interest",s:"PDV"},{n:"Depreciation",s:"PDV"}],
+      L2:[{n:"NA",s:"PDV"},{n:"Beban Kepegawaian",s:"PDV"},{n:"Komisi penjualan",s:"PDV"},{n:"Revenue 50% PPJB",s:"PDV"},{n:"Revenue 50% ST",s:"PDV"},{n:"CoS 50% PPJB",s:"PDV"},{n:"CoS 50% ST",s:"PDV"},{n:"Selisih cara bayar (net) 50% PPJB",s:"PDV"},{n:"Selisih cara bayar (net) 50% ST",s:"PDV"}],
+      L3:[{n:"NA",s:"PDV"},{n:"Beban gaji",s:"PDV"}],
+      L4:[{n:"Gaji tetap",s:"PDV"},{n:"Beban pensiun & pisah",s:"PDV"},{n:"Beban jamsostek",s:"PDV"},{n:"Beban THR & Bonus",s:"PDV"},{n:"Beban karyawan proyek",s:"PDV"},{n:"Beban Perekrutan, Pengembangan, dan Pelatihan",s:"PDV"},{n:"Beban tenaga kerja lain",s:"PDV"},{n:"Reimbursement",s:"PDV"},{n:"Insentif",s:"PDV"},{n:"Tunjangan lainnya",s:"PDV"},{n:"Lembur",s:"PDV"},{n:"Uang saku & makan perjalanan dinas",s:"PDV"},{n:"Beban jamuan",s:"PDV"},{n:"Beban asuransi",s:"PDV"},{n:"Beban sumbangan",s:"PDV"},{n:"Beban CSR",s:"PDV"},{n:"Beban rumah tangga kantor",s:"PDV"},{n:"Beban keamanan",s:"PDV"},{n:"Beban honor profesional",s:"PDV"},{n:"Beban inventaris",s:"PDV"},{n:"Beban perbaikan & pemeliharaan",s:"PDV"},{n:"Beban kantor",s:"PDV"},{n:"Beban akomodasi perjalanan dinas",s:"PDV"},{n:"Beban kendaraan dan transportasi",s:"PDV"},{n:"Beban pemeliharaan lingkungan",s:"PDV"},{n:"Beban gedung",s:"PDV"},{n:"Beban ijin dan keanggotaan",s:"PDV"},{n:"Beban operasional transaksi keuangan",s:"PDV"},{n:"Beban acara perusahaan",s:"PDV"},{n:"Beban umum lainnya",s:"PDV"},{n:"Beban PBB",s:"PDV"},{n:"Beban manajemen",s:"PDV"},{n:"Event",s:"PDV"},{n:"Purna jual",s:"PDV"},{n:"Media promosi",s:"PDV"},{n:"Souvenir dan hadiah",s:"PDV"},{n:"Beban Operasional Bangunan Contoh dan maket",s:"PDV"},{n:"Komisi penjualan Internal",s:"PDV"},{n:"Komisi penjualan External",s:"PDV"},{n:"Riset pemasaran dan survei (R&D)",s:"PDV"},{n:"Biaya penjualan Lainnya",s:"PDV"},{n:"Bangunan Contoh Sementara",s:"PDV"},{n:"Ready stock",s:"PDV"},{n:"Insentif penjualan",s:"PDV"},{n:"House Landed",s:"PDV"},{n:"Commercial Landed",s:"PDV"},{n:"Landplot",s:"PDV"},{n:"Residential Strata",s:"PDV"},{n:"Commercial Space Strata",s:"PDV"},{n:"Net Other Optg (Expense)/Income",s:"PDV"},{n:"Depreciation",s:"PDV"},{n:"Interest Income",s:"PDV"},{n:"Other Finance Income",s:"PDV"},{n:"Interest Expense",s:"PDV"},{n:"Other Finance Expense",s:"PDV"},{n:"Tax PPJB & ST",s:"PDV"},{n:"Tax Other",s:"PDV"},{n:"Selisih cara bayar (gross)",s:"PDV"},{n:"Tax selisih cara bayar",s:"PDV"}],
+      S1:[{n:"Standard",s:"All"},{n:"Non Standard",s:"All"}],
+      S2:[{n:"Dept",s:"All"},{n:"Non Dept",s:"All"}]
+    };
+    // plItems = mapping kombinasi Item P&L Management Report (diisi oleh IIFE Item P&L di bawah);
+    // dipakai bersama oleh form Tambah Item Anggaran (cascading L1→L4 + Status Standard auto).
+    var plItems=[];
+
+    // ===== Master Struktur P&L screen =====
+    var plmSearch=$('plmSearch'),plmLevel=$('plmLevel'),plmSeg=$('plmSeg'),plmCount=$('plmCount'),plmBody=document.querySelector('#plmTable tbody');
+    function filterPLM(){var t=(plmSearch.value||'').toLowerCase(),k=plmLevel.value,sg=plmSeg.value,n=0;[].forEach.call(plmBody.querySelectorAll('tr'),function(r){var ok=(!t||r.dataset.name.indexOf(t)>-1)&&(!k||r.dataset.lv===k)&&(!sg||r.dataset.seg===sg);r.style.display=ok?'':'none';if(ok)n++;});plmCount.textContent=n;}
+    function renderPLM(){var rows='';LV.forEach(function(p){plMaster[p[0]].forEach(function(o){rows+='<tr data-lv="'+p[0]+'" data-seg="'+o.s+'" data-name="'+esc(o.n.toLowerCase())+'"><td><span class="tag brand">'+lvShort(p[0])+'</span></td><td><b>'+esc(o.n)+'</b></td><td class="c mut3">'+o.s+'</td><td class="c"><span class="tag good">Aktif</span></td></tr>';});});plmBody.innerHTML=rows;filterPLM();}
+    if(plmSearch){[plmSearch,plmLevel,plmSeg].forEach(function(el){el.addEventListener('input',filterPLM);});renderPLM();}
+    var mplOv=$('mplOv');
+    if($('plmAddBtn'))$('plmAddBtn').addEventListener('click',function(){$('pfName').value='';$('pfLevel').value='L1';$('pfSeg').value='PDV';$('pfAktif').value='Aktif';$('pfName').classList.remove('err');mplOv.classList.add('open');setTimeout(function(){$('pfName').focus();},60);});
+    if($('pfSave'))$('pfSave').addEventListener('click',function(){var nm=$('pfName').value.trim();if(!nm){$('pfName').classList.add('err');$('pfName').focus();return;}var k=$('pfLevel').value;plMaster[k].push({n:nm,s:$('pfSeg').value});renderPLM();mplOv.classList.remove('open');toast('Master '+lvShort(k)+' "'+nm+'" ditambahkan');});
+    if($('pfName'))$('pfName').addEventListener('input',function(){this.classList.remove('err');});
+
+    // ===== Master Item Anggaran screen (data: AF=Capex, BD+BE=Non-Capex; render dari JS) =====
+    var q=$('mSearch'),kat=$('mKat'),l1=$('mL1'),seg=$('mSeg'),reset=$('mReset'),count=$('mCount'),tbody=document.querySelector('#mTable tbody');
+    if(!q)return;
+    var capexItems=["BANGUNAN FA","BANGUNAN IP","KENDARAAN","PERALATAN","MESIN","IT","LAIN LAIN","Inventaris"];
+    var nonCapexItems=[
+      ["Media promosi","Selling Expense","NA","NA","Media promosi","Standard"],
+      ["Riset pemasaran dan survei (R&D)","Selling Expense","NA","NA","Riset pemasaran dan survei (R&D)","Standard"],
+      ["Purna jual","Selling Expense","NA","NA","Purna jual","Standard"],
+      ["Ready stock","Selling Expense","NA","NA","Ready stock","Non Standard"],
+      ["Event","Selling Expense","NA","NA","Event","Standard"],
+      ["Souvenir dan hadiah","Selling Expense","NA","NA","Souvenir dan hadiah","Standard"],
+      ["Operasional Bangunan contoh (BC) dan maket","Selling Expense","NA","NA","Beban Operasional Bangunan Contoh dan maket","Standard"],
+      ["Interior BC & BC sementara","Selling Expense","NA","NA","Bangunan Contoh Sementara","Non Standard"],
+      ["Insentif penjualan","Revenue","NA","NA","Insentif penjualan","Standard"],
+      ["Beban gedung","Beban Umum dan Administrasi","NA","NA","Beban gedung","Standard"],
+      ["Lain-lain","Selling Expense","NA","NA","Biaya penjualan Lainnya","Standard"],
+      ["Beban Jamsostek","GA Expense standard","Beban Kepegawaian","Beban gaji","Beban Jamsostek","Standard"],
+      ["Gaji tetap","GA Expense standard","Beban Kepegawaian","Beban gaji","Gaji tetap","Standard"],
+      ["Insentif","GA Expense standard","Beban Kepegawaian","NA","Insentif","Standard"],
+      ["Beban pensiun & pisah","GA Expense standard","Beban Kepegawaian","Beban gaji","Beban pensiun & pisah","Standard"],
+      ["Beban tenaga kerja lain","GA Expense standard","Beban Kepegawaian","NA","Beban tenaga kerja lain","Standard"],
+      ["Lembur","GA Expense standard","Beban Kepegawaian","NA","Lembur","Standard"],
+      ["Beban pengembangan dan pelatihan","GA Expense standard","Beban Kepegawaian","NA","Beban Perekrutan, Pengembangan, dan Pelatihan","Standard"],
+      ["Beban THR & Bonus","GA Expense standard","Beban Kepegawaian","Beban gaji","Beban THR & Bonus","Standard"],
+      ["Reimbursement","GA Expense standard","Beban Kepegawaian","NA","Reimbursement","Standard"],
+      ["Tunjangan lainnya","GA Expense standard","Beban Kepegawaian","NA","Tunjangan lainnya","Standard"],
+      ["Uang saku & makan perjalanan dinas","GA Expense standard","Beban Kepegawaian","NA","Uang saku & makan perjalanan dinas","Standard"],
+      ["Beban kantor","Beban Umum dan Administrasi","NA","NA","Beban kantor","Standard"],
+      ["Beban pemeliharaan lingkungan","Beban Umum dan Administrasi","NA","NA","Beban pemeliharaan lingkungan","Standard"],
+      ["Beban PBB","Beban Umum dan Administrasi","NA","NA","Beban PBB","Non Standard"],
+      ["Beban operasional transaksi keuangan","Beban Umum dan Administrasi","NA","NA","Beban operasional transaksi keuangan","Standard"],
+      ["Beban honor profesional","Beban Umum dan Administrasi","NA","NA","Beban honor profesional","Standard"],
+      ["Beban kendaraan dan transportasi","Beban Umum dan Administrasi","NA","NA","Beban kendaraan dan transportasi","Standard"],
+      ["Beban keamanan","Beban Umum dan Administrasi","NA","NA","Beban keamanan","Standard"],
+      ["Beban CSR","Beban Umum dan Administrasi","NA","NA","Beban CSR","Standard"],
+      ["Beban ijin dan keanggotaan","Beban Umum dan Administrasi","NA","NA","Beban ijin dan keanggotaan","Standard"],
+      ["Beban asuransi","Beban Umum dan Administrasi","NA","NA","Beban asuransi","Standard"],
+      ["Beban perbaikan & pemeliharaan","Beban Umum dan Administrasi","NA","NA","Beban perbaikan & pemeliharaan","Standard"],
+      ["Beban rumah tangga kantor","Beban Umum dan Administrasi","NA","NA","Beban rumah tangga kantor","Standard"],
+      ["Beban inventaris","Beban Umum dan Administrasi","NA","NA","Beban inventaris","Standard"],
+      ["Beban acara perusahaan","Beban Umum dan Administrasi","NA","NA","Beban acara perusahaan","Standard"],
+      ["Beban sumbangan","Beban Umum dan Administrasi","NA","NA","Beban sumbangan","Standard"],
+      ["Beban jamuan","Beban Umum dan Administrasi","NA","NA","Beban jamuan","Standard"],
+      ["Beban umum lainnya","Beban Umum dan Administrasi","NA","NA","Beban umum lainnya","Standard"],
+      ["Komisi penjualan Internal","Selling Expense","Komisi penjualan","NA","Komisi penjualan Internal","Standard"],
+      ["Komisi penjualan External","Selling Expense","Komisi penjualan","NA","Komisi penjualan External","Standard"],
+      ["Selisih barang gudang","Net Other Optg (Expense)/Income","NA","NA","Net Other Optg (Expense)/Income","Standard"]
+    ];
+    var itemData=[];
+    nonCapexItems.forEach(function(a){itemData.push({name:a[0],capex:false,l1:a[1],l2:a[2],l3:a[3],l4:a[4],st:a[5],seg:"PDV"});});
+    capexItems.forEach(function(nm){itemData.push({name:nm,capex:true,seg:"All"});});
+    function naCell(v){return (!v||v==='NA')?'<span class="sep na">N/A</span>':'<span class="sep">'+esc(v)+'</span>';}
+    function stInline(s){return s==='Standard'?'<span class="st">Standard</span>':'<span class="st"><span class="mut3">Non Std</span></span>';}
+    function plmapM(o){return '<div class="plmap"><span class="l1">'+esc(o.l1)+'</span>'+naCell(o.l2)+naCell(o.l3)+naCell(o.l4)+stInline(o.st)+'</div>';}
+    function rowHTMLm(o){
+      var jenis=o.capex?'<span class="tag warn">Capex</span>':'<span class="tag mut">Non-Capex</span>';
+      var jkey=o.capex?'Capex':'Non-Capex';
+      var pl=o.capex?'<td class="mut3" style="font-size:15px">—</td>':'<td>'+plmapM(o)+'</td>';
+      var srch=(o.name+' '+(o.l1||'')+' '+(o.l4||'')).toLowerCase();
+      var akt=(o.aktif===false)?'<span class="tag mut">Non-Aktif</span>':'<span class="tag good">Aktif</span>';
+      return '<tr data-name="'+esc(o.name.toLowerCase())+'" data-search="'+esc(srch)+'" data-jenis="'+jkey+'" data-l1="'+esc(o.l1||'')+'" data-seg="'+esc(o.seg)+'">'+
+        '<td><b>'+esc(o.name)+'</b></td><td>'+jenis+'</td>'+pl+
+        '<td class="c mut3">'+esc(o.seg)+'</td><td class="c">'+akt+'</td></tr>';
+    }
+    function applyM(){var t=(q.value||'').toLowerCase(),k=kat.value,p=l1.value,s=seg.value,n=0;[].forEach.call(tbody.querySelectorAll('tr'),function(r){var ok=(!t||r.dataset.search.indexOf(t)>-1)&&(!k||r.dataset.jenis===k)&&(!p||r.dataset.l1===p)&&(!s||r.dataset.seg===s);r.style.display=ok?'':'none';if(ok)n++;});count.textContent=n;}
+    function renderM(){tbody.innerHTML=itemData.map(rowHTMLm).join('');applyM();}
+    (function(){var seen={},opt='<option value="">Semua</option>';itemData.forEach(function(o){if(!o.capex&&o.l1&&!seen[o.l1]){seen[o.l1]=1;opt+='<option>'+esc(o.l1)+'</option>';}});l1.innerHTML=opt;})();
+    [q,kat,l1,seg].forEach(function(el){el.addEventListener('input',applyM);});
+    reset.addEventListener('click',function(){q.value='';kat.value='';l1.value='';seg.value='';applyM();});
+    renderM();
+
+    // modal Tambah Item Anggaran — P&L cascading dari plItems (Item P&L Management Report) + Status Standard auto
+    var ov=$('mAddOv'),fName=$('fName'),fKat=$('fKat'),fSeg=$('fSeg'),fAktif=$('fAktif'),
+        fL1=$('fL1'),fL2=$('fL2'),fL3=$('fL3'),fL4=$('fL4'),fStd=$('fStd'),
+        plFields=$('plFields'),capexNote=$('capexNote');
+    function distinct(a){var s=[],seen={};a.forEach(function(v){var key='#'+(v||'');if(!(key in seen)){seen[key]=1;s.push(v);}});return s;}
+    function optsHTML(a){var h='';a.forEach(function(v){h+='<option>'+esc(v)+'</option>';});return h;}
+    function plL2s(a){return distinct(plItems.filter(function(o){return o[0]===a;}).map(function(o){return o[1];}));}
+    function plL3s(a,b){return distinct(plItems.filter(function(o){return o[0]===a&&o[1]===b;}).map(function(o){return o[2];}));}
+    function plL4s(a,b,c){return distinct(plItems.filter(function(o){return o[0]===a&&o[1]===b&&o[2]===c;}).map(function(o){return o[3];}));}
+    function plStd(a,b,c,d){var m=plItems.filter(function(o){return o[0]===a&&o[1]===b&&o[2]===c&&o[3]===d;});return m.length?m[0][4]:'';}
+    function refreshStd(){fStd.value=plStd(fL1.value,fL2.value,fL3.value,fL4.value);}
+    function refreshL4(){fL4.innerHTML=optsHTML(plL4s(fL1.value,fL2.value,fL3.value));refreshStd();}
+    function refreshL3(){fL3.innerHTML=optsHTML(plL3s(fL1.value,fL2.value));refreshL4();}
+    function refreshL2(){fL2.innerHTML=optsHTML(plL2s(fL1.value));refreshL3();}
+    fL1.addEventListener('change',refreshL2);
+    fL2.addEventListener('change',refreshL3);
+    fL3.addEventListener('change',refreshL4);
+    fL4.addEventListener('change',refreshStd);
+    function onKat(){if(fKat.value==='Capex'){plFields.style.display='none';capexNote.style.display='flex';fSeg.value='All';}else{plFields.style.display='';capexNote.style.display='none';}}
+    function openM(){
+      fName.value='';fKat.value='Non-Capex';fSeg.value='PDV';fAktif.value='Aktif';fName.classList.remove('err');
+      fL1.innerHTML=optsHTML(distinct(plItems.map(function(o){return o[0];})));refreshL2();
+      onKat();ov.classList.add('open');setTimeout(function(){fName.focus();},60);
+    }
+    $('mAddBtn').addEventListener('click',openM);
+    fKat.addEventListener('change',onKat);
+    fName.addEventListener('input',function(){fName.classList.remove('err');});
+    $('fSave').addEventListener('click',function(){
+      var name=fName.value.trim();if(!name){fName.classList.add('err');fName.focus();return;}
+      var isCx=fKat.value==='Capex';
+      var o={name:name,capex:isCx,seg:isCx?'All':fSeg.value,l1:fL1.value,l2:fL2.value,l3:fL3.value,l4:fL4.value,st:fStd.value,aktif:(fAktif.value==='Aktif')};
+      itemData.push(o);
+      var tmp=document.createElement('tbody');tmp.innerHTML=rowHTMLm(o);var tr=tmp.firstChild;
+      tbody.appendChild(tr);ov.classList.remove('open');applyM();toast('Item anggaran "'+name+'" ditambahkan');
+      tr.style.transition='background 1.4s';tr.style.background='var(--brand-050)';setTimeout(function(){tr.style.background='';},1500);
+    });
+    var ex=$('mExport');if(ex)ex.addEventListener('click',function(){toast('Export Excel tersedia di aplikasi final');});
+
+    // ===== Item P&L Management Report screen (mapping kombinasi L1–L4 + Status Standard) =====
+    (function(){
+      var ipBody=document.querySelector('#ipTable tbody');if(!ipBody)return;
+      // data mapping dari sheet Master kolom AS–AW → [L1, L2, L3, L4, Status1]; Segmen PDV
+      // (mengisi plItems yang dideklarasikan di scope Setting agar dipakai bersama menu Item Anggaran)
+      plItems=[
+        ["GA Expense standard","Beban Kepegawaian","Beban gaji","Gaji tetap","Standard"],
+        ["GA Expense standard","Beban Kepegawaian","Beban gaji","Beban pensiun & pisah","Standard"],
+        ["GA Expense standard","Beban Kepegawaian","Beban gaji","Beban jamsostek","Standard"],
+        ["GA Expense standard","Beban Kepegawaian","Beban gaji","Beban THR & Bonus","Standard"],
+        ["GA Expense standard","Beban Kepegawaian","Beban gaji","Beban karyawan proyek","Standard"],
+        ["GA Expense standard","Beban Kepegawaian","NA","Beban Perekrutan, Pengembangan, dan Pelatihan","Standard"],
+        ["GA Expense standard","Beban Kepegawaian","NA","Beban tenaga kerja lain","Standard"],
+        ["GA Expense standard","Beban Kepegawaian","NA","Reimbursement","Standard"],
+        ["GA Expense standard","Beban Kepegawaian","NA","Insentif","Standard"],
+        ["GA Expense standard","Beban Kepegawaian","NA","Tunjangan lainnya","Standard"],
+        ["GA Expense standard","Beban Kepegawaian","NA","Lembur","Standard"],
+        ["GA Expense standard","Beban Kepegawaian","NA","Uang saku & makan perjalanan dinas","Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban jamuan","Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban asuransi","Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban sumbangan","Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban CSR","Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban rumah tangga kantor","Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban keamanan","Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban honor profesional","Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban inventaris","Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban perbaikan & pemeliharaan","Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban kantor","Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban akomodasi perjalanan dinas","Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban kendaraan dan transportasi","Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban pemeliharaan lingkungan","Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban gedung","Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban ijin dan keanggotaan","Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban operasional transaksi keuangan","Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban acara perusahaan","Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban umum lainnya","Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban PBB","Non Standard"],
+        ["Beban Umum dan Administrasi","NA","NA","Beban manajemen","Non Standard"],
+        ["Selling Expense","NA","NA","Event","Standard"],
+        ["Selling Expense","NA","NA","Purna jual","Standard"],
+        ["Selling Expense","NA","NA","Media promosi","Standard"],
+        ["Selling Expense","NA","NA","Souvenir dan hadiah","Standard"],
+        ["Selling Expense","NA","NA","Beban Operasional Bangunan Contoh dan maket","Standard"],
+        ["Selling Expense","Komisi penjualan","NA","Komisi penjualan Internal","Standard"],
+        ["Selling Expense","Komisi penjualan","NA","Komisi penjualan External","Standard"],
+        ["Selling Expense","NA","NA","Riset pemasaran dan survei (R&D)","Standard"],
+        ["Selling Expense","NA","NA","Biaya penjualan Lainnya","Standard"],
+        ["Selling Expense","NA","NA","Bangunan Contoh Sementara","Non Standard"],
+        ["Selling Expense","NA","NA","Ready stock","Non Standard"],
+        ["Revenue","NA","NA","Insentif penjualan","Standard"],
+        ["Revenue","Revenue 50% PPJB","NA","House Landed","Standard"],
+        ["Revenue","Revenue 50% PPJB","NA","Commercial Landed","Standard"],
+        ["Revenue","Revenue 50% PPJB","NA","Landplot","Standard"],
+        ["Revenue","Revenue 50% PPJB","NA","Residential Strata","Standard"],
+        ["Revenue","Revenue 50% PPJB","NA","Commercial Space Strata","Standard"],
+        ["Revenue","Revenue 50% ST","NA","House Landed","Standard"],
+        ["Revenue","Revenue 50% ST","NA","Commercial Landed","Standard"],
+        ["Revenue","Revenue 50% ST","NA","Landplot","Standard"],
+        ["Revenue","Revenue 50% ST","NA","Residential Strata","Standard"],
+        ["Revenue","Revenue 50% ST","NA","Commercial Space Strata","Standard"],
+        ["Net Other Optg (Expense)/Income","NA","NA","Net Other Optg (Expense)/Income","Standard"],
+        ["Depreciation","NA","NA","Depreciation","Standard"],
+        ["Finance Income","NA","NA","Interest Income","Standard"],
+        ["Finance Income","NA","NA","Other Finance Income","Standard"],
+        ["Finance Cost","NA","NA","Interest Expense","Standard"],
+        ["Finance Cost","NA","NA","Other Finance Expense","Standard"],
+        ["Taxation","NA","NA","Tax PPJB & ST","Standard"],
+        ["Taxation","NA","NA","Tax Other","Standard"],
+        ["Selisih cara bayar (net)","Selisih cara bayar (net) 50% PPJB","NA","Selisih cara bayar (gross)","Standard"],
+        ["Selisih cara bayar (net)","Selisih cara bayar (net) 50% PPJB","NA","Tax selisih cara bayar","Standard"],
+        ["Selisih cara bayar (net)","Selisih cara bayar (net) 50% ST","NA","Selisih cara bayar (gross)","Standard"],
+        ["Selisih cara bayar (net)","Selisih cara bayar (net) 50% ST","NA","Tax selisih cara bayar","Standard"],
+        ["Management Interest","NA","NA","Management Interest","Standard"]
+      ];
+      var ipSearch=$('ipSearch'),ipL1=$('ipL1'),ipSt=$('ipSt'),ipSeg=$('ipSeg'),ipReset=$('ipReset'),ipCount=$('ipCount');
+      // isi filter L1 dari master Struktur P&L
+      var l1opt='<option value="">Semua</option>';plMaster.L1.forEach(function(o){l1opt+='<option>'+esc(o.n)+'</option>';});ipL1.innerHTML=l1opt;
+      function segCell(v){return (!v||v==='NA')?'<span class="sep na">N/A</span>':'<span class="sep">'+esc(v)+'</span>';}
+      function stBadge(s){return s==='Standard'?'<span class="tag brand">Standard</span>':'<span class="tag mut">Non Standard</span>';}
+      function rowHTML(o,seg){
+        var srch=(o[0]+' '+o[1]+' '+o[2]+' '+o[3]).toLowerCase();
+        return '<tr data-search="'+esc(srch)+'" data-l1="'+esc(o[0])+'" data-st="'+esc(o[4])+'" data-seg="'+esc(seg)+'">'+
+          '<td><div class="plmap"><span class="l1">'+esc(o[0])+'</span>'+segCell(o[1])+segCell(o[2])+segCell(o[3])+'</div></td>'+
+          '<td class="c">'+stBadge(o[4])+'</td>'+
+          '<td class="c mut3">'+esc(seg)+'</td>'+
+          '<td class="c"><span class="tag good">Aktif</span></td></tr>';
+      }
+      function filterIP(){var t=(ipSearch.value||'').toLowerCase(),p=ipL1.value,st=ipSt.value,sg=ipSeg.value,n=0;
+        [].forEach.call(ipBody.querySelectorAll('tr'),function(r){var ok=(!t||r.dataset.search.indexOf(t)>-1)&&(!p||r.dataset.l1===p)&&(!st||r.dataset.st===st)&&(!sg||r.dataset.seg===sg);r.style.display=ok?'':'none';if(ok)n++;});ipCount.textContent=n;}
+      function renderIP(){var rows='';plItems.forEach(function(o){rows+=rowHTML(o,'PDV');});ipBody.innerHTML=rows;filterIP();}
+      [ipSearch,ipL1,ipSt,ipSeg].forEach(function(el){el.addEventListener('input',filterIP);});
+      ipReset.addEventListener('click',function(){ipSearch.value='';ipL1.value='';ipSt.value='';ipSeg.value='';filterIP();});
+      renderIP();
+      // modal + Mapping P&L
+      var ipOv=$('ipOv'),ipfL1=$('ipfL1'),ipfL2=$('ipfL2'),ipfL3=$('ipfL3'),ipfL4=$('ipfL4'),ipfSt=$('ipfSt'),ipfSeg=$('ipfSeg');
+      function fillSel(sel,arr){var h='';arr.forEach(function(o){h+='<option>'+esc(o.n)+'</option>';});sel.innerHTML=h;}
+      $('ipAddBtn').addEventListener('click',function(){
+        fillSel(ipfL1,plMaster.L1);fillSel(ipfL2,plMaster.L2);fillSel(ipfL3,plMaster.L3);fillSel(ipfL4,plMaster.L4);
+        ipfSt.value='Standard';ipfSeg.value='PDV';ipOv.classList.add('open');
+      });
+      $('ipfSave').addEventListener('click',function(){
+        var o=[ipfL1.value,ipfL2.value,ipfL3.value,ipfL4.value,ipfSt.value],seg=ipfSeg.value;
+        plItems.push(o);
+        var tmp=document.createElement('tbody');tmp.innerHTML=rowHTML(o,seg);var tr=tmp.firstChild;
+        ipBody.appendChild(tr);ipOv.classList.remove('open');filterIP();
+        toast('Mapping P&L "'+o[0]+' › '+o[3]+'" ditambahkan');
+        tr.style.transition='background 1.4s';tr.style.background='var(--brand-050)';setTimeout(function(){tr.style.background='';},1500);
+      });
+    })();
+  })();
+
+  // ---- Mapping Item P&L Unit (COA → P&L): filter/search + Tambah Mapping (in-memory) ----
+  (function(){
+    function esc(s){return (s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+    var itemPL={
+      'Media promosi':['Selling Exp › Media promosi','Selling Expense › Media promosi'],
+      'Event':['Selling Exp › Event','Selling Expense › Event'],
+      'Beban gedung':['GA Other › Beban gedung','Beban Umum & Adm › Beban gedung'],
+      'Beban asuransi':['GA Other › Beban asuransi','Beban Umum & Adm › Beban asuransi'],
+      'Beban kantor':['GA Other › Beban kantor','Beban Umum & Adm › Beban kantor'],
+      'Gaji tetap':['GA Employee › Gaji tetap','Beban Kepegawaian › Gaji tetap'],
+      'Komisi penjualan Internal':['Selling Exp › Komisi penjualan Internal','Selling Expense › Komisi penjualan Internal'],
+      'Beban PBB':['GA Other › Beban PBB','Beban Umum & Adm › Beban PBB']
+    };
+    var search=document.getElementById('cSearch'),unit=document.getElementById('cUnit'),item=document.getElementById('cItem'),
+        reset=document.getElementById('cReset'),count=document.getElementById('cCount'),tbody=document.querySelector('#cTable tbody');
+    if(!search)return;
+    var opts='';for(var k in itemPL){opts+='<option>'+esc(k)+'</option>';}
+    item.innerHTML='<option value="">Semua</option>'+opts;
+    var cfItem=document.getElementById('cfItem');cfItem.innerHTML=opts;
+    function apply(){var t=(search.value||'').toLowerCase(),u=unit.value,it=item.value,n=0;[].forEach.call(tbody.querySelectorAll('tr'),function(r){var ok=(!t||r.dataset.name.indexOf(t)>-1)&&(!u||r.dataset.unit===u)&&(!it||r.dataset.item===it);r.style.display=ok?'':'none';if(ok)n++;});count.textContent=n;}
+    [search,unit,item].forEach(function(el){el.addEventListener('input',apply);});
+    reset.addEventListener('click',function(){search.value='';unit.value='';item.value='';apply();});
+    // modal add
+    var ov=document.getElementById('cAddOv'),cfUnit=document.getElementById('cfUnit'),cfCoa=document.getElementById('cfCoa'),
+        cfNama=document.getElementById('cfNama'),cfPlUnit=document.getElementById('cfPlUnit'),cfPlKons=document.getElementById('cfPlKons');
+    var PLU=['Selling Exp › Media promosi','Selling Exp › Event','GA Other › Beban gedung','GA Other › Beban asuransi','GA Other › Beban kantor','GA Employee › Gaji tetap','Selling Exp › Komisi penjualan Internal','GA Other › Beban PBB'];
+    var PLK=['Selling Expense › Media promosi','Selling Expense › Event','Beban Umum & Adm › Beban gedung','Beban Umum & Adm › Beban asuransi','Beban Umum & Adm › Beban kantor','Beban Kepegawaian › Gaji tetap','Selling Expense › Komisi penjualan Internal','Beban Umum & Adm › Beban PBB'];
+    cfPlUnit.innerHTML=PLU.map(function(o){return '<option>'+esc(o)+'</option>';}).join('');
+    cfPlKons.innerHTML=PLK.map(function(o){return '<option>'+esc(o)+'</option>';}).join('');
+    function syncPL(){var m=itemPL[cfItem.value]||['',''];if(m[0])cfPlUnit.value=m[0];if(m[1])cfPlKons.value=m[1];}
+    cfItem.addEventListener('change',syncPL);
+    document.getElementById('cAddBtn').addEventListener('click',function(){cfUnit.value='SCGD';cfItem.selectedIndex=0;cfCoa.value='';cfNama.value='';cfCoa.classList.remove('err');cfNama.classList.remove('err');syncPL();ov.classList.add('open');setTimeout(function(){cfCoa.focus();},60);});
+    [cfCoa,cfNama].forEach(function(el){el.addEventListener('input',function(){el.classList.remove('err');});});
+    document.getElementById('cfSave').addEventListener('click',function(){
+      var coa=cfCoa.value.trim(),nama=cfNama.value.trim(),valid=true;
+      if(!coa){cfCoa.classList.add('err');valid=false;} if(!nama){cfNama.classList.add('err');valid=false;} if(!valid){(!coa?cfCoa:cfNama).focus();return;}
+      var u=cfUnit.value,it=cfItem.value,pu=cfPlUnit.value,pk=cfPlKons.value;
+      var tr=document.createElement('tr');
+      tr.setAttribute('data-unit',u);tr.setAttribute('data-item',it);tr.setAttribute('data-name',(coa+' '+nama).toLowerCase());
+      tr.innerHTML='<td class="mut3">'+u+'</td><td><span class="code">'+esc(coa)+'</span></td><td>'+esc(nama)+'</td><td>'+esc(it)+'</td><td class="muted">'+esc(pu)+'</td><td class="muted">'+esc(pk)+'</td>';
+      tbody.appendChild(tr);ov.classList.remove('open');apply();toast('Mapping COA '+coa+' → '+it+' ditambahkan');
+      tr.style.transition='background 1.4s';tr.style.background='var(--brand-050)';setTimeout(function(){tr.style.background='';},1500);
+    });
+    apply();
+  })();
+
+  // ---- Input Budget: teropong pengajuan + rincian + phasing (in-memory) ----
+  (function(){
+    function esc(s){return (s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+    function fmt(n){n=Math.round(n||0);var s=String(n),o='';for(var i=0;i<s.length;i++){if(i>0&&(s.length-i)%3===0)o+='.';o+=s.charAt(i);}return o;}
+    var subsBody=document.querySelector('#ibSubs tbody');
+    if(!subsBody)return;
+    var MONTHS=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    var JENIS=['BARU','PERBAIKAN/PENGGANTIAN','EFISIENSI','GENERATE REVENUE'];
+    function jenisOpts(sel){return JENIS.map(function(v){return '<option'+(v===sel?' selected':'')+'>'+esc(v)+'</option>';}).join('');}
+    var SUBS=[
+      {no:'BR-2026-SPCK-0042',kat:'Umum',dept:'HR&GA',thn:2026,jenis:'Budget',status:'Draft',items:[
+        {item:'Beban asuransi',nama:'Asuransi Gedung Kantor SPCK',qty:12,sat:'Bulan',harga:6250000,jns:'BARU',ket:'Kontrak asuransi tahunan'},
+        {item:'Beban gedung',nama:'Pemeliharaan Gedung & Taman',qty:12,sat:'Bulan',harga:25000000,jns:'PERBAIKAN/PENGGANTIAN',ket:'Rutin bulanan'},
+        {item:'Beban kantor',nama:'ATK & Rumah Tangga Kantor',qty:12,sat:'Bulan',harga:1500000,jns:'BARU',ket:''}
+      ]},
+      {no:'BR-2026-SPCK-0043',kat:'Event',dept:'Marketing',thn:2026,jenis:'Non Budget',status:'Diajukan',items:[
+        {item:'Event',nama:'Event JFFF 2026 — Dekor & Panggung',qty:1,sat:'Paket',harga:350000000,jns:'GENERATE REVENUE',ket:'Di luar budget awal'},
+        {item:'Event',nama:'Aktivasi & Hiburan (Sirkus)',qty:1,sat:'Paket',harga:150000000,jns:'GENERATE REVENUE',ket:''},
+        {item:'Souvenir dan hadiah',nama:'Souvenir & Hadiah Pengunjung',qty:2000,sat:'Pcs',harga:50000,jns:'GENERATE REVENUE',ket:'Estimasi 2000 pengunjung'}
+      ]},
+      {no:'BR-2026-SPCK-0044',kat:'Capex',dept:'IT',thn:2026,jenis:'Budget',status:'Approved',items:[
+        {item:'Komputer',nama:'Pengadaan 20 Unit Komputer Kantor',qty:20,sat:'Unit',harga:9800000,jns:'PERBAIKAN/PENGGANTIAN',ket:'Refresh perangkat'},
+        {item:'IT',nama:'Server & Perangkat Jaringan',qty:1,sat:'Paket',harga:250000000,jns:'BARU',ket:''}
+      ]},
+      {no:'BR-2026-SPCK-0045',kat:'Persediaan Gudang',dept:'GA',thn:2026,jenis:'Revised',status:'Draft',items:[
+        {item:'Beban kantor',nama:'Stok ATK Gudang A',qty:1000,sat:'Pcs',harga:15000,jns:'EFISIENSI',ket:'Revisi qty dari 800'},
+        {item:'Beban rumah tangga kantor',nama:'Stok Alat Kebersihan',qty:500,sat:'Pcs',harga:25000,jns:'BARU',ket:''}
+      ]},
+      {no:'BR-2026-SPCK-0046',kat:'Inventaris',dept:'GA',thn:2026,jenis:'Budget',status:'Diajukan',items:[
+        {item:'Beban inventaris',nama:'Meja & Kursi Kerja Karyawan',qty:50,sat:'Unit',harga:1200000,jns:'BARU',ket:''},
+        {item:'Beban inventaris',nama:'AC Split 2 PK Ruang Kerja',qty:15,sat:'Unit',harga:4500000,jns:'PERBAIKAN/PENGGANTIAN',ket:'Untuk 3 lantai'}
+      ]}
+    ];
+    var curSub=0,curItem=0;
+    function subTotal(s){var t=0;s.items.forEach(function(it){t+=it.qty*it.harga;});return t;}
+    function katTag(k){var c=k==='Event'?'info':(k==='Capex'?'warn':'mut');return '<span class="tag '+c+'">'+esc(k)+'</span>';}
+    function stsTag(st){var c=st==='Approved'?'good':(st==='Diajukan'?'warn':'mut');return '<span class="tag '+c+'">'+esc(st)+'</span>';}
+
+    function renderSubs(){
+      var h='';SUBS.forEach(function(s,i){
+        h+='<tr data-idx="'+i+'" style="cursor:pointer'+(i===curSub?';background:var(--brand-050)':'')+'"><td><b>'+s.no+'</b></td><td>'+katTag(s.kat)+'</td><td class="muted">'+esc(s.dept)+'</td><td class="c num">'+s.thn+'</td><td class="r num">'+fmt(subTotal(s))+'</td><td class="c">'+stsTag(s.status)+'</td></tr>';
+      });
+      subsBody.innerHTML=h;
+    }
+    subsBody.addEventListener('click',function(e){var tr=e.target.closest('tr[data-idx]');if(!tr)return;curSub=+tr.dataset.idx;curItem=0;loadSub();document.getElementById('ibSubsOv').classList.remove('open');});
+    document.getElementById('ibPickBtn').addEventListener('click',function(){document.getElementById('ibSubsOv').classList.add('open');});
+    var ibSubSearch=document.getElementById('ibSubSearch');
+    if(ibSubSearch)ibSubSearch.addEventListener('input',function(){var t=ibSubSearch.value.toLowerCase();[].forEach.call(subsBody.querySelectorAll('tr'),function(r){r.style.display=r.textContent.toLowerCase().indexOf(t)>-1?'':'none';});});
+
+    var ibhJenis=document.getElementById('ibhJenis'),ibhNo=document.getElementById('ibhNo'),
+        ibhThn=document.getElementById('ibhThn'),ibhDept=document.getElementById('ibhDept'),ibhDeptB=document.getElementById('ibhDeptB'),
+        ibDetNo=document.getElementById('ibDetNo'),ibKatLabel=document.getElementById('ibKatLabel'),ibStatus=document.getElementById('ibStatus'),
+        tbody=document.querySelector('#ibTable tbody'),total=document.getElementById('ibTotal'),
+        phaseName=document.getElementById('ibPhaseName'),phaseSub=document.getElementById('ibPhaseSub'),
+        realBody=document.querySelector('#ibRealTable tbody'),realQty=document.getElementById('ibRealQty'),realTot=document.getElementById('ibRealTot');
+
+    function renderRincian(){
+      var s=SUBS[curSub],h='';
+      s.items.forEach(function(it,i){
+        var tot=it.qty*it.harga;
+        h+='<tr data-idx="'+i+'" style="cursor:pointer'+(i===curItem?';background:var(--brand-050)':'')+'"><td><b>'+esc(it.item)+'</b></td><td class="muted">'+esc(it.nama)+'</td><td class="r num">'+it.qty+'</td><td>'+esc(it.sat)+'</td><td class="r num">'+fmt(it.harga)+'</td><td class="r num">'+fmt(tot)+'</td><td class="muted">'+esc(it.jns||'')+'</td><td class="muted">'+esc(it.ket||'')+'</td></tr>';
+      });
+      tbody.innerHTML=h;total.textContent=fmt(subTotal(s));
+    }
+    tbody.addEventListener('click',function(e){var tr=e.target.closest('tr[data-idx]');if(!tr)return;selectItem(+tr.dataset.idx);});
+    function distribute(total,n){var base=Math.floor(total/n),rem=total-base*n,a=[];for(var i=0;i<n;i++)a.push(base+(i<rem?1:0));return a;}
+    function selectItem(i){
+      curItem=i;var it=SUBS[curSub].items[i];
+      [].forEach.call(tbody.querySelectorAll('tr'),function(r){r.style.background=(+r.dataset.idx===i)?'var(--brand-050)':'';});
+      if(!it){realBody.innerHTML='';phaseName.textContent='—';phaseSub.textContent='';realQty.textContent='0';realTot.textContent='0';return;}
+      phaseName.textContent=it.nama;
+      phaseSub.textContent='Harga satuan (master): Rp '+fmt(it.harga)+' / '+it.sat+' · Nilai = Qty × Harga Satuan';
+      var qtys=distribute(it.qty,12),h='';
+      MONTHS.forEach(function(m,idx){
+        h+='<tr><td>'+m+' 2026</td>'+
+          '<td class="r"><input class="mi realqty" style="width:72px;text-align:right" value="'+qtys[idx]+'"></td>'+
+          '<td class="r num nilai">'+fmt(qtys[idx]*it.harga)+'</td>'+
+          '<td><select class="inp" style="padding:6px 9px;width:100%">'+jenisOpts(it.jns)+'</select></td></tr>';
+      });
+      realBody.innerHTML=h;
+      var rows=realBody.querySelectorAll('tr');
+      function recalc(){var tq=0,tn=0;[].forEach.call(rows,function(r){var q=parseInt(r.querySelector('.realqty').value||'0',10);var nl=q*it.harga;r.querySelector('.nilai').textContent=fmt(nl);tq+=q;tn+=nl;});realQty.textContent=tq;realTot.textContent=fmt(tn);}
+      [].forEach.call(realBody.querySelectorAll('.realqty'),function(inp){inp.addEventListener('input',recalc);});
+      recalc();
+    }
+    function loadSub(){
+      var s=SUBS[curSub];
+      ibhJenis.value=s.jenis;ibhNo.value=s.no;ibhThn.value=String(s.thn);ibhDept.value=s.dept;ibhDeptB.value=s.dept;
+      ibDetNo.textContent=s.no;ibKatLabel.textContent='Kategori (dari item): '+s.kat;ibStatus.textContent='Status: '+s.status;
+      renderSubs();renderRincian();selectItem(0);
+    }
+
+    // +Baris modal
+    var ov=document.getElementById('ibAddOv'),ibItem=document.getElementById('ibItem'),ibKet=document.getElementById('ibKet'),
+        ibQty=document.getElementById('ibQty'),ibSat=document.getElementById('ibSat'),ibHarga=document.getElementById('ibHarga'),ibKetr=document.getElementById('ibKetr'),ibJns=document.getElementById('ibJns'),ibTot=document.getElementById('ibTot');
+    var ITEMS=['Media promosi','Event','Souvenir dan hadiah','Beban gedung','Beban asuransi','Beban kantor','Gaji tetap','Beban PBB','Komisi penjualan Internal','Beban rumah tangga kantor','Beban inventaris','Komputer','IT'];
+    ibItem.innerHTML=ITEMS.map(function(v){return '<option>'+esc(v)+'</option>';}).join('');
+    ibJns.innerHTML=jenisOpts('');
+    function syncTot(){var t=(parseInt(ibQty.value||'0',10))*(parseFloat(ibHarga.value||'0'));ibTot.value='Rp '+fmt(t);}
+    ibQty.addEventListener('input',syncTot);ibHarga.addEventListener('input',syncTot);
+    document.getElementById('ibAddBtn').addEventListener('click',function(){ibItem.selectedIndex=0;ibKet.value='';ibQty.value='12';ibSat.value='Bulan';ibHarga.value='0';ibKetr.value='';ibJns.selectedIndex=0;syncTot();ov.classList.add('open');setTimeout(function(){ibItem.focus();},60);});
+    document.getElementById('ibSave').addEventListener('click',function(){
+      var it={item:ibItem.value,nama:(ibKet.value.trim()||ibItem.value),qty:parseInt(ibQty.value||'0',10),sat:ibSat.value,harga:parseFloat(ibHarga.value||'0'),jns:ibJns.value,ket:ibKetr.value.trim()};
+      SUBS[curSub].items.push(it);ov.classList.remove('open');curItem=SUBS[curSub].items.length-1;
+      renderSubs();renderRincian();selectItem(curItem);
+      toast('Item "'+it.item+'" ditambahkan ke '+SUBS[curSub].no);
+    });
+    document.getElementById('ibDraft').addEventListener('click',function(){toast('Draft '+SUBS[curSub].no+' disimpan');});
+    document.getElementById('ibAjukan').addEventListener('click',function(){SUBS[curSub].status='Diajukan';ibStatus.textContent='Status: Diajukan · menunggu approval';renderSubs();toast('Pengajuan '+SUBS[curSub].no+' diajukan untuk approval berjenjang');});
+    document.getElementById('ibNewBtn').addEventListener('click',function(){toast('Membuat pengajuan baru — pilih kategori & isi rincian');});
+
+    loadSub();
+  })();
+
+  // ---- Input Budget Capex: teropong + rincian + phasing (in-memory) ----
+  (function(){
+    function esc(s){return (s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+    function fmt(n){n=Math.round(n||0);var s=String(n),o='';for(var i=0;i<s.length;i++){if(i>0&&(s.length-i)%3===0)o+='.';o+=s.charAt(i);}return o;}
+    var subsBody=document.querySelector('#cxSubs tbody');
+    if(!subsBody)return;
+    var MONTHS=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    var JENIS=['BARU','PERBAIKAN/PENGGANTIAN','EFISIENSI','GENERATE REVENUE'];
+    function jenisOpts(sel){return JENIS.map(function(v){return '<option'+(v===sel?' selected':'')+'>'+esc(v)+'</option>';}).join('');}
+    var SUBS=[
+      {no:'CX-2026-SPCK-0012',dept:'GA',thn:2026,jenis:'Budget',status:'Draft',items:[
+        {item:'KENDARAAN',nama:'Mobil Operasional Toyota Innova',qty:2,sat:'Unit',harga:450000000,jns:'BARU',ket:'Tambahan armada operasional'},
+        {item:'KENDARAAN',nama:'Motor Operasional Lapangan',qty:5,sat:'Unit',harga:28000000,jns:'BARU',ket:''}
+      ]},
+      {no:'CX-2026-SPCK-0013',dept:'GA',thn:2026,jenis:'Budget',status:'Diajukan',items:[
+        {item:'BANGUNAN FA',nama:'Renovasi Lobby & Front Office',qty:1,sat:'Paket',harga:850000000,jns:'PERBAIKAN/PENGGANTIAN',ket:'Peremajaan gedung'},
+        {item:'PERALATAN',nama:'Genset 250 kVA',qty:1,sat:'Unit',harga:320000000,jns:'BARU',ket:'Backup power'}
+      ]},
+      {no:'CX-2026-SPCK-0014',dept:'IT',thn:2026,jenis:'Budget',status:'Approved',items:[
+        {item:'IT',nama:'Server & Storage Datacenter',qty:1,sat:'Paket',harga:750000000,jns:'PERBAIKAN/PENGGANTIAN',ket:'Upgrade kapasitas'},
+        {item:'IT',nama:'Lisensi & Perangkat Jaringan',qty:1,sat:'Paket',harga:180000000,jns:'EFISIENSI',ket:''},
+        {item:'MESIN',nama:'Chiller AC Sentral',qty:2,sat:'Unit',harga:410000000,jns:'PERBAIKAN/PENGGANTIAN',ket:''}
+      ]},
+      {no:'CX-2026-SPCK-0015',dept:'HR&GA',thn:2026,jenis:'Revised',status:'Draft',items:[
+        {item:'Inventaris',nama:'Furniture Ruang Kerja Lantai 5',qty:40,sat:'Unit',harga:3500000,jns:'BARU',ket:'Ekspansi lantai 5'},
+        {item:'IT',nama:'Laptop Karyawan Baru',qty:25,sat:'Unit',harga:15000000,jns:'BARU',ket:''}
+      ]}
+    ];
+    var curSub=0,curItem=0;
+    function subTotal(s){var t=0;s.items.forEach(function(it){t+=it.qty*it.harga;});return t;}
+    function stsTag(st){var c=st==='Approved'?'good':(st==='Diajukan'?'warn':'mut');return '<span class="tag '+c+'">'+esc(st)+'</span>';}
+    function renderSubs(){
+      var h='';SUBS.forEach(function(s,i){
+        h+='<tr data-idx="'+i+'" style="cursor:pointer'+(i===curSub?';background:var(--brand-050)':'')+'"><td><b>'+s.no+'</b></td><td><span class="tag warn">Capex</span></td><td class="muted">'+esc(s.dept)+'</td><td class="c num">'+s.thn+'</td><td class="r num">'+fmt(subTotal(s))+'</td><td class="c">'+stsTag(s.status)+'</td></tr>';
+      });
+      subsBody.innerHTML=h;
+    }
+    subsBody.addEventListener('click',function(e){var tr=e.target.closest('tr[data-idx]');if(!tr)return;curSub=+tr.dataset.idx;curItem=0;loadSub();document.getElementById('cxSubsOv').classList.remove('open');});
+    document.getElementById('cxPickBtn').addEventListener('click',function(){document.getElementById('cxSubsOv').classList.add('open');});
+    var cxSubSearch=document.getElementById('cxSubSearch');
+    if(cxSubSearch)cxSubSearch.addEventListener('input',function(){var t=cxSubSearch.value.toLowerCase();[].forEach.call(subsBody.querySelectorAll('tr'),function(r){r.style.display=r.textContent.toLowerCase().indexOf(t)>-1?'':'none';});});
+
+    var cxhJenis=document.getElementById('cxhJenis'),cxhNo=document.getElementById('cxhNo'),
+        cxhThn=document.getElementById('cxhThn'),cxhDept=document.getElementById('cxhDept'),cxhDeptB=document.getElementById('cxhDeptB'),
+        cxDetNo=document.getElementById('cxDetNo'),cxKatLabel=document.getElementById('cxKatLabel'),cxStatus=document.getElementById('cxStatus'),
+        tbody=document.querySelector('#cxTable tbody'),total=document.getElementById('cxTotal'),
+        phaseName=document.getElementById('cxPhaseName'),phaseSub=document.getElementById('cxPhaseSub'),
+        realBody=document.querySelector('#cxRealTable tbody'),realQty=document.getElementById('cxRealQty'),realTot=document.getElementById('cxRealTot');
+
+    function renderRincian(){
+      var s=SUBS[curSub],h='';
+      s.items.forEach(function(it,i){
+        var tot=it.qty*it.harga;
+        h+='<tr data-idx="'+i+'" style="cursor:pointer'+(i===curItem?';background:var(--brand-050)':'')+'"><td><b>'+esc(it.item)+'</b></td><td class="muted">'+esc(it.nama)+'</td><td class="r num">'+it.qty+'</td><td>'+esc(it.sat)+'</td><td class="r num">'+fmt(it.harga)+'</td><td class="r num">'+fmt(tot)+'</td><td class="muted">'+esc(it.jns||'')+'</td><td class="muted">'+esc(it.ket||'')+'</td></tr>';
+      });
+      tbody.innerHTML=h;total.textContent=fmt(subTotal(s));
+    }
+    tbody.addEventListener('click',function(e){var tr=e.target.closest('tr[data-idx]');if(!tr)return;selectItem(+tr.dataset.idx);});
+    function distribute(total,n){var base=Math.floor(total/n),rem=total-base*n,a=[];for(var i=0;i<n;i++)a.push(base+(i<rem?1:0));return a;}
+    function selectItem(i){
+      curItem=i;var it=SUBS[curSub].items[i];
+      [].forEach.call(tbody.querySelectorAll('tr'),function(r){r.style.background=(+r.dataset.idx===i)?'var(--brand-050)':'';});
+      if(!it){realBody.innerHTML='';phaseName.textContent='—';phaseSub.textContent='';realQty.textContent='0';realTot.textContent='0';return;}
+      phaseName.textContent=it.nama;
+      phaseSub.textContent='Harga satuan: Rp '+fmt(it.harga)+' / '+it.sat+' · Jenis: '+esc(it.jns||'-')+' · Nilai = Qty × Harga Satuan';
+      var qtys=distribute(it.qty,12),h='';
+      MONTHS.forEach(function(m,idx){
+        h+='<tr><td>'+m+' 2026</td>'+
+          '<td class="r"><input class="mi realqty" style="width:72px;text-align:right" value="'+qtys[idx]+'"></td>'+
+          '<td class="r num nilai">'+fmt(qtys[idx]*it.harga)+'</td>'+
+          '<td><select class="inp" style="padding:6px 9px;width:100%">'+jenisOpts(it.jns)+'</select></td></tr>';
+      });
+      realBody.innerHTML=h;
+      var rows=realBody.querySelectorAll('tr');
+      function recalc(){var tq=0,tn=0;[].forEach.call(rows,function(r){var q=parseInt(r.querySelector('.realqty').value||'0',10);var nl=q*it.harga;r.querySelector('.nilai').textContent=fmt(nl);tq+=q;tn+=nl;});realQty.textContent=tq;realTot.textContent=fmt(tn);}
+      [].forEach.call(realBody.querySelectorAll('.realqty'),function(inp){inp.addEventListener('input',recalc);});
+      recalc();
+    }
+    function loadSub(){
+      var s=SUBS[curSub];
+      cxhJenis.value=s.jenis;cxhNo.value=s.no;cxhThn.value=String(s.thn);cxhDept.value=s.dept;cxhDeptB.value=s.dept;
+      cxDetNo.textContent=s.no;cxKatLabel.textContent='Kategori: Capex';cxStatus.textContent='Status: '+s.status;
+      renderSubs();renderRincian();selectItem(0);
+    }
+
+    // +Baris modal
+    var ov=document.getElementById('cxAddOv'),cxItem=document.getElementById('cxItem'),cxKet=document.getElementById('cxKet'),
+        cxQty=document.getElementById('cxQty'),cxSat=document.getElementById('cxSat'),cxHarga=document.getElementById('cxHarga'),cxKetr=document.getElementById('cxKetr'),cxJns=document.getElementById('cxJns'),cxTot=document.getElementById('cxTot');
+    var CXITEMS=['BANGUNAN FA','BANGUNAN IP','KENDARAAN','PERALATAN','MESIN','IT','LAIN LAIN','Inventaris'];
+    cxItem.innerHTML=CXITEMS.map(function(v){return '<option>'+esc(v)+'</option>';}).join('');
+    cxJns.innerHTML=jenisOpts('');
+    function syncTot(){var t=(parseInt(cxQty.value||'0',10))*(parseFloat(cxHarga.value||'0'));cxTot.value='Rp '+fmt(t);}
+    cxQty.addEventListener('input',syncTot);cxHarga.addEventListener('input',syncTot);
+    document.getElementById('cxAddBtn').addEventListener('click',function(){cxItem.selectedIndex=0;cxKet.value='';cxQty.value='1';cxSat.value='Unit';cxHarga.value='0';cxKetr.value='';cxJns.selectedIndex=0;syncTot();ov.classList.add('open');setTimeout(function(){cxItem.focus();},60);});
+    document.getElementById('cxSave').addEventListener('click',function(){
+      var it={item:cxItem.value,nama:(cxKet.value.trim()||cxItem.value),qty:parseInt(cxQty.value||'0',10),sat:cxSat.value,harga:parseFloat(cxHarga.value||'0'),jns:cxJns.value,ket:cxKetr.value.trim()};
+      SUBS[curSub].items.push(it);ov.classList.remove('open');curItem=SUBS[curSub].items.length-1;
+      renderSubs();renderRincian();selectItem(curItem);
+      toast('Item "'+it.item+'" ditambahkan ke '+SUBS[curSub].no);
+    });
+    document.getElementById('cxDraft').addEventListener('click',function(){toast('Draft '+SUBS[curSub].no+' disimpan');});
+    document.getElementById('cxAjukan').addEventListener('click',function(){SUBS[curSub].status='Diajukan';cxStatus.textContent='Status: Diajukan · menunggu approval';renderSubs();toast('Pengajuan '+SUBS[curSub].no+' diajukan untuk approval berjenjang');});
+    document.getElementById('cxNewBtn').addEventListener('click',function(){toast('Membuat pengajuan capex baru — pilih kategori barang & isi rincian');});
+
+    loadSub();
+  })();
+
+  // ---- Approval: setujui / kembalikan + rantai (in-memory) ----
+  (function(){
+    var wait=document.getElementById('apWait'),done=document.getElementById('apDone'),rej=document.getElementById('apRej'),
+        actions=document.getElementById('apActions'),stepU=document.getElementById('apStepFaUnit'),
+        stepC=document.getElementById('apStepFaCorp'),link=document.getElementById('apLink2'),
+        ap=document.getElementById('apApprove'),rt=document.getElementById('apReturn'),det=document.getElementById('apDetail');
+    if(!ap)return;
+    function val(el){return parseInt(el.textContent,10)||0;}
+    ap.addEventListener('click',function(){
+      stepU.className='step done';stepU.querySelector('.cn').textContent='✓';stepU.querySelector('.sl span').textContent='Anda · disetujui';
+      link.className='lnk done';
+      stepC.className='step now';stepC.querySelector('.sl span').textContent='menunggu';
+      actions.innerHTML='<span class="tag good">✓ Disetujui di tingkat FA Unit — diteruskan ke FA Corp</span>';
+      wait.textContent=Math.max(0,val(wait)-1);done.textContent=val(done)+1;
+      toast('Pengajuan BR-2026-SCGD-0042 disetujui — diteruskan ke FA Corp');
+    });
+    rt.addEventListener('click',function(){
+      actions.innerHTML='<span class="tag crit">↩ Dikembalikan ke unit untuk revisi</span>';
+      wait.textContent=Math.max(0,val(wait)-1);rej.textContent=val(rej)+1;
+      toast('Pengajuan dikembalikan ke unit untuk revisi');
+    });
+    if(det)det.addEventListener('click',function(){toast('Membuka detail pengajuan BR-2026-SCGD-0042');});
+    var tbl=document.getElementById('apTable');
+    if(tbl)[].forEach.call(tbl.querySelectorAll('tbody .btn'),function(b){b.addEventListener('click',function(){var no=b.closest('tr').querySelector('b').textContent;toast('Membuka pengajuan '+no);});});
+  })();
+
+  // ---- Laporan P&L: filter ganti data + export (in-memory) ----
+  (function(){
+    function fmt(n){var neg=n<0;n=Math.abs(Math.round(n||0));var s=String(n),o='';for(var i=0;i<s.length;i++){if(i>0&&(s.length-i)%3===0)o+='.';o+=s.charAt(i);}return neg?'('+o+')':o;}
+    function pct(a,b){return b>0?Math.round(a/b*100)+'%':'—';}
+    [].forEach.call(document.querySelectorAll('.expbtn'),function(b){b.addEventListener('click',function(){var t=b.textContent.indexOf('PDF')>-1?'PDF':'Excel';toast('Ekspor laporan ke '+t+' — tersedia di aplikasi final');});});
+
+    // Per Unit
+    var puBody=document.getElementById('puBody'),puUnit=document.getElementById('puUnit'),puTitle=document.getElementById('puTitle'),puPeriod=document.getElementById('puPeriod');
+    var UBASE=[
+      {t:'rev1',n:'Revenue'},{t:'revsub',n:'Menyusul (integrasi ERP Sales)'},
+      {t:'l1',n:'Selling Expense',b:240e6,a:120e6,f:720e6},
+      {t:'l3',n:'Event',b:200e6,a:120e6,f:600e6},
+      {t:'l3',n:'Media promosi',b:40e6,a:0,f:120e6},
+      {t:'l1',n:'Beban Kepegawaian',b:0,a:0,f:0},
+      {t:'l3d',n:'Gaji tetap <span class="tag mut" style="margin-left:6px">integrasi payroll</span>'},
+      {t:'l1',n:'Beban Umum & Administrasi',b:116.7e6,a:45.4e6,f:387e6},
+      {t:'l3',n:'Beban gedung',b:100e6,a:28e6,f:300e6},
+      {t:'l3',n:'Beban asuransi',b:25e6,a:16.2e6,f:75e6},
+      {t:'l3',n:'Beban kantor',b:4e6,a:1.2e6,f:12e6},
+      {t:'sub',n:'Total Beban Operasional',b:356.7e6,a:165.4e6,f:1107e6},
+      {t:'grand',n:'Operating Profit / (Loss)',b:356.7e6,a:165.4e6,f:1107e6}
+    ];
+    var UF={SCGD:[1,1],SBGR:[0.30,0.24],SMMK:[0.12,0.05]};
+    function renderU(){
+      var u=puUnit.value,f=UF[u],bf=f[0],af=f[1],h='';
+      UBASE.forEach(function(r){
+        if(r.t==='rev1'){h+='<tr class="lvl1 rev"><td>'+r.n+'</td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td class="r">—</td></tr>';return;}
+        if(r.t==='revsub'||r.t==='l3d'){h+='<tr class="'+(r.t==='revsub'?'rev lvl3':'lvl3')+'"><td>'+r.n+'</td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td class="r">—</td></tr>';return;}
+        var b=r.b*bf,a=r.a*af,v=b-a;
+        if(r.t==='grand'){h+='<tr class="grand"><td>'+r.n+'</td><td class="r num">'+fmt(-b)+'</td><td class="r num">'+fmt(-a)+'</td><td class="r num">—</td><td class="r">—</td><td class="r num">'+fmt(-r.f*bf)+'</td></tr>';return;}
+        var cls=r.t==='l1'?'lvl1':(r.t==='sub'?'sub':'lvl3'),vcls=v>=0?'vpos':'vneg';
+        h+='<tr class="'+cls+'"><td>'+r.n+'</td><td class="r num">'+fmt(b)+'</td><td class="r num">'+fmt(a)+'</td><td class="r '+vcls+' num">'+fmt(v)+'</td><td class="r">'+pct(a,b)+'</td><td class="r num">'+fmt(r.f*bf)+'</td></tr>';
+      });
+      puBody.innerHTML=h;puTitle.textContent='Laporan Laba Rugi (P&L) — '+u;
+    }
+    if(puBody){puUnit.addEventListener('change',renderU);puPeriod.addEventListener('change',function(){toast('Memuat periode: '+puPeriod.value);});renderU();}
+
+    // Per Lokasi
+    var plBody=document.getElementById('plBody'),plLok=document.getElementById('plLok'),plTitle=document.getElementById('plTitle');
+    var LBASE=[
+      {t:'l1',n:'Selling Expense',b:280e6,a:134.5e6},
+      {t:'l3',n:'Event',b:200e6,a:120e6},
+      {t:'l3',n:'Media promosi',b:55e6,a:12.5e6},
+      {t:'l3',n:'Komisi penjualan Internal',b:25e6,a:2e6},
+      {t:'l1',n:'Beban Umum & Administrasi',b:140.5e6,a:52.1e6},
+      {t:'l3',n:'Beban gedung',b:100e6,a:28e6},
+      {t:'l3',n:'Beban asuransi',b:30e6,a:20.9e6},
+      {t:'l3',n:'Beban kantor',b:10.5e6,a:3.2e6},
+      {t:'sub',n:'Total Beban Operasional',b:420.5e6,a:186.6e6}
+    ];
+    var LF={Serpong:[1,1],Bekasi:[0.55,0.40],Bandung:[0.28,0.15]};
+    function renderL(){
+      var lk=plLok.value,f=LF[lk],bf=f[0],af=f[1],h='';
+      LBASE.forEach(function(r){
+        var b=r.b*bf,a=r.a*af,v=b-a,cls=r.t==='l1'?'lvl1':(r.t==='sub'?'sub':'lvl3'),vcls=v>=0?'vpos':'vneg';
+        h+='<tr class="'+cls+'"><td>'+r.n+'</td><td class="r num">'+fmt(b)+'</td><td class="r num">'+fmt(a)+'</td><td class="r '+vcls+' num">'+fmt(v)+'</td><td class="r">'+pct(a,b)+'</td></tr>';
+      });
+      plBody.innerHTML=h;plTitle.textContent='Laporan P&L — Lokasi '+lk;
+    }
+    if(plBody){plLok.addEventListener('change',renderL);renderL();}
+
+    var ko=document.getElementById('koPeriod');if(ko)ko.addEventListener('change',function(){toast('Memuat periode: '+ko.value);});
+  })();
+</script>
+</body>
+</html>
