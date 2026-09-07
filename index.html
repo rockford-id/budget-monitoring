@@ -65,6 +65,12 @@
   .rr-cell .rr-jns{grid-column:1 / -1;min-width:0;height:30px;padding:2px 8px;font-size:11.5px}
   .rr-cell .rr-bln{min-width:0;height:32px;padding:2px 8px}
   .rr-cell .rr-qty{height:32px;text-align:right;padding:2px 6px;font-variant-numeric:tabular-nums}
+  /* dokumen rev+1 hasil Over Budget: qty terkunci, hanya harga yang boleh diubah */
+  .rr-locked .rr-qty{pointer-events:none;opacity:.5;background:var(--t-surf-2)}
+  .rr-locked .rr-del,.rr-locked .rr-add{display:none}
+  /* dokumen yang sudah diajukan (status bukan N): rincian read-only */
+  .rr-readonly .rr-qty,.rr-readonly .mk-combo,.rr-readonly .rr-add,.rr-readonly .rr-del{pointer-events:none;opacity:.5}
+  .rr-readonly .rr-qty,.rr-readonly .mk-combo-inp{background:var(--t-surf-2)}
   .rr-cell .rr-nilai{min-width:104px;text-align:right;font-size:12px;color:var(--t-text);font-variant-numeric:tabular-nums;white-space:nowrap}
   .rr-cell .rr-del{width:26px;height:26px;color:var(--t-text-faint);justify-self:end}
   .rr-cell .rr-del:hover{color:var(--t-danger)}
@@ -100,7 +106,7 @@
   .mk-fixed{table-layout:fixed}
   .mk-1line{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-  /* Baris bm_budget_plan yang sudah diganti Addition: redup + dicoret, tidak dijumlahkan */
+  /* Baris budget dari rev LAMA (status R/O): redup + dicoret, tidak dijumlahkan */
   .mk-super>td{opacity:.5;text-decoration:line-through;text-decoration-color:var(--t-text-faint)}
   .mk-super>td .ds-badge{text-decoration:none}
   .mk-chk{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--t-text);cursor:pointer}
@@ -331,8 +337,6 @@
             <ul class="nav nav-treeview">
               <li class="nav-item"><a href="#" class="nav-link" data-s="input-cx"><i class="bi bi-building-gear nav-icon"></i><p>Input Budget Capex</p></a></li>
               <li class="nav-item"><a href="#" class="nav-link" data-s="input"><i class="bi bi-file-earmark-text nav-icon"></i><p>Input Budget Non Capex</p></a></li>
-              <li class="nav-item"><a href="#" class="nav-link" data-s="addition"><i class="bi bi-cash-coin nav-icon"></i><p>Addition Budget</p></a></li>
-              <li class="nav-item"><a href="#" class="nav-link" data-s="revisi"><i class="bi bi-pencil-square nav-icon"></i><p>Revisi Budget</p></a></li>
               <li class="nav-item"><a href="#" class="nav-link" data-s="alokasi"><i class="bi bi-diagram-2 nav-icon"></i><p>Alokasi Budget</p></a></li>
               <li class="nav-item"><a href="#" class="nav-link" data-s="approval-alk"><i class="bi bi-check2-circle nav-icon"></i><p>Approval Alokasi Budget</p></a></li>
               <li class="nav-item"><a href="#" class="nav-link" data-s="approval-dept"><i class="bi bi-check2-square nav-icon"></i><p>Approval Budget Departemen</p></a></li>
@@ -1005,6 +1009,8 @@
               <button class="ds-btn ds-btn-secondary" id="ibPickBtn"><i class="bi bi-search"></i> Daftar Pengajuan</button>
               <button class="ds-btn ds-btn-secondary" id="ibDraft">Simpan Draft</button>
               <button class="ds-btn ds-btn-secondary" id="ibAjukan">Ajukan <i class="bi bi-arrow-right"></i></button>
+              <button class="ds-btn ds-btn-secondary" id="ibRevisi"><i class="bi bi-pencil-square"></i> Revisi</button>
+              <button class="ds-btn ds-btn-secondary" id="ibAddition"><i class="bi bi-cash-coin"></i> Addition</button>
             </span>
           </div>
           <div class="ds-form-stack ds-form-stack-4">
@@ -1044,6 +1050,8 @@
               <button class="ds-btn ds-btn-secondary" id="cxPickBtn"><i class="bi bi-search"></i> Daftar Pengajuan</button>
               <button class="ds-btn ds-btn-secondary" id="cxDraft">Simpan Draft</button>
               <button class="ds-btn ds-btn-secondary" id="cxAjukan">Ajukan <i class="bi bi-arrow-right"></i></button>
+              <button class="ds-btn ds-btn-secondary" id="cxRevisi"><i class="bi bi-pencil-square"></i> Revisi</button>
+              <button class="ds-btn ds-btn-secondary" id="cxAddition"><i class="bi bi-cash-coin"></i> Addition</button>
             </span>
           </div>
           <div class="ds-form-stack ds-form-stack-4">
@@ -1067,76 +1075,6 @@
 
 
 
-      <!-- ================= ADDITION BUDGET =================
-           Skema 2026-08-06: kolom bm_budget_plan.tipe DIHAPUS. Addition = baris BARU
-           dengan fg_addition='Y' + ref_addition_budget_plan_id = budget_plan_id baris asli.
-           Baris asli tidak diubah & tidak dihapus.
-           Dulu bernama "Revisi Budget"; istilah dibetulkan 2026-08-03. Id elemen masih rev*. -->
-      <section class="screen" id="s-addition">
-        <div class="ds-page-header"><div class="ds-page-title"><h1>Addition Budget</h1><div class="ds-page-subtitle">Anggaran · tambahan harga satuan → baris baru <code>fg_addition='Y'</code> yang menunjuk baris asli lewat <code>ref_addition_budget_plan_id</code> · qty tidak boleh diubah (bm_budget_plan)</div></div></div>
-        <div class="ds-section" style="margin-bottom:14px">
-          <div class="mk-sec-head">
-            <span class="mk-sec-label"><i class="bi bi-cash-coin"></i> Detail Addition — <span id="revDetNo" style="text-transform:none;letter-spacing:0;color:var(--t-text)">—</span></span>
-            <span class="mk-sec-meta" id="revStatus">Belum ada pengajuan dipilih</span>
-            <span class="mk-sec-actions">
-              <button class="ds-btn ds-btn-primary" id="revPickBtn"><i class="bi bi-search"></i> Pilih Pengajuan Budget</button>
-              <button class="ds-btn ds-btn-secondary" id="revDraft">Simpan Draft</button>
-              <button class="ds-btn ds-btn-secondary" id="revAjukan">Ajukan <i class="bi bi-arrow-right"></i></button>
-            </span>
-          </div>
-          <div class="ds-form-stack ds-form-stack-5">
-            <div><label class="ds-label">No. Pengajuan <span class="mk-faint">(no_budget)</span></label><input class="ds-input" id="revhRef" readonly></div>
-            <div><label class="ds-label">Rev <span class="mk-faint">(rev)</span></label><input class="ds-input" id="revhRev" readonly></div>
-            <div><label class="ds-label">Penanda Baris <span class="mk-faint">(fg_addition)</span></label><input class="ds-input" id="revhJenis" value="Y — Addition" readonly></div>
-            <div><label class="ds-label">Tahun</label><input class="ds-input" id="revhThn" readonly></div>
-            <div><label class="ds-label">Departemen <span class="mk-faint">(kd_dept_acc)</span></label><input class="ds-input" id="revhDept" readonly></div>
-          </div>
-        </div>
-        <div class="ds-section">
-          <div class="mk-sec-head"><span class="mk-sec-label"><i class="bi bi-list-ul"></i> Rincian Addition</span><span class="mk-sec-meta">isi <b>Harga Satuan Addition</b> per item · <b>Qty terkunci</b> (tidak boleh diubah) · tiap baris yang diisi menghasilkan <b>baris baru</b> <code>fg_addition='Y'</code> yang menunjuk <code>budget_plan_id</code> baris asli · tetap butuh approval Departemen → Finance Unit → Finance CO</span></div>
-          <div class="mk-tablewrap"><table class="ds-table ds-table-sm" id="revTable" style="min-width:1240px">
-            <thead><tr><th style="width:96px">Baris Asli <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t-text-faint)">(id)</span></th><th>Item Anggaran</th><th>Nama</th><th class="mk-r">Qty <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t-text-faint)">(terkunci)</span></th><th class="mk-r">Harga Satuan Awal</th><th class="mk-r" style="width:170px">Harga Satuan Addition</th><th class="mk-r">Total Awal</th><th class="mk-r">Total Addition</th><th class="mk-r">Selisih</th><th>Jenis</th></tr></thead>
-            <tbody></tbody>
-            <tfoot><tr><td colspan="6" style="text-align:right;font-weight:700">Total</td><td class="mk-r mk-num" id="revTotAwal" style="font-weight:700">0</td><td class="mk-r mk-num" id="revTotRev" style="font-weight:800;color:var(--smra-orange)">0</td><td class="mk-r mk-num" id="revTotSel" style="font-weight:700">0</td><td></td></tr></tfoot>
-          </table></div>
-        </div>
-      </section>
-
-      <!-- ================= REVISI BUDGET (bm_budget_req.rev) =================
-           Revisi = pengajuan BARU: no_budget sama, rev+1, status N, detail awal sama.
-           Seluruh plan direview — qty MAUPUN harga satuan boleh diubah. -->
-      <section class="screen" id="s-revisi">
-        <div class="ds-page-header"><div class="ds-page-title"><h1>Revisi Budget</h1><div class="ds-page-subtitle">Anggaran · review seluruh plan (qty &amp; harga satuan boleh diubah) → pengajuan baru dengan no_budget sama, rev+1, status N (bm_budget_req.rev)</div></div></div>
-        <div class="ds-section" style="margin-bottom:14px">
-          <div class="mk-sec-head">
-            <span class="mk-sec-label"><i class="bi bi-pencil-square"></i> Detail Revisi — <span id="rvDetNo" style="text-transform:none;letter-spacing:0;color:var(--t-text)">—</span></span>
-            <span class="mk-sec-meta" id="rvStatus">Belum ada pengajuan dipilih</span>
-            <span class="mk-sec-actions">
-              <button class="ds-btn ds-btn-primary" id="rvPickBtn"><i class="bi bi-search"></i> Pilih Pengajuan (status R)</button>
-              <button class="ds-btn ds-btn-secondary" id="rvAddBtn"><i class="bi bi-plus-lg"></i> Baris</button>
-              <button class="ds-btn ds-btn-secondary" id="rvDraft">Simpan Draft</button>
-              <button class="ds-btn ds-btn-secondary" id="rvAjukan">Ajukan <i class="bi bi-arrow-right"></i></button>
-            </span>
-          </div>
-          <div class="ds-form-stack ds-form-stack-5">
-            <div><label class="ds-label">No. Pengajuan <span class="mk-faint">(no_budget — sama)</span></label><input class="ds-input" id="rvhNo" readonly></div>
-            <div><label class="ds-label">Rev <span class="mk-faint">(rev)</span></label><input class="ds-input" id="rvhRev" readonly></div>
-            <div><label class="ds-label">Status <span class="mk-faint">(status)</span></label><input class="ds-input" id="rvhStatus" readonly></div>
-            <div><label class="ds-label">Tahun</label><input class="ds-input" id="rvhThn" readonly></div>
-            <div><label class="ds-label">Departemen <span class="mk-faint">(kd_dept_acc)</span></label><input class="ds-input" id="rvhDept" readonly></div>
-          </div>
-        </div>
-        <div class="ds-section">
-          <div class="mk-sec-head"><span class="mk-sec-label"><i class="bi bi-list-ul"></i> Rincian Revisi</span><span class="mk-sec-meta"><b>Qty &amp; Harga Satuan boleh diubah</b> (tambah/kurang), baris juga boleh dihapus/ditambah · nilai awal = plan rev sebelumnya · setelah diajukan masuk approval berjenjang lagi</span></div>
-          <div class="mk-tablewrap"><table class="ds-table ds-table-sm" id="rvTable" style="min-width:1120px">
-            <thead><tr><th>Item Anggaran</th><th>Nama</th><th class="mk-r" style="width:90px">Qty Awal</th><th class="mk-r" style="width:110px">Qty Revisi</th><th class="mk-r">Harga Satuan Awal</th><th class="mk-r" style="width:170px">Harga Satuan Revisi</th><th class="mk-r">Total Awal</th><th class="mk-r">Total Revisi</th><th class="mk-r">Selisih</th><th style="width:60px">Aksi</th></tr></thead>
-            <tbody></tbody>
-            <tfoot><tr><td colspan="6" style="text-align:right;font-weight:700">Total</td><td class="mk-r mk-num" id="rvTotAwal" style="font-weight:700">0</td><td class="mk-r mk-num" id="rvTotRev" style="font-weight:800;color:var(--smra-orange)">0</td><td class="mk-r mk-num" id="rvTotSel" style="font-weight:700">0</td><td></td></tr></tfoot>
-          </table></div>
-        </div>
-      </section>
-
-      <!-- ================= ALOKASI BUDGET (bm_allocation / bm_budget_allocation) ================= -->
       <section class="screen" id="s-alokasi">
         <div class="ds-page-header"><div class="ds-page-title"><h1>Alokasi Budget</h1><div class="ds-page-subtitle">Anggaran · alokasi Event (bm_allocation / bm_budget_allocation)</div></div></div>
         <div class="ds-section" style="margin-bottom:14px">
@@ -1176,7 +1114,7 @@
         <div class="mk-kpis" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
           <div class="ds-stat-card"><div class="ds-stat-label">Menunggu approval Anda</div><div class="ds-stat-value" id="ap-dept-wait">0</div><div class="ds-stat-delta mk-muted">sebagai Kepala Departemen</div></div>
           <div class="ds-stat-card"><div class="ds-stat-label">Disetujui bulan ini</div><div class="ds-stat-value" id="ap-dept-done">8</div><div class="ds-stat-delta mk-vpos">tingkat Departemen</div></div>
-          <div class="ds-stat-card"><div class="ds-stat-label">Permintaan revisi (R0)</div><div class="ds-stat-value" id="ap-dept-rej">1</div><div class="ds-stat-delta mk-muted">perlu revisi</div></div>
+          <div class="ds-stat-card"><div class="ds-stat-label">Dikembalikan ke pengaju</div><div class="ds-stat-value" id="ap-dept-rej">1</div><div class="ds-stat-delta mk-muted">status kembali ke N</div></div>
         </div>
         <div class="ds-section">
           <div class="ds-section-title"><i class="bi bi-inbox"></i> Antrian Persetujuan — Departemen</div>
@@ -1193,7 +1131,7 @@
         <div class="mk-kpis" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
           <div class="ds-stat-card"><div class="ds-stat-label">Menunggu approval Anda</div><div class="ds-stat-value" id="ap-faunit-wait">0</div><div class="ds-stat-delta mk-muted">sebagai FA Unit</div></div>
           <div class="ds-stat-card"><div class="ds-stat-label">Disetujui bulan ini</div><div class="ds-stat-value" id="ap-faunit-done">11</div><div class="ds-stat-delta mk-vpos">tingkat Finance Unit</div></div>
-          <div class="ds-stat-card"><div class="ds-stat-label">Permintaan revisi (R0)</div><div class="ds-stat-value" id="ap-faunit-rej">2</div><div class="ds-stat-delta mk-muted">perlu revisi</div></div>
+          <div class="ds-stat-card"><div class="ds-stat-label">Dikembalikan ke pengaju</div><div class="ds-stat-value" id="ap-faunit-rej">2</div><div class="ds-stat-delta mk-muted">status kembali ke N</div></div>
         </div>
         <div class="ds-section">
           <div class="ds-section-title"><i class="bi bi-inbox"></i> Antrian Persetujuan — Finance Unit</div>
@@ -1210,7 +1148,7 @@
         <div class="mk-kpis" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
           <div class="ds-stat-card"><div class="ds-stat-label">Menunggu approval Anda</div><div class="ds-stat-value" id="ap-facorp-wait">0</div><div class="ds-stat-delta mk-muted">sebagai FA Corp</div></div>
           <div class="ds-stat-card"><div class="ds-stat-label">Disetujui bulan ini</div><div class="ds-stat-value" id="ap-facorp-done">9</div><div class="ds-stat-delta mk-vpos">tingkat Finance CO</div></div>
-          <div class="ds-stat-card"><div class="ds-stat-label">Permintaan revisi (R0)</div><div class="ds-stat-value" id="ap-facorp-rej">1</div><div class="ds-stat-delta mk-muted">perlu revisi</div></div>
+          <div class="ds-stat-card"><div class="ds-stat-label">Dikembalikan ke pengaju</div><div class="ds-stat-value" id="ap-facorp-rej">1</div><div class="ds-stat-delta mk-muted">status kembali ke N</div></div>
         </div>
         <div class="ds-section">
           <div class="ds-section-title"><i class="bi bi-inbox"></i> Antrian Persetujuan — Finance CO</div>
@@ -1227,7 +1165,7 @@
         <div class="mk-kpis" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
           <div class="ds-stat-card"><div class="ds-stat-label">Menunggu approval Anda</div><div class="ds-stat-value" id="apalk-wait">0</div><div class="ds-stat-delta mk-muted">alokasi Event</div></div>
           <div class="ds-stat-card"><div class="ds-stat-label">Disetujui bulan ini</div><div class="ds-stat-value" id="apalk-done">5</div><div class="ds-stat-delta mk-vpos">alokasi</div></div>
-          <div class="ds-stat-card"><div class="ds-stat-label">Permintaan revisi (R0)</div><div class="ds-stat-value" id="apalk-rej">1</div><div class="ds-stat-delta mk-muted">perlu revisi</div></div>
+          <div class="ds-stat-card"><div class="ds-stat-label">Dikembalikan ke pengaju</div><div class="ds-stat-value" id="apalk-rej">1</div><div class="ds-stat-delta mk-muted">status kembali ke N</div></div>
         </div>
         <div class="ds-section">
           <div class="ds-section-title"><i class="bi bi-inbox"></i> Antrian Persetujuan Alokasi</div>
@@ -1253,13 +1191,12 @@
               <span style="text-align:right"><span class="mk-eyebrow">Sisa</span><div class="v" style="color:var(--t-success)" id="kbSisa">—</div></span>
             </span>
           </div>
-          <!-- Budget = baris EFEKTIF bm_budget_plan (baris yang tidak diganti Addition).
-               Realisasi tiap bulan dijumlahkan SEPANJANG RANTAI ref_addition_budget_plan_id,
-               karena bm_budget_usage menempel ke budget_plan_id tertentu — pemakaian yang
-               terjadi sebelum Addition tetap tercatat di baris aslinya. -->
+          <!-- Budget = plan dokumen dengan rev TERTINGGI berstatus A. Realisasi dari rev
+               lama TETAP dihitung karena bm_budget_usage menempel ke budget_plan_id
+               tertentu — pemakaian sebelum revisi/over budget tidak hilang. -->
           <div class="ds-toolbar" style="margin-bottom:10px">
-            <label class="mk-chk"><input type="checkbox" id="kbShowOld"> Tampilkan baris yang diganti Addition</label>
-            <span class="mk-faint" style="font-size:11px">baris yang diganti tampil redup &amp; dicoret — tidak ikut dijumlahkan</span>
+            <label class="mk-chk"><input type="checkbox" id="kbShowOld"> Tampilkan budget rev sebelumnya</label>
+            <span class="mk-faint" style="font-size:11px">budget rev lama tampil redup &amp; dicoret — tidak ikut dijumlahkan</span>
           </div>
           <div class="mk-tablewrap"><table class="ds-table ds-table-sm" style="min-width:900px">
             <thead><tr><th>Periode <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t-text-faint)">(thn · bln)</span></th><th class="mk-r">Budget</th><th class="mk-r">Realisasi</th><th class="mk-c">Dokumen</th><th>No. Dokumen &amp; Tanggal</th><th class="mk-c">Aplikasi</th><th class="mk-r">Balance</th></tr></thead>
@@ -1736,33 +1673,23 @@
       <div class="mk-modal-f"><button class="ds-btn ds-btn-secondary" data-close>Batal</button><button class="ds-btn ds-btn-primary" id="ipufSave"><i class="bi bi-check-lg"></i> Simpan</button></div>
     </div>
   </div>
-  <!-- Modal: Pilih Pengajuan Budget (untuk Addition) -->
-  <div class="mk-ov" id="revPickOv">
-    <div class="mk-modal" style="max-width:820px">
-      <div class="mk-modal-h"><h3>Pilih Pengajuan Budget — Addition</h3><button class="mk-modal-x" data-close title="Tutup"><i class="bi bi-x-lg"></i></button></div>
+  <!-- Modal: Ajukan Revisi / Addition (Over Budget) — dipakai Input Budget Capex & Non Capex.
+       Klik tombol Revisi/Addition di layar Input Budget → status dokumen jadi R0 / O0,
+       alasannya masuk bm_budget_req.ket_rev. -->
+  <div class="mk-ov" id="revReqOv">
+    <div class="mk-modal" style="max-width:520px">
+      <div class="mk-modal-h"><h3 id="revReqTitle">Ajukan Revisi</h3><button class="mk-modal-x" data-close title="Tutup"><i class="bi bi-x-lg"></i></button></div>
       <div class="mk-modal-b">
-        <div style="margin-bottom:12px"><label class="ds-label">Cari</label><input id="revPickSearch" class="ds-input" placeholder="Cari no. pengajuan / dept…"></div>
-        <div class="mk-tablewrap"><table class="ds-table ds-table-sm" id="revPickTable" style="min-width:760px">
-          <thead><tr><th>No. Pengajuan</th><th class="mk-c">Rev</th><th>Jenis</th><th>Dept</th><th class="mk-c">Tahun</th><th class="mk-r">Total</th><th class="mk-c" style="width:150px">Pilih</th></tr></thead>
-          <tbody></tbody>
-        </table></div>
-        <div class="mk-faint" style="font-size:11px;margin-top:10px">Hanya pengajuan berjenis <b>Budget</b> yang bisa di-Addition. <b>Non Budget</b> tidak dapat dipilih. Addition hanya mengubah <b>harga satuan</b> — qty tetap.</div>
+        <div class="ds-form-stack ds-form-stack-2" style="margin-bottom:14px">
+          <div><label class="ds-label">No. Pengajuan <span class="mk-faint">(no_budget)</span></label><input class="ds-input" id="revReqNo" readonly></div>
+          <div><label class="ds-label">Rev saat ini</label><input class="ds-input" id="revReqRev" readonly></div>
+        </div>
+        <div class="ds-form-stack" style="margin-bottom:14px">
+          <div><label class="ds-label">Alasan <span class="ds-required">*</span> <span class="mk-faint">(ket_rev)</span></label><textarea class="ds-input" id="revReqKet" rows="3" placeholder="mis. harga vendor naik setelah negosiasi ulang"></textarea></div>
+        </div>
+        <div class="mk-note" id="revReqNote"><i class="bi bi-info-circle"></i><span></span></div>
       </div>
-    </div>
-  </div>
-
-  <!-- Modal: Pilih Pengajuan (untuk Revisi — hanya status R) -->
-  <div class="mk-ov" id="rvPickOv">
-    <div class="mk-modal" style="max-width:820px">
-      <div class="mk-modal-h"><h3>Pilih Pengajuan Budget — Revisi</h3><button class="mk-modal-x" data-close title="Tutup"><i class="bi bi-x-lg"></i></button></div>
-      <div class="mk-modal-b">
-        <div style="margin-bottom:12px"><label class="ds-label">Cari</label><input id="rvPickSearch" class="ds-input" placeholder="Cari no. pengajuan / dept…"></div>
-        <div class="mk-tablewrap"><table class="ds-table ds-table-sm" id="rvPickTable" style="min-width:760px">
-          <thead><tr><th>No. Pengajuan</th><th class="mk-c">Rev</th><th class="mk-c">Status</th><th>Dept</th><th class="mk-c">Tahun</th><th class="mk-r">Total</th><th class="mk-c" style="width:150px">Pilih</th></tr></thead>
-          <tbody></tbody>
-        </table></div>
-        <div class="mk-faint" style="font-size:11px;margin-top:10px">Hanya pengajuan berstatus <b>R (disetujui untuk revisi)</b> yang bisa dibuat revisinya. Sistem akan membuat pengajuan baru: <b>no_budget sama, rev+1, status N</b>, detail awal disalin dari rev sebelumnya.</div>
-      </div>
+      <div class="mk-modal-f"><button class="ds-btn ds-btn-secondary" data-close>Batal</button><button class="ds-btn ds-btn-primary" id="revReqSave"><i class="bi bi-send"></i> Ajukan</button></div>
     </div>
   </div>
 
@@ -1898,26 +1825,16 @@ window.mkFillSegForm=function(sel,val){if(!sel)return;
 
 // ============================================================
 // NILAI EFEKTIF bm_budget_plan
-// Baris efektif = baris yang TIDAK menjadi induk Addition mana pun.
-// Dipakai di SEMUA tempat yang menjumlahkan nilai (total pengajuan, saldo, P&L,
-// Kartu Kontrol). JANGAN pernah SUM(harga_total) atas seluruh baris — baris asli
-// dan baris Addition-nya akan dihitung dua kali.
-//
-// rows = [{id, refAdd, ...}] · refAdd = ref_addition_budget_plan_id
+// Sejak Addition mengikuti pola Revisi (kolom fg_addition & ref_addition_budget_plan_id
+// dihapus), tidak ada lagi rantai baris yang harus dijumlahkan. Budget efektif =
+// baris plan milik dokumen dengan rev TERTINGGI yang berstatus A (per no_budget+kd_unit).
+// Rev lama yang sudah berstatus R atau O tidak ikut dihitung.
+// docs = [{rev, status, plan:[...]}]
 // ============================================================
-window.planEfektif=function(rows){
-  var diganti={};
-  rows.forEach(function(r){if(r.refAdd)diganti[r.refAdd]=1;});
-  return rows.filter(function(r){return !diganti[r.id];});
-};
-// Rantai Addition sebuah baris efektif: [baris asli, addition-1, …, baris efektif].
-// Dipakai Kartu Kontrol — realisasi (bm_budget_usage) menempel ke budget_plan_id
-// tertentu, jadi pemakaian harus dijumlahkan sepanjang rantai ini.
-window.planRantai=function(rows,r){
-  var byId={};rows.forEach(function(x){byId[x.id]=x;});
-  var out=[r],cur=r;
-  while(cur&&cur.refAdd&&byId[cur.refAdd]){cur=byId[cur.refAdd];out.unshift(cur);}
-  return out;
+window.planEfektif=function(docs){
+  var hit=null;
+  (docs||[]).forEach(function(d){if(d.status==='A'&&(!hit||d.rev>hit.rev))hit=d;});
+  return hit?hit.plan:[];
 };
 
 window.mkFillUnit=function(sel,val){if(!sel)return;sel.innerHTML=window.MK_MST_UNITS.map(function(m){
@@ -1951,18 +1868,100 @@ window.mkMonthCombo=function(host, initVal, thn, onChange, noBertahap){
   document.addEventListener('click',function(e){if(!host.contains(e.target))hide();});
   window.addEventListener('scroll',function(){if(pop&&!pop.hidden)hide();},true);
 };
-// Status bm_budget_req: N (entry awal) → A0, A1, … (siap/menunggu approval bertingkat) → A
-// (approved). Permintaan revisi: R0 → disetujui revisi jadi R → sistem membuat pengajuan baru
-// (no_budget sama, rev+1, status N).
+// Status bm_budget_req — Revisi & Addition memakai alur yang SAMA, bedanya hanya huruf:
+// R* untuk Revisi, O* untuk Addition/Over Budget.
+//   Pengajuan awal :  N  → A0 → A1 → A2 → A
+//   Revisi         :  A  → R0 → R1 → R2 → R  → dokumen baru rev+1 status N
+//   Over Budget    :  A  → O0 → O1 → O2 → O  → dokumen baru rev+1 status N
+// Akhiran 0/1/2 = menunggu Kabag / Finance Unit / Finance CO. Tanpa akhiran = disetujui
+// Finance CO. Begitu R atau O tercapai, dokumen lama DITUTUP (nilainya tidak diubah).
 window.MK_STS={
   N:{lbl:'Baru / Draft',c:'neutral'},
-  A0:{lbl:'Menunggu approval (tingkat 1)',c:'warning'},
-  A1:{lbl:'Menunggu approval (tingkat 2)',c:'warning'},
-  A2:{lbl:'Menunggu approval (tingkat 3)',c:'warning'},
+  A0:{lbl:'Menunggu approval Departemen',c:'warning'},
+  A1:{lbl:'Menunggu approval Finance Unit',c:'warning'},
+  A2:{lbl:'Menunggu approval Finance CO',c:'warning'},
   A:{lbl:'Approved',c:'success'},
-  R0:{lbl:'Permintaan revisi',c:'info'},
-  R:{lbl:'Disetujui untuk revisi',c:'brand'}
+  R0:{lbl:'Pengajuan revisi — menunggu Departemen',c:'info'},
+  R1:{lbl:'Pengajuan revisi — menunggu Finance Unit',c:'info'},
+  R2:{lbl:'Pengajuan revisi — menunggu Finance CO',c:'info'},
+  R:{lbl:'Revisi disetujui — dokumen ditutup',c:'brand'},
+  O0:{lbl:'Pengajuan over budget — menunggu Departemen',c:'warning'},
+  O1:{lbl:'Pengajuan over budget — menunggu Finance Unit',c:'warning'},
+  O2:{lbl:'Pengajuan over budget — menunggu Finance CO',c:'warning'},
+  O:{lbl:'Over budget disetujui — dokumen ditutup',c:'danger'}
 };
+// Rantai approval per famili status. Dipakai layar Approval untuk menaikkan satu tingkat.
+window.MK_STS_NEXT={A0:'A1',A1:'A2',A2:'A',R0:'R1',R1:'R2',R2:'R',O0:'O1',O1:'O2',O2:'O'};
+// Famili: 'A' = pengajuan awal, 'R' = revisi, 'O' = over budget/addition.
+window.MK_STS_FAM=function(st){return String(st||'').charAt(0);};
+// Dokumen yang statusnya boleh diminta Revisi / Addition.
+window.MK_STS_BISA_REV=function(st){return st==='A';};
+
+// ============================================================
+// Alur Revisi / Addition dari layar Input Budget (Capex & Non Capex)
+// Menu Revisi Budget & Addition Budget SUDAH DIHAPUS — permintaannya dimulai dari
+// tombol di Input Budget. Klik → modal alasan → status dokumen jadi R0 / O0 →
+// approval berjenjang (3 menu Approval) → begitu FA Corp setuju status jadi R / O,
+// dokumen lama DITUTUP dan lahir dokumen baru no_budget sama, rev+1, status N.
+// ============================================================
+window.mkRevReq=function(opt){
+  // opt = {sub, jenis:"R"|"O", onSubmit}
+  var ov=document.getElementById('revReqOv');if(!ov)return;
+  var isRev=opt.jenis==='R';
+  document.getElementById('revReqTitle').textContent=isRev?'Ajukan Revisi':'Ajukan Addition (Over Budget)';
+  document.getElementById('revReqNo').value=opt.sub.no;
+  document.getElementById('revReqRev').value='rev '+(opt.sub.rev||0);
+  document.getElementById('revReqKet').value='';
+  document.getElementById('revReqNote').querySelector('span').innerHTML=isRev
+    ?'Status dokumen jadi <b>R0</b> dan masuk approval Departemen → Finance Unit → Finance CO. Setelah disetujui, dokumen ini ditutup (status <b>R</b>) dan lahir dokumen baru <b>rev '+((opt.sub.rev||0)+1)+'</b> yang <b>qty dan harganya boleh diubah</b>.'
+    :'Status dokumen jadi <b>O0</b> dan masuk approval Departemen → Finance Unit → Finance CO. Setelah disetujui, dokumen ini ditutup (status <b>O</b>) dan lahir dokumen baru <b>rev '+((opt.sub.rev||0)+1)+'</b> yang <b>hanya boleh mengubah harga</b> — qty terkunci.';
+  var btn=document.getElementById('revReqSave'),ket=document.getElementById('revReqKet');
+  var handler=function(){
+    var v=ket.value.trim();
+    if(!v){ket.classList.add('is-error');ket.focus();if(window.toast)toast('Alasan wajib diisi');return;}
+    ket.classList.remove('is-error');
+    opt.sub.status=isRev?'R0':'O0';
+    opt.sub.ketRev=v;
+    btn.removeEventListener('click',handler);
+    ov.classList.remove('open');
+    if(opt.onSubmit)opt.onSubmit();
+    if(window.toast)toast('Pengajuan '+(isRev?'revisi':'addition (over budget)')+' '+opt.sub.no+' diajukan — status '+opt.sub.status);
+  };
+  btn.addEventListener('click',handler);
+  ket.addEventListener('input',function(){ket.classList.remove('is-error');});
+  ov.classList.add('open');setTimeout(function(){ket.focus();},60);
+};
+// Aktif/mati tombol Input Budget menurut status dokumen terpilih.
+window.mkBtnState=function(pre,sub){
+  var st=sub?sub.status:'N',g=function(id){return document.getElementById(id);};
+  var set=function(el,on){if(el){el.disabled=!on;el.style.opacity=on?'':'.45';el.style.pointerEvents=on?'':'none';}};
+  set(g(pre+'Draft'),st==='N');
+  set(g(pre+'Ajukan'),st==='N');
+  set(g(pre+'Revisi'),window.MK_STS_BISA_REV(st));
+  set(g(pre+'Addition'),window.MK_STS_BISA_REV(st));
+};
+// Badge penanda asal dokumen rev+1: dibaca dari status rev sebelumnya (R atau O).
+// Dokumen rev+1 hasil Over Budget hanya boleh mengubah HARGA — qty terkunci.
+window.mkQtyTerkunci=function(sub){return !!sub&&sub.asal==='O';};
+// Dokumen yang sudah diajukan (status bukan N) tidak boleh diubah rinciannya.
+window.mkDokReadonly=function(sub){return !!sub&&sub.status!=='N';};
+// Baris catatan di atas rincian, dipakai kedua layar Input Budget.
+window.mkLockRow=function(sub,kolom){
+  var pesan='';
+  if(window.mkDokReadonly(sub)){
+    pesan='Dokumen berstatus <b>'+sub.status+'</b> — rincian <b>tidak bisa diubah</b>. Perubahan hanya lewat pengajuan Revisi / Addition.';
+  }else if(window.mkQtyTerkunci(sub)){
+    pesan='Dokumen ini hasil <b>Addition / Over Budget</b> dari rev '+(sub.rev-1)+' — <b>hanya harga satuan</b> yang boleh diubah. Qty terkunci dan baris tidak boleh ditambah/dihapus.';
+  }
+  if(!pesan)return '';
+  return '<tr><td colspan="'+kolom+'" style="padding:0 0 8px"><div class="mk-note"><i class="bi bi-lock"></i><span>'+pesan+'</span></div></td></tr>';
+};
+window.mkAsalBadge=function(sub){
+  if(!sub||!sub.asal)return '';
+  var isRev=sub.asal==='R';
+  return ' <span class="ds-badge ds-badge-'+(isRev?'brand':'danger')+'" title="'+(isRev?'Hasil revisi — qty & harga boleh diubah':'Hasil addition / over budget — hanya harga yang boleh diubah, qty terkunci')+'">'+(isRev?'Revisi':'Over Budget')+' dari rev '+(sub.rev-1)+'</span>';
+};
+
 window.MK_STS_LBL=function(st){var o=window.MK_STS[st];return st+(o?' — '+o.lbl:'');};
 window.MK_STS_BADGE=function(st){var o=window.MK_STS[st]||{lbl:'',c:'neutral'};return '<span class="ds-badge ds-badge-'+o.c+'" title="'+o.lbl+'">'+st+'</span>';};
 
@@ -2084,8 +2083,6 @@ window.mkPhasingDetail=function(td, item, thn){
     "cfx-map":["Item Anggaran Capex Unit","Item Anggaran · Cash Flow per unit (bm_item_capex_unit_dtl) — mapping ke Corporate di Data Master"],
     input:["Input Budget Non Capex","Anggaran · pengajuan anggaran opex/non-capex"],
     "input-cx":["Input Budget Capex","Anggaran · pengajuan anggaran capex (investasi)"],
-    addition:["Addition Budget","Anggaran · tambahan harga satuan → baris baru fg_addition=Y yang menunjuk baris asli, qty tetap (bm_budget_plan)"],
-    revisi:["Revisi Budget","Anggaran · review seluruh plan (qty & harga) → pengajuan baru rev+1 status N (bm_budget_req.rev)"],
     alokasi:["Alokasi Budget","Anggaran · alokasi Event (bm_allocation / bm_budget_allocation)"],
     "approval-alk":["Approval Alokasi Budget","Anggaran · persetujuan alokasi Event (bm_allocation.status)"],
     "approval-dept":["Approval Budget Departemen","Anggaran · persetujuan tingkat Departemen"],
@@ -3034,6 +3031,16 @@ window.mkPhasingDetail=function(td, item, thn){
         phasing:[{bln:'Feb',qty:400},{bln:'Jun',qty:300},{bln:'Okt',qty:300}]},
       {item:'Beban rumah tangga kantor',nama:'Stok Alat Kebersihan',qty:500,sat:'Pcs',harga:25000,jns:'BARU',ket:'Sekali beli',bln:'Feb'}
     ]},
+    // status A → tombol Revisi & Addition aktif di layar ini
+    {no:'BR-2026-SPCK-0040',kat:'Umum',dept:'HR & GA',thn:2026,jenis:'Budget',rev:0,status:'A',items:[
+      {item:'Beban kantor',nama:'Langganan Internet Kantor',qty:12,sat:'Bulan',harga:3500000,jns:'BARU',ket:'Kontrak 12 bulan',bln:'bertahap',
+        phasing:[{bln:'Jan',qty:1},{bln:'Feb',qty:1},{bln:'Mar',qty:1},{bln:'Apr',qty:1},{bln:'Mei',qty:1},{bln:'Jun',qty:1},{bln:'Jul',qty:1},{bln:'Agu',qty:1},{bln:'Sep',qty:1},{bln:'Okt',qty:1},{bln:'Nov',qty:1},{bln:'Des',qty:1}]}
+    ]},
+    // dokumen rev 1 hasil Over Budget (pendahulunya rev 0 status O) → qty TERKUNCI
+    {no:'BR-2026-SPCK-0042',kat:'Umum',dept:'HR & GA',thn:2026,jenis:'Budget',rev:1,status:'N',asal:'O',items:[
+      {item:'Beban asuransi',nama:'Asuransi Gedung Kantor SPCK',qty:12,sat:'Bulan',harga:6250000,jns:'BARU',ket:'Premi naik — hanya harga yang diubah',bln:'bertahap',
+        phasing:[{bln:'Jan',qty:1},{bln:'Feb',qty:1},{bln:'Mar',qty:1},{bln:'Apr',qty:1},{bln:'Mei',qty:1},{bln:'Jun',qty:1},{bln:'Jul',qty:1},{bln:'Agu',qty:1},{bln:'Sep',qty:1},{bln:'Okt',qty:1},{bln:'Nov',qty:1},{bln:'Des',qty:1}]}
+    ]},
     {no:'BR-2026-SPCK-0046',kat:'Inventaris',dept:'General Affairs',thn:2026,jenis:'Budget',rev:0,status:'A0',items:[
       {item:'Beban inventaris',nama:'Meja & Kursi Kerja Karyawan',qty:50,sat:'Unit',harga:1200000,jns:'BARU',ket:'2 tahap: Mar & Sep',bln:'bertahap',
         phasing:[{bln:'Mar',qty:30},{bln:'Sep',qty:20}]},
@@ -3053,7 +3060,10 @@ window.mkPhasingDetail=function(td, item, thn){
       ibDetNo=document.getElementById('ibDetNo'),ibKatLabel=document.getElementById('ibKatLabel'),ibStatus=document.getElementById('ibStatus'),
       tbody=document.querySelector('#ibTable tbody'),total=document.getElementById('ibTotal');
   function renderRincian(){
-    var s=SUBS[curSub],h='';
+    var s=SUBS[curSub],h=window.mkLockRow(s,9);
+    tbody.classList.toggle('rr-locked',window.mkQtyTerkunci(s));
+    tbody.classList.toggle('rr-readonly',window.mkDokReadonly(s));
+    (function(){var ab=document.getElementById('ibAddBtn');if(!ab)return;var lk=window.mkQtyTerkunci(s)||window.mkDokReadonly(s);ab.disabled=lk;ab.style.opacity=lk?'.45':'';ab.style.pointerEvents=lk?'none':'';})();
     s.items.forEach(function(it,i){
       if(it.bln===undefined)it.bln=(it.sat==='Bulan')?'bertahap':'Jan';
       var tot=it.qty*it.harga;
@@ -3084,7 +3094,11 @@ window.mkPhasingDetail=function(td, item, thn){
   }
   function fillDet(i){var it=SUBS[curSub].items[i],d=tbody.querySelector('.rr-detail[data-det="'+i+'"]');if(d)window.mkPhasingDetail(d.querySelector('td'),it,(SUBS[curSub].thn||2026));}
   function toggleDet(i){var it=SUBS[curSub].items[i],d=tbody.querySelector('.rr-detail[data-det="'+i+'"]');if(!d)return;if(it.bln==='bertahap'){d.style.display='';fillDet(i);}else{d.style.display='none';d.querySelector('td').innerHTML='';}}
-  function loadSub(){var s=SUBS[curSub];ibhJenis.value=s.jenis;ibhNo.value=s.no;ibhThn.value=String(s.thn);ibhDept.value=s.dept;ibDetNo.textContent=s.no;ibKatLabel.textContent='Kategori (dari item): '+s.kat;ibStatus.textContent='Status: '+window.MK_STS_LBL(s.status);renderSubs();renderRincian();}
+  function loadSub(){var s=SUBS[curSub];ibhJenis.value=s.jenis;ibhNo.value=s.no;ibhThn.value=String(s.thn);ibhDept.value=s.dept;
+    ibDetNo.innerHTML=esc(s.no)+window.mkAsalBadge(s);
+    ibKatLabel.textContent='Kategori (dari item): '+s.kat;
+    ibStatus.textContent='Status: '+window.MK_STS_LBL(s.status);
+    window.mkBtnState('ib',s);renderSubs();renderRincian();}
   var ov=document.getElementById('ibAddOv'),ibItem=document.getElementById('ibItem'),ibKet=document.getElementById('ibKet'),ibQty=document.getElementById('ibQty'),ibSat=document.getElementById('ibSat'),ibHarga=document.getElementById('ibHarga'),ibKetr=document.getElementById('ibKetr'),ibJns=document.getElementById('ibJns'),ibTot=document.getElementById('ibTot');
   var ITEMS=['Media promosi','Event','Souvenir dan hadiah','Beban gedung','Beban asuransi','Beban kantor','Gaji tetap','Beban PBB','Komisi penjualan Internal','Beban rumah tangga kantor','Beban inventaris'];
   ibItem.innerHTML=ITEMS.map(function(v){return '<option>'+esc(v)+'</option>';}).join('');
@@ -3094,7 +3108,13 @@ window.mkPhasingDetail=function(td, item, thn){
   document.getElementById('ibAddBtn').addEventListener('click',function(){ibItem.selectedIndex=0;ibKet.value='';ibQty.value='12';ibSat.value='Bulan';ibHarga.value='0';ibKetr.value='';ibJns.selectedIndex=0;syncTot();ov.classList.add('open');setTimeout(function(){ibItem.focus();},60);});
   document.getElementById('ibSave').addEventListener('click',function(){var it={item:ibItem.value,nama:(ibKet.value.trim()||ibItem.value),qty:parseInt(ibQty.value||'0',10),sat:ibSat.value,harga:parseFloat(ibHarga.value||'0'),jns:ibJns.value,ket:ibKetr.value.trim()};it.bln=(it.sat==='Bulan')?'bertahap':'Jan';SUBS[curSub].items.push(it);ov.classList.remove('open');curItem=SUBS[curSub].items.length-1;renderSubs();renderRincian();toast('Item "'+it.item+'" ditambahkan ke '+SUBS[curSub].no);});
   document.getElementById('ibDraft').addEventListener('click',function(){toast('Draft '+SUBS[curSub].no+' disimpan');});
-  document.getElementById('ibAjukan').addEventListener('click',function(){SUBS[curSub].status='A0';ibStatus.textContent='Status: '+window.MK_STS_LBL('A0');renderSubs();toast('Pengajuan '+SUBS[curSub].no+' diajukan untuk approval berjenjang');});
+  document.getElementById('ibAjukan').addEventListener('click',function(){SUBS[curSub].status='A0';ibStatus.textContent='Status: '+window.MK_STS_LBL('A0');window.mkBtnState('ib',SUBS[curSub]);renderSubs();toast('Pengajuan '+SUBS[curSub].no+' diajukan untuk approval berjenjang');});
+  // Revisi & Addition: permintaannya dimulai dari sini (menu terpisahnya sudah dihapus)
+  ['Revisi','Addition'].forEach(function(k){
+    document.getElementById('ib'+k).addEventListener('click',function(){
+      window.mkRevReq({sub:SUBS[curSub],jenis:(k==='Revisi'?'R':'O'),onSubmit:loadSub});
+    });
+  });
   function ibPad(n){return ('000'+n).slice(-4);}
   function ibNewSub(){var no='BR-2026-SPCK-'+ibPad(50+SUBS.length);SUBS.push({no:no,kat:'Umum',dept:'HR & GA',thn:2026,jenis:'Budget',rev:0,status:'N',items:[]});curSub=SUBS.length-1;curItem=0;loadSub();toast('Pengajuan baru '+no+' dibuat — isi rincian lalu Ajukan');}
   document.getElementById('ibNewHdr').addEventListener('click',ibNewSub);
@@ -3147,7 +3167,10 @@ window.mkPhasingDetail=function(td, item, thn){
       cxDetNo=document.getElementById('cxDetNo'),cxKatLabel=document.getElementById('cxKatLabel'),cxStatus=document.getElementById('cxStatus'),
       tbody=document.querySelector('#cxTable tbody'),total=document.getElementById('cxTotal');
   function renderRincian(){
-    var s=SUBS[curSub],h='';
+    var s=SUBS[curSub],h=window.mkLockRow(s,9);
+    tbody.classList.toggle('rr-locked',window.mkQtyTerkunci(s));
+    tbody.classList.toggle('rr-readonly',window.mkDokReadonly(s));
+    (function(){var ab=document.getElementById('cxAddBtn');if(!ab)return;var lk=window.mkQtyTerkunci(s)||window.mkDokReadonly(s);ab.disabled=lk;ab.style.opacity=lk?'.45':'';ab.style.pointerEvents=lk?'none':'';})();
     s.items.forEach(function(it,i){
       if(it.bln===undefined)it.bln=(it.sat==='Bulan')?'bertahap':'Jan';
       var tot=it.qty*it.harga;
@@ -3178,7 +3201,11 @@ window.mkPhasingDetail=function(td, item, thn){
   }
   function fillDet(i){var it=SUBS[curSub].items[i],d=tbody.querySelector('.rr-detail[data-det="'+i+'"]');if(d)window.mkPhasingDetail(d.querySelector('td'),it,(SUBS[curSub].thn||2026));}
   function toggleDet(i){var it=SUBS[curSub].items[i],d=tbody.querySelector('.rr-detail[data-det="'+i+'"]');if(!d)return;if(it.bln==='bertahap'){d.style.display='';fillDet(i);}else{d.style.display='none';d.querySelector('td').innerHTML='';}}
-  function loadSub(){var s=SUBS[curSub];cxhJenis.value=s.jenis;cxhNo.value=s.no;cxhThn.value=String(s.thn);cxhDept.value=s.dept;cxDetNo.textContent=s.no;cxKatLabel.textContent='Kategori: Capex';cxStatus.textContent='Status: '+window.MK_STS_LBL(s.status);renderSubs();renderRincian();}
+  function loadSub(){var s=SUBS[curSub];cxhJenis.value=s.jenis;cxhNo.value=s.no;cxhThn.value=String(s.thn);cxhDept.value=s.dept;
+    cxDetNo.innerHTML=esc(s.no)+window.mkAsalBadge(s);
+    cxKatLabel.textContent='Kategori: Capex';
+    cxStatus.textContent='Status: '+window.MK_STS_LBL(s.status);
+    window.mkBtnState('cx',s);renderSubs();renderRincian();}
   var ov=document.getElementById('cxAddOv'),cxItem=document.getElementById('cxItem'),cxKet=document.getElementById('cxKet'),cxQty=document.getElementById('cxQty'),cxSat=document.getElementById('cxSat'),cxHarga=document.getElementById('cxHarga'),cxKetr=document.getElementById('cxKetr'),cxJns=document.getElementById('cxJns'),cxTot=document.getElementById('cxTot');
   // item rincian capex = item capex UNIT (bm_budget_plan.item_capex_unit_id → bm_item_capex_unit).
   // Diisi saat modal dibuka karena modul MCX dieksekusi setelah blok ini.
@@ -3195,7 +3222,12 @@ window.mkPhasingDetail=function(td, item, thn){
   document.getElementById('cxAddBtn').addEventListener('click',function(){fillCxItems();cxItem.selectedIndex=0;cxKet.value='';cxQty.value='1';cxSat.value='Unit';cxHarga.value='0';cxKetr.value='';cxJns.selectedIndex=0;syncTot();ov.classList.add('open');setTimeout(function(){cxItem.focus();},60);});
   document.getElementById('cxSave').addEventListener('click',function(){var it={item:cxItem.value,nama:(cxKet.value.trim()||cxItem.value),qty:parseInt(cxQty.value||'0',10),sat:cxSat.value,harga:parseFloat(cxHarga.value||'0'),jns:cxJns.value,ket:cxKetr.value.trim()};it.bln=(it.sat==='Bulan')?'bertahap':'Jan';SUBS[curSub].items.push(it);ov.classList.remove('open');curItem=SUBS[curSub].items.length-1;renderSubs();renderRincian();toast('Item "'+it.item+'" ditambahkan ke '+SUBS[curSub].no);});
   document.getElementById('cxDraft').addEventListener('click',function(){toast('Draft '+SUBS[curSub].no+' disimpan');});
-  document.getElementById('cxAjukan').addEventListener('click',function(){SUBS[curSub].status='A0';cxStatus.textContent='Status: '+window.MK_STS_LBL('A0');renderSubs();toast('Pengajuan '+SUBS[curSub].no+' diajukan untuk approval berjenjang');});
+  document.getElementById('cxAjukan').addEventListener('click',function(){SUBS[curSub].status='A0';cxStatus.textContent='Status: '+window.MK_STS_LBL('A0');window.mkBtnState('cx',SUBS[curSub]);renderSubs();toast('Pengajuan '+SUBS[curSub].no+' diajukan untuk approval berjenjang');});
+  ['Revisi','Addition'].forEach(function(k){
+    document.getElementById('cx'+k).addEventListener('click',function(){
+      window.mkRevReq({sub:SUBS[curSub],jenis:(k==='Revisi'?'R':'O'),onSubmit:loadSub});
+    });
+  });
   function cxPad(n){return ('000'+n).slice(-4);}
   function cxNewSub(){var no='CX-2026-SPCK-'+cxPad(16+SUBS.length);SUBS.push({no:no,dept:'General Affairs',thn:2026,jenis:'Budget',rev:0,status:'N',items:[]});curSub=SUBS.length-1;curItem=0;loadSub();toast('Pengajuan capex baru '+no+' dibuat — isi rincian lalu Ajukan');}
   document.getElementById('cxNewHdr').addEventListener('click',cxNewSub);
@@ -3656,122 +3688,165 @@ window.MCX={};   // dipakai Input Budget Capex (item rincian = item capex unit)
 
 // ============================================================
 // Approval Budget (Departemen / Finance Unit / Finance CO) — per level
+// Satu layar melayani TIGA famili status sekaligus:
+//   A0→A1→A2→A  pengajuan awal
+//   R0→R1→R2→R  pengajuan REVISI (diminta dari tombol Revisi di Input Budget)
+//   O0→O1→O2→O  pengajuan ADDITION / OVER BUDGET (tombol Addition di Input Budget)
+// Setujui = naik satu tingkat dalam famili yang sama (window.MK_STS_NEXT).
+// Kembalikan = status balik ke N supaya pengaju memperbaiki, lalu ajukan lagi.
+// (Dulu tombol ini bernama "Minta Revisi" dan memakai R0 — sekarang R0 sudah dipakai
+//  untuk PENGAJUAN revisi oleh pengaju, jadi artinya bentrok.)
+// Nomor & nilai HARUS cocok dengan pengajuan di menu Input Budget.
 // ============================================================
 (function(){
   function esc(s){return (s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function fmt(n){n=Math.round(n||0);var s=String(n),o='';for(var i=0;i<s.length;i++){if(i>0&&(s.length-i)%3===0)o+='.';o+=s.charAt(i);}return o;}
-  // Nomor & nilai HARUS cocok dengan pengajuan di menu Input Budget / Addition / Revisi.
-  // Jenis header hanya Budget / Non Budget (bm_budget_req.tipe = B/N); baris Addition ditandai
-  // fg_addition='Y' di bm_budget_plan (kolom `tipe` sudah tidak ada).
-  // Status mengikuti bm_budget_req.status (A0/A1/A2 → A, minta revisi → R0).
   var LEVELS={
-    'dept':{lbl:'Departemen',rows:[   // menunggu approval tingkat 1 → status A0
+    'dept':{lbl:'Departemen',rows:[      // menunggu tingkat 1 → akhiran 0
       {no:'BR-2026-SPCK-0043',ud:'SPCK · Marketing',jns:'Non Budget',c:'brand',v:600000000,sts:'A0'},
       {no:'BR-2026-SPCK-0046',ud:'SPCK · General Affairs',jns:'Budget',c:'neutral',v:127500000,sts:'A0'},
-      {no:'CX-2026-SPCK-0013',ud:'SPCK · General Affairs',jns:'Budget',c:'warning',v:1170000000,sts:'A0'}
+      {no:'CX-2026-SPCK-0013',ud:'SPCK · General Affairs',jns:'Budget',c:'warning',v:1170000000,sts:'A0'},
+      {no:'BR-2026-SPCK-0041',ud:'SPCK · Marketing',jns:'Budget',c:'neutral',v:450000000,sts:'R0',rev:1},
+      {no:'BR-2026-SPCK-0044',ud:'SPCK · HR & GA',jns:'Budget',c:'neutral',v:88000000,sts:'O0',rev:0}
     ]},
-    'faunit':{lbl:'Finance Unit',rows:[   // sudah lewat tingkat 1 → status A1
-      {no:'BR-2026-SPCK-0042',ud:'SPCK · HR & GA',jns:'Addition',c:'brand',v:291000000,sts:'A1'},
+    'faunit':{lbl:'Finance Unit',rows:[  // sudah lewat tingkat 1 → akhiran 1
+      {no:'BR-2026-SPCK-0042',ud:'SPCK · HR & GA',jns:'Budget',c:'neutral',v:291000000,sts:'O1',rev:0},
       {no:'BR-2026-SMSF-0018',ud:'SMSF · Finance & Accounting',jns:'Budget',c:'neutral',v:60000000,sts:'A1'}
     ]},
-    'facorp':{lbl:'Finance CO',rows:[   // approval terakhir → status A2
+    'facorp':{lbl:'Finance CO',rows:[    // approval terakhir → akhiran 2
       {no:'CX-2026-SPCK-0014',ud:'SPCK · Information Technology',jns:'Budget',c:'warning',v:1750000000,sts:'A2'},
-      {no:'BR-2026-SPCK-0045',ud:'SPCK · General Affairs',jns:'Budget',c:'neutral',v:27500000,sts:'A2'}
+      {no:'BR-2026-SPCK-0045',ud:'SPCK · General Affairs',jns:'Budget',c:'neutral',v:27500000,sts:'A2'},
+      {no:'BR-2026-SPCK-0039',ud:'SPCK · General Affairs',jns:'Budget',c:'neutral',v:512000000,sts:'R2',rev:2},
+      {no:'CX-2026-SPCK-0011',ud:'SPCK · Engineering',jns:'Budget',c:'warning',v:640000000,sts:'O2',rev:1}
     ]}
   };
+  // penanda jenis permintaan, diturunkan dari famili status
+  function reqBadge(sts){
+    var f=window.MK_STS_FAM(sts);
+    if(f==='R')return ' <span class="ds-badge ds-badge-info" title="Pengajuan revisi — qty & harga akan boleh diubah di dokumen rev+1">Revisi</span>';
+    if(f==='O')return ' <span class="ds-badge ds-badge-warning" title="Pengajuan addition / over budget — dokumen rev+1 hanya boleh mengubah harga">Over Budget</span>';
+    return '';
+  }
   Object.keys(LEVELS).forEach(function(k){
     var L=LEVELS[k];
     var body=document.querySelector('#ap-'+k+'-table tbody'); if(!body) return;
     var waitEl=document.getElementById('ap-'+k+'-wait'),doneEl=document.getElementById('ap-'+k+'-done'),rejEl=document.getElementById('ap-'+k+'-rej');
-    // status mengikuti bm_budget_req.status: A0/A1 menunggu → A approved; minta revisi → R0
     function stsCell(r){
-      if(r.st==='ok')return window.MK_STS_BADGE('A')+' <span class="mk-faint" style="font-size:11px">Approved</span>';
-      if(r.st==='no')return window.MK_STS_BADGE('R0')+' <span class="mk-faint" style="font-size:11px">Permintaan revisi</span>';
-      return window.MK_STS_BADGE(r.sts||'A0')+' <span class="mk-faint" style="font-size:11px">Menunggu</span>';
+      if(r.st==='ok'){
+        var f=window.MK_STS_FAM(r.sts),ket=(f==='A')?'Approved':(f==='R'?'Revisi disetujui':'Over budget disetujui');
+        return window.MK_STS_BADGE(r.sts)+' <span class="mk-faint" style="font-size:11px">'+ket+'</span>';
+      }
+      if(r.st==='no')return window.MK_STS_BADGE('N')+' <span class="mk-faint" style="font-size:11px">Dikembalikan ke pengaju</span>';
+      return window.MK_STS_BADGE(r.sts)+' <span class="mk-faint" style="font-size:11px">Menunggu</span>';
     }
     function actCell(r,i){
       if(r.st)return '<span class="mk-faint">—</span>';
-      return '<button class="ds-btn ds-btn-primary ds-btn-sm ap-ok" data-i="'+i+'"><i class="bi bi-check-lg"></i> Setujui</button> <button class="ds-btn ds-btn-danger ds-btn-sm ap-no" data-i="'+i+'"><i class="bi bi-arrow-counterclockwise"></i> Minta Revisi</button>';
+      return '<button class="ds-btn ds-btn-primary ds-btn-sm ap-ok" data-i="'+i+'"><i class="bi bi-check-lg"></i> Setujui</button> <button class="ds-btn ds-btn-danger ds-btn-sm ap-no" data-i="'+i+'"><i class="bi bi-arrow-counterclockwise"></i> Kembalikan</button>';
     }
     function recount(){var w=0;L.rows.forEach(function(r){if(!r.st)w++;});if(waitEl)waitEl.textContent=w;}
-    function render(){var h='';L.rows.forEach(function(r,i){h+='<tr><td><b>'+esc(r.no)+'</b></td><td class="mk-muted">'+esc(r.ud)+'</td><td><span class="ds-badge ds-badge-'+r.c+'">'+esc(r.jns)+'</span></td><td class="mk-r mk-num">'+fmt(r.v)+'</td><td>'+stsCell(r)+'</td><td class="mk-c">'+actCell(r,i)+'</td></tr>';});body.innerHTML=h;recount();}
+    function render(){
+      var h='';
+      L.rows.forEach(function(r,i){
+        h+='<tr><td><b>'+esc(r.no)+'</b>'+(r.rev!=null?' <span class="mk-faint" style="font-size:11px">rev '+r.rev+'</span>':'')+reqBadge(r.sts)+'</td>'
+          +'<td class="mk-muted">'+esc(r.ud)+'</td>'
+          +'<td><span class="ds-badge ds-badge-'+r.c+'">'+esc(r.jns)+'</span></td>'
+          +'<td class="mk-r mk-num">'+fmt(r.v)+'</td><td>'+stsCell(r)+'</td><td class="mk-c">'+actCell(r,i)+'</td></tr>';
+      });
+      body.innerHTML=h;recount();
+    }
     body.addEventListener('click',function(e){
       var ok=e.target.closest('.ap-ok'),no=e.target.closest('.ap-no');
       if(!ok&&!no)return;
       var i=+(ok||no).getAttribute('data-i'),r=L.rows[i];
-      if(ok){r.st='ok';if(doneEl)doneEl.textContent=(parseInt(doneEl.textContent,10)||0)+1;toast('Pengajuan '+r.no+' disetujui ('+L.lbl+')');}
-      else{r.st='no';if(rejEl)rejEl.textContent=(parseInt(rejEl.textContent,10)||0)+1;toast('Pengajuan '+r.no+' → status R0 (permintaan revisi). Setelah disetujui jadi R, lalu terbit pengajuan baru rev+1 status N');}
+      if(ok){
+        var next=window.MK_STS_NEXT[r.sts]||r.sts;
+        r.sts=next;r.st='ok';
+        if(doneEl)doneEl.textContent=(parseInt(doneEl.textContent,10)||0)+1;
+        if(next==='R'||next==='O'){
+          var baru=(r.rev||0)+1;
+          toast('Pengajuan '+(next==='R'?'revisi':'over budget')+' '+r.no+' disetujui → status '+next+'. Dokumen ditutup, terbit dokumen baru rev '+baru+' status N'+(next==='O'?' (hanya harga yang boleh diubah)':''));
+        }else{
+          toast('Pengajuan '+r.no+' disetujui ('+L.lbl+') → status '+next);
+        }
+      }else{
+        r.st='no';
+        if(rejEl)rejEl.textContent=(parseInt(rejEl.textContent,10)||0)+1;
+        toast('Pengajuan '+r.no+' dikembalikan ke pengaju — status balik ke N');
+      }
       render();
     });
     render();
   });
 })();
-
-// ============================================================
 // ============================================================
 // Kartu Kontrol Budget — Beban asuransi SPCK 2026
 // Memperlihatkan tiga hal sekaligus:
-//  (1) Budget = baris EFEKTIF bm_budget_plan (planEfektif)
-//  (2) Realisasi dijumlahkan SEPANJANG RANTAI ref_addition_budget_plan_id
-//      (pemakaian sebelum Addition tetap menempel di baris asli)
-//  (3) Toggle untuk menampilkan baris yang sudah diganti Addition
+//  (1) Budget = plan dokumen dengan rev TERTINGGI yang berstatus A (planEfektif)
+//  (2) Realisasi rev LAMA tetap dihitung — bm_budget_usage menempel ke budget_plan_id,
+//      jadi pemakaian sebelum revisi/over budget tidak hilang
+//  (3) Toggle untuk menampilkan budget rev sebelumnya (redup, tidak dijumlahkan)
 // Angka dikunci agar cocok dg Laporan P&L (Beban asuransi SPCK: 75,0 jt / 16,0 jt).
 // ============================================================
 (function(){
   var body=document.getElementById('kbBody'); if(!body) return;
   function fmt(n){n=Math.round(n||0);var s=String(n),o='';for(var i=0;i<s.length;i++){if(i>0&&(s.length-i)%3===0)o+='.';o+=s.charAt(i);}return o;}
   var MN=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-  // bm_budget_plan — 1 baris = 1 item x 1 bulan. Maret: baris asli 5,0 jt DIGANTI
-  // Addition 6,25 jt (harga satuan naik; qty tetap 1).
-  var PLAN=[];
-  for(var m=1;m<=12;m++)PLAN.push({id:2000+m,bln:m,harga:(m===3?5000000:6250000),refAdd:null});
-  PLAN.push({id:2013,bln:3,harga:6250000,refAdd:2003});   // ADDITION Maret
-  // bm_budget_usage — menempel ke budget_plan_id tertentu
-  var USAGE=[
-    {plan:2001,doc:'PO',no:'PO-2026-000871',tgl:'12 Jan 2026',app:'SIPP',v:4000000},
-    {plan:2002,doc:'PO',no:'PO-2026-001042',tgl:'10 Feb 2026',app:'SIPP',v:4000000},
-    {plan:2003,doc:'PR',no:'PR-2026-002315',tgl:'05 Mar 2026',app:'SIPP',v:3000000},  // di baris ASLI Maret
-    {plan:2013,doc:'PO',no:'PO-2026-001330',tgl:'22 Mar 2026',app:'SIPP',v:1000000},  // di baris ADDITION
-    {plan:2004,doc:'PR',no:'PR-2026-002480',tgl:'03 Apr 2026',app:'SIPP',v:4000000}
+  // Dua dokumen bm_budget_req dengan no_budget SAMA:
+  //   rev 0 — status O (permintaan over budget disetujui 20 Mar) → DITUTUP
+  //   rev 1 — status A → budget efektif. Harga Maret naik 5,0 jt → 6,25 jt, qty tetap.
+  // id plan: 20xx = rev 0, 21xx = rev 1; dua digit terakhir = bulan.
+  var DOCS=[
+    {rev:0,status:'O',plan:[]},
+    {rev:1,status:'A',plan:[]}
   ];
-  var EFF=window.planEfektif(PLAN);
-  var diganti=PLAN.filter(function(p){return EFF.indexOf(p)<0;});
-  function effBln(m){var r=null;EFF.forEach(function(p){if(p.bln===m)r=p;});return r;}
-  function usageBln(m){
-    var e=effBln(m);if(!e)return [];
-    var ids={};window.planRantai(PLAN,e).forEach(function(p){ids[p.id]=1;});
-    return USAGE.filter(function(u){return ids[u.plan];});
+  for(var m=1;m<=12;m++){
+    DOCS[0].plan.push({id:2000+m,rev:0,bln:m,harga:(m===3?5000000:6250000)});
+    DOCS[1].plan.push({id:2100+m,rev:1,bln:m,harga:6250000});
   }
+  var EFF=window.planEfektif(DOCS);            // plan rev 1 (status A)
+  var OLD=DOCS[0].plan;                        // plan rev 0 (status O) — tidak dijumlahkan
+  var REV_EFF=1;
+  function blnOf(id){return id%100;}
+  // bm_budget_usage — menempel ke budget_plan_id tertentu, jadi realisasi Jan–Mar
+  // (sebelum over budget disetujui) tetap menempel di baris plan rev 0.
+  var USAGE=[
+    {plan:2001,rev:0,doc:'PO',no:'PO-2026-000871',tgl:'12 Jan 2026',app:'SIPP',v:4000000},
+    {plan:2002,rev:0,doc:'PO',no:'PO-2026-001042',tgl:'10 Feb 2026',app:'SIPP',v:4000000},
+    {plan:2003,rev:0,doc:'PR',no:'PR-2026-002315',tgl:'05 Mar 2026',app:'SIPP',v:3000000},
+    {plan:2103,rev:1,doc:'PO',no:'PO-2026-001330',tgl:'22 Mar 2026',app:'SIPP',v:1000000},
+    {plan:2104,rev:1,doc:'PR',no:'PR-2026-002480',tgl:'03 Apr 2026',app:'SIPP',v:4000000}
+  ];
   var docBadge={PO:'success',PR:'warning',UM:'info',PJUM:'info'};
+  function effBln(m){var r=null;EFF.forEach(function(p){if(p.bln===m)r=p;});return r;}
+  function usageBln(m){return USAGE.filter(function(u){return blnOf(u.plan)===m;});}
+  function revTag(rev){return rev===REV_EFF?'':' <span class="mk-addbadge" title="realisasi ini menempel di baris plan rev '+rev+', sebelum over budget disetujui">rev '+rev+'</span>';}
   function render(){
     var showOld=document.getElementById('kbShowOld').checked;
     var h='',cb=0,cr=0;
     for(var m=1;m<=5;m++){
-      var e=effBln(m),us=usageBln(m),ada=e&&e.refAdd;
-      // baris yang diganti (opsional, tidak dijumlahkan)
-      if(showOld)diganti.forEach(function(p){
+      var e=effBln(m),us=usageBln(m);
+      // budget rev sebelumnya (opsional, tidak dijumlahkan)
+      if(showOld)OLD.forEach(function(p){
         if(p.bln!==m)return;
         h+='<tr class="mk-super"><td>'+MN[m-1]+' 2026 <span class="mk-faint">#'+p.id+'</span></td>'
           +'<td class="mk-r mk-num">'+fmt(p.harga)+'</td><td class="mk-r mk-num">—</td>'
-          +'<td class="mk-c mk-faint">—</td><td class="mk-muted">diganti Addition #'+e.id+'</td>'
+          +'<td class="mk-c mk-faint">—</td><td class="mk-muted">budget rev 0 — dokumen ditutup (status O)</td>'
           +'<td class="mk-c mk-faint">—</td><td class="mk-r mk-faint">—</td></tr>';
       });
       cb+=e.harga;
       if(!us.length){
-        cr+=0;
-        h+='<tr><td>'+MN[m-1]+' 2026 '+(ada?'<span class="mk-addbadge" title="ref_addition_budget_plan_id = '+e.refAdd+'">Addition</span>':'')+'</td>'
+        h+='<tr><td>'+MN[m-1]+' 2026</td>'
           +'<td class="mk-r mk-num">'+fmt(e.harga)+'</td><td class="mk-r mk-num mk-faint">—</td>'
           +'<td class="mk-c mk-faint">—</td><td class="mk-muted">belum ada pemakaian</td>'
           +'<td class="mk-c mk-faint">—</td><td class="mk-r mk-num">'+fmt(cb-cr)+'</td></tr>';
       } else {
         us.forEach(function(u,k){
           cr+=u.v;
-          var rantai=(u.plan!==e.id)?' <span class="mk-faint" title="realisasi ini menempel di baris asli #'+u.plan+', sebelum Addition">(baris #'+u.plan+')</span>':'';
-          h+='<tr><td>'+(k===0?MN[m-1]+' 2026 '+(ada?'<span class="mk-addbadge" title="ref_addition_budget_plan_id = '+e.refAdd+'">Addition</span>':''):'<span class="mk-faint">↳ lanjutan</span>')+'</td>'
+          h+='<tr><td>'+(k===0?MN[m-1]+' 2026':'<span class="mk-faint">↳ lanjutan</span>')+'</td>'
             +'<td class="mk-r mk-num">'+(k===0?fmt(e.harga):'<span class="mk-faint">—</span>')+'</td>'
             +'<td class="mk-r mk-num">'+fmt(u.v)+'</td>'
             +'<td class="mk-c"><span class="ds-badge ds-badge-'+(docBadge[u.doc]||'neutral')+'">'+u.doc+'</span></td>'
-            +'<td class="mk-muted">'+u.no+' · '+u.tgl+rantai+'</td>'
+            +'<td class="mk-muted">'+u.no+' · '+u.tgl+revTag(u.rev)+'</td>'
             +'<td class="mk-c mk-muted">'+u.app+'</td>'
             +'<td class="mk-r mk-num">'+fmt(cb-cr)+'</td></tr>';
         });
@@ -3789,205 +3864,6 @@ window.MCX={};   // dipakai Input Budget Capex (item rincian = item capex unit)
   }
   document.getElementById('kbShowOld').addEventListener('change',render);
   render();
-})();
-
-// ============================================================
-// Addition Budget — pilih Budget → ubah harga satuan saja.
-// Skema 2026-08-06: baris Addition = baris BARU dengan fg_addition='Y' dan
-// ref_addition_budget_plan_id = budget_plan_id baris asli (kolom `tipe` sudah dihapus).
-// ============================================================
-(function(){
-  function esc(s){return (s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-  function fmt(n){var neg=n<0;n=Math.abs(Math.round(n||0));var s=String(n),o='';for(var i=0;i<s.length;i++){if(i>0&&(s.length-i)%3===0)o+='.';o+=s.charAt(i);}return (neg?'-':'')+o;}
-  var revBody=document.querySelector('#revTable tbody'); if(!revBody) return;
-  // pengajuan yang bisa direvisi (jenis Budget selectable; Non Budget disabled)
-  var BUDGETS=[
-    // id = bm_budget_plan.budget_plan_id baris ASLI (ref_addition_budget_plan_id menunjuk ke sini)
-    // qty & harga HARUS sama dengan seed di Input Budget Non Capex / Capex
-    {no:'BR-2026-SPCK-0042',jenis:'Budget',dept:'HR & GA',thn:2026,rev:0,status:'A',items:[
-      {id:1001,item:'Beban asuransi',nama:'Asuransi Gedung Kantor SPCK',qty:12,harga:6250000},
-      {id:1002,item:'Beban gedung',nama:'Pemeliharaan Gedung & Taman',qty:6,harga:25000000},
-      {id:1003,item:'Beban kantor',nama:'ATK & Rumah Tangga Kantor',qty:4,harga:1500000},
-      {id:1004,item:'Beban jamuan',nama:'Jamuan Rapat Kerja Tahunan',qty:1,harga:45000000}
-    ]},
-    {no:'CX-2026-SPCK-0014',jenis:'Budget',dept:'Information Technology',thn:2026,rev:0,status:'A',items:[
-      {id:1101,item:'Server & Storage',nama:'Server & Storage Datacenter',qty:1,harga:750000000},
-      {id:1102,item:'Perangkat Jaringan & Lisensi',nama:'Lisensi & Perangkat Jaringan',qty:1,harga:180000000},
-      {id:1103,item:'Chiller AC Sentral',nama:'Chiller AC Sentral',qty:2,harga:410000000}
-    ]},
-    {no:'BR-2026-SPCK-0043',jenis:'Non Budget',dept:'Marketing',thn:2026,rev:0,status:'A0',items:[
-      {id:1201,item:'Event',nama:'Event Dekor & Panggung',qty:1,harga:350000000},
-      {id:1202,item:'Event',nama:'Aktivasi & Hiburan (Sirkus)',qty:1,harga:150000000},
-      {id:1203,item:'Souvenir dan hadiah',nama:'Souvenir & Hadiah Pengunjung',qty:2000,harga:50000}
-    ]},
-    {no:'BR-2026-SMSF-0018',jenis:'Budget',dept:'Finance & Accounting',thn:2026,rev:0,status:'R',items:[
-      {id:1301,item:'Beban gedung',nama:'Sewa Kantor Pemasaran Bekasi',qty:12,harga:5000000}
-    ]}
-  ];
-  function bTotal(b){var t=0;b.items.forEach(function(it){t+=it.qty*it.harga;});return t;}
-  // picker modal
-  var pickBody=document.querySelector('#revPickTable tbody');
-  function renderPick(){var h='';BUDGETS.forEach(function(b,i){var isB=b.jenis==='Budget';h+='<tr'+(isB?'':' style="opacity:.5"')+'><td><b>'+esc(b.no)+'</b></td><td class="mk-c mk-num">'+b.rev+'</td><td><span class="ds-badge ds-badge-'+(isB?'neutral':'warning')+'">'+esc(b.jenis)+'</span></td><td class="mk-muted">'+esc(b.dept)+'</td><td class="mk-c mk-num">'+b.thn+'</td><td class="mk-r mk-num">'+fmt(bTotal(b))+'</td><td class="mk-c">'+(isB?'<button class="ds-btn ds-btn-primary ds-btn-sm rev-pick" data-i="'+i+'">Pilih</button>':'<span class="mk-faint">tidak bisa</span>')+'</td></tr>';});pickBody.innerHTML=h;}
-  document.getElementById('revPickBtn').addEventListener('click',function(){renderPick();document.getElementById('revPickOv').classList.add('open');});
-  var revPickSearch=document.getElementById('revPickSearch');
-  if(revPickSearch)revPickSearch.addEventListener('input',function(){var t=revPickSearch.value.toLowerCase();[].forEach.call(pickBody.querySelectorAll('tr'),function(r){r.style.display=r.textContent.toLowerCase().indexOf(t)>-1?'':'none';});});
-  document.getElementById('revPickTable').addEventListener('click',function(e){var b=e.target.closest('.rev-pick');if(!b)return;selectBudget(+b.getAttribute('data-i'));document.getElementById('revPickOv').classList.remove('open');});
-
-  // ADDITION: hanya mengubah HARGA SATUAN, qty terkunci. Disimpan sebagai baris BARU di
-  // budget_req yang SAMA dengan fg_addition='Y' + ref_addition_budget_plan_id = id baris asli.
-  // Unique index ux_budget_plan_item_bulan (budget_req_id, nm_budget, ref_addition_budget_plan_id,
-  // thn, bln) membuat baris asli & baris Addition hidup berdampingan per item/bulan.
-  // Revisi qty ada di menu Revisi Budget (pengajuan baru rev+1).
-  var revhRef=document.getElementById('revhRef'),revhRev=document.getElementById('revhRev'),revhThn=document.getElementById('revhThn'),revhDept=document.getElementById('revhDept'),
-      revDetNo=document.getElementById('revDetNo'),revStatus=document.getElementById('revStatus');
-  var revItems=[],curRef=null;
-  function selectBudget(i){
-    var b=BUDGETS[i];curRef=b;
-    revItems=b.items.map(function(it){return {id:it.id,item:it.item,nama:it.nama,qty:it.qty,hargaAwal:it.harga,hargaRev:it.harga};});
-    revhRef.value=b.no;revhRev.value=String(b.rev);revhThn.value=String(b.thn);revhDept.value=b.dept;
-    revDetNo.textContent=b.no;revStatus.textContent='Status: N (Draft) · baris fg_addition=Y pada pengajuan '+b.no+' rev '+b.rev;
-    renderRincian();
-  }
-  function selCls(d){return d>0?'mk-vneg':(d<0?'mk-vpos':'');}
-  function awalOf(it){return it.qty*it.hargaAwal;}
-  function revOf(it){return it.qty*it.hargaRev;}
-  function renderRincian(){
-    var h='';revItems.forEach(function(it,i){var awal=awalOf(it),rev=revOf(it),d=rev-awal;
-      var ada=d!==0;
-      h+='<tr><td><span class="mk-code" title="'+(ada?'ref_addition_budget_plan_id = '+it.id:'belum ada baris Addition untuk baris ini')+'">'+(ada?'#'+it.id:'<span class="mk-faint">#'+it.id+'</span>')+'</span></td>'+
-        '<td><b>'+esc(it.item)+'</b></td><td class="mk-muted">'+esc(it.nama)+'</td><td class="mk-r mk-num">'+it.qty+'</td><td class="mk-r mk-num">'+fmt(it.hargaAwal)+'</td>'+
-        '<td class="mk-r"><input class="ds-input mk-num rev-input" data-i="'+i+'" type="text" inputmode="numeric" style="text-align:right" value="'+fmt(it.hargaRev)+'"></td>'+
-        '<td class="mk-r mk-num">'+fmt(awal)+'</td><td class="mk-r mk-num rev-tot">'+fmt(rev)+'</td>'+
-        '<td class="mk-r mk-num rev-sel '+selCls(d)+'">'+(d>0?'+':'')+fmt(d)+'</td><td><span class="ds-badge ds-badge-neutral">'+esc(it.jns||'BARU')+'</span></td></tr>';
-    });revBody.innerHTML=h;recalc();
-  }
-  function recalc(){var ta=0,tr=0;revItems.forEach(function(it){ta+=awalOf(it);tr+=revOf(it);});document.getElementById('revTotAwal').textContent=fmt(ta);document.getElementById('revTotRev').textContent=fmt(tr);var d=tr-ta;var c=document.getElementById('revTotSel');c.textContent=(d>0?'+':'')+fmt(d);c.className='mk-r mk-num '+selCls(d);c.style.fontWeight='700';}
-  // input harga satuan revisi: terima angka dg/atau tanpa titik, tampilkan berformat saat blur
-  revBody.addEventListener('input',function(e){var inp=e.target.closest('.rev-input');if(!inp)return;var i=+inp.getAttribute('data-i');revItems[i].hargaRev=parseFloat(String(inp.value).replace(/[^\d]/g,'')||'0')||0;var awal=awalOf(revItems[i]),rev=revOf(revItems[i]),d=rev-awal;var tr=inp.closest('tr');tr.querySelector('.rev-tot').textContent=fmt(rev);var sc=tr.querySelector('.rev-sel');sc.textContent=(d>0?'+':'')+fmt(d);sc.className='mk-r mk-num rev-sel '+selCls(d);recalc();});
-  revBody.addEventListener('blur',function(e){var inp=e.target.closest&&e.target.closest('.rev-input');if(!inp)return;inp.value=fmt(revItems[+inp.getAttribute('data-i')].hargaRev);},true);
-  function nAdd(){var n=0;revItems.forEach(function(it){if(revOf(it)!==awalOf(it))n++;});return n;}
-  document.getElementById('revDraft').addEventListener('click',function(){if(!curRef){toast('Pilih pengajuan Budget dulu');return;}
-    toast(nAdd()+' baris Addition (fg_addition=Y) pada '+curRef.no+' disimpan sebagai draft');});
-  document.getElementById('revAjukan').addEventListener('click',function(){if(!curRef){toast('Pilih pengajuan Budget dulu');return;}revStatus.textContent='Status: A0 · menunggu approval berjenjang';toast('Addition '+curRef.no+' diajukan ('+nAdd()+' baris) — butuh approval Departemen → Finance Unit → Finance CO');});
-  // contoh awal supaya layar tidak tampil kosong (tetap bisa diganti via Pilih Pengajuan Budget)
-  selectBudget(0);
-  revItems[1].hargaRev=27500000;   // contoh kenaikan harga satuan pemeliharaan gedung
-  renderRincian();
-  window.MK_BUDGETS=BUDGETS;   // dipakai layar Revisi Budget (rev+1)
-})();
-
-// ============================================================
-// Revisi Budget (bm_budget_req.rev) — pengajuan BARU: no_budget sama, rev+1, status N.
-// Seluruh plan direview: qty MAUPUN harga satuan boleh diubah (tambah/kurang), baris
-// boleh ditambah/dihapus. Hanya pengajuan berstatus R yang bisa dibuat revisinya.
-// ============================================================
-(function(){
-  function esc(s){return (s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-  function fmt(n){var neg=n<0;n=Math.abs(Math.round(n||0));var s=String(n),o='';for(var i=0;i<s.length;i++){if(i>0&&(s.length-i)%3===0)o+='.';o+=s.charAt(i);}return (neg?'-':'')+o;}
-  var body=document.querySelector('#rvTable tbody'); if(!body) return;
-  var g=function(id){return document.getElementById(id);};
-  var STS={N:'N — Baru/Draft',A0:'A0 — Menunggu approval',A1:'A1 — Menunggu approval lanjut',A:'A — Approved',R0:'R0 — Permintaan revisi',R:'R — Disetujui untuk revisi'};
-  var items=[],curRef=null,curRev=0;
-
-  // ---- picker: hanya status R ----
-  var pickBody=document.querySelector('#rvPickTable tbody');
-  function bTotal(b){var t=0;b.items.forEach(function(it){t+=it.qty*it.harga;});return t;}
-  function renderPick(){
-    var B=window.MK_BUDGETS||[],h='';
-    B.forEach(function(b,i){
-      var bisa=(b.status==='R');
-      h+='<tr'+(bisa?'':' style="opacity:.5"')+'><td><b>'+esc(b.no)+'</b></td><td class="mk-c mk-num">'+b.rev+'</td>'+
-        '<td class="mk-c"><span class="ds-badge ds-badge-'+(bisa?'brand':'neutral')+'">'+esc(b.status)+'</span></td>'+
-        '<td class="mk-muted">'+esc(b.dept)+'</td><td class="mk-c mk-num">'+b.thn+'</td><td class="mk-r mk-num">'+fmt(bTotal(b))+'</td>'+
-        '<td class="mk-c">'+(bisa?'<button class="ds-btn ds-btn-primary ds-btn-sm rv-pick" data-i="'+i+'">Buat Revisi</button>':'<span class="mk-faint">status ≠ R</span>')+'</td></tr>';
-    });
-    pickBody.innerHTML=h;
-  }
-  g('rvPickBtn').addEventListener('click',function(){renderPick();g('rvPickOv').classList.add('open');});
-  var rvPickSearch=g('rvPickSearch');
-  if(rvPickSearch)rvPickSearch.addEventListener('input',function(){var t=rvPickSearch.value.toLowerCase();[].forEach.call(pickBody.querySelectorAll('tr'),function(r){r.style.display=r.textContent.toLowerCase().indexOf(t)>-1?'':'none';});});
-  g('rvPickTable').addEventListener('click',function(e){var b=e.target.closest('.rv-pick');if(!b)return;pilih(+b.getAttribute('data-i'));g('rvPickOv').classList.remove('open');});
-
-  function pilih(i){
-    var b=(window.MK_BUDGETS||[])[i];if(!b)return;
-    curRef=b;curRev=b.rev+1;
-    // detail awal DISALIN persis dari rev sebelumnya, lalu boleh diubah semuanya
-    items=b.items.map(function(it){return {item:it.item,nama:it.nama,qtyAwal:it.qty,qty:it.qty,hargaAwal:it.harga,harga:it.harga};});
-    g('rvhNo').value=b.no;g('rvhRev').value=String(curRev);g('rvhStatus').value=STS.N;
-    g('rvhThn').value=String(b.thn);g('rvhDept').value=b.dept;
-    g('rvDetNo').textContent=b.no+' · rev '+curRev;
-    g('rvStatus').textContent='Status: N (Draft) · revisi dari rev '+b.rev+' (status R)';
-    render();
-  }
-  function selCls(d){return d>0?'mk-vneg':(d<0?'mk-vpos':'');}
-  function awalOf(it){return it.qtyAwal*it.hargaAwal;}
-  function revOf(it){return (parseInt(it.qty,10)||0)*(it.harga||0);}
-  function render(){
-    var h='';
-    items.forEach(function(it,i){
-      var awal=awalOf(it),rev=revOf(it),d=rev-awal;
-      h+='<tr><td><b>'+esc(it.item)+'</b></td><td class="mk-muted">'+esc(it.nama)+'</td>'+
-        '<td class="mk-r mk-num mk-faint">'+it.qtyAwal+'</td>'+
-        '<td class="mk-r"><input class="ds-input mk-num rv-qty" data-i="'+i+'" type="text" inputmode="numeric" style="text-align:right" value="'+it.qty+'"></td>'+
-        '<td class="mk-r mk-num mk-faint">'+fmt(it.hargaAwal)+'</td>'+
-        '<td class="mk-r"><input class="ds-input mk-num rv-harga" data-i="'+i+'" type="text" inputmode="numeric" style="text-align:right" value="'+fmt(it.harga)+'"></td>'+
-        '<td class="mk-r mk-num">'+fmt(awal)+'</td><td class="mk-r mk-num rv-tot">'+fmt(rev)+'</td>'+
-        '<td class="mk-r mk-num rv-sel '+selCls(d)+'">'+(d>0?'+':'')+fmt(d)+'</td>'+
-        '<td class="mk-c"><button type="button" class="ds-btn-icon rv-del" data-i="'+i+'" title="Hapus baris"><i class="bi bi-trash"></i></button></td></tr>';
-    });
-    body.innerHTML=h;recalc();
-  }
-  function recalc(){
-    var ta=0,tr=0;items.forEach(function(it){ta+=awalOf(it);tr+=revOf(it);});
-    g('rvTotAwal').textContent=fmt(ta);g('rvTotRev').textContent=fmt(tr);
-    var d=tr-ta,c=g('rvTotSel');c.textContent=(d>0?'+':'')+fmt(d);c.className='mk-r mk-num '+selCls(d);c.style.fontWeight='700';
-  }
-  function refreshRow(tr,it){
-    var awal=awalOf(it),rev=revOf(it),d=rev-awal;
-    tr.querySelector('.rv-tot').textContent=fmt(rev);
-    var sc=tr.querySelector('.rv-sel');sc.textContent=(d>0?'+':'')+fmt(d);sc.className='mk-r mk-num rv-sel '+selCls(d);
-    recalc();
-  }
-  body.addEventListener('input',function(e){
-    var q=e.target.closest('.rv-qty'),hg=e.target.closest('.rv-harga');
-    if(!q&&!hg)return;
-    var el=q||hg,i=+el.getAttribute('data-i'),v=parseFloat(String(el.value).replace(/[^\d]/g,'')||'0')||0;
-    if(q)items[i].qty=v; else items[i].harga=v;
-    refreshRow(el.closest('tr'),items[i]);
-  });
-  body.addEventListener('blur',function(e){
-    var hg=e.target.closest&&e.target.closest('.rv-harga');
-    if(hg)hg.value=fmt(items[+hg.getAttribute('data-i')].harga);
-  },true);
-  body.addEventListener('click',function(e){
-    var d=e.target.closest('.rv-del');if(!d)return;
-    items.splice(+d.getAttribute('data-i'),1);render();
-    toast('Baris dihapus dari revisi');
-  });
-  g('rvAddBtn').addEventListener('click',function(){
-    if(!curRef){toast('Pilih pengajuan berstatus R dulu');return;}
-    items.push({item:curRef.items[0].item,nama:'Baris revisi baru',qtyAwal:0,qty:1,hargaAwal:0,harga:0});
-    render();toast('Baris baru ditambahkan — qty & harga satuan bisa diisi bebas');
-  });
-  g('rvDraft').addEventListener('click',function(){if(!curRef){toast('Pilih pengajuan berstatus R dulu');return;}toast('Draft revisi '+curRef.no+' rev '+curRev+' (status N) disimpan');});
-  g('rvAjukan').addEventListener('click',function(){
-    if(!curRef){toast('Pilih pengajuan berstatus R dulu');return;}
-    g('rvhStatus').value=STS.A0;
-    g('rvStatus').textContent='Status: A0 · menunggu approval berjenjang';
-    toast('Revisi '+curRef.no+' rev '+curRev+' diajukan — approval Departemen → Finance Unit → Finance CO');
-  });
-  // contoh awal: BR-2026-SMSF-0018 berstatus R — sengaja diberi perbedaan supaya terlihat
-  // bahwa revisi boleh mengubah qty MAUPUN harga satuan, dan boleh menambah baris baru.
-  (function(){
-    var B=window.MK_BUDGETS||[];
-    for(var i=0;i<B.length;i++){if(B[i].status==='R'){pilih(i);break;}}
-    if(items.length){
-      items[0].qty=10;              // qty turun 12 → 10
-      items[0].harga=5500000;       // harga satuan naik 5,0 jt → 5,5 jt
-      items.push({item:'Beban gedung',nama:'Renovasi Kantor Pemasaran Bogor',qtyAwal:0,qty:1,hargaAwal:0,harga:25000000});
-      render();
-    }
-  })();
 })();
 
 // ============================================================
