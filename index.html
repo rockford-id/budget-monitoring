@@ -77,7 +77,7 @@
 
   /* Breadcrumb pemetaan P&L (L1 › L2 › L3 › L4 · Status) — lebar level dikunci agar sejajar antar baris */
   /* L4 dapat sisa lebar karena namanya paling panjang; teks penuh tetap di tooltip baris */
-  .plmap{display:grid;grid-template-columns:186px 164px 146px minmax(0,1fr) 112px;font-size:11.5px;line-height:1.3;align-items:center;white-space:nowrap}
+  .plmap{display:grid;grid-template-columns:186px 164px 146px minmax(0,1fr);font-size:11.5px;line-height:1.3;align-items:center;white-space:nowrap}
   .plmap>span{padding-right:12px;position:relative;overflow:hidden;text-overflow:ellipsis}
   .plmap>span.l1{color:var(--smra-orange);font-weight:700}
   .plmap>span.sep,.plmap>span.st{padding-left:14px}
@@ -591,12 +591,12 @@
       <!-- ================= STRUKTUR P&L MANAGEMENT REPORT ================= -->
       <section class="screen" id="s-master-pl">
         <div class="ds-page-header">
-          <div class="ds-page-title"><h1>Item P&amp;L Corporate</h1><div class="ds-page-subtitle">Komponen · level penyusun P&amp;L Corporate (L1–L4, Status 1 &amp; 2) — bm_mst_item_pl</div></div>
+          <div class="ds-page-title"><h1>Item P&amp;L Corporate</h1><div class="ds-page-subtitle">Komponen · level penyusun P&amp;L Corporate (L1–L4) — bm_mst_item_pl</div></div>
           <div class="ds-page-actions"><button class="ds-btn ds-btn-primary" id="plmAddBtn"><i class="bi bi-plus-lg"></i> Item P&amp;L</button></div>
         </div>
         <div class="ds-toolbar">
           <div class="ds-toolbar-search"><input type="search" class="ds-input" id="plmSearch" placeholder="Cari nama level…"></div>
-          <div class="mk-filter"><label>Level</label><select id="plmLevel" class="ds-input" style="width:150px"><option value="">Semua Level</option><option value="L1">L1</option><option value="L2">L2</option><option value="L3">L3</option><option value="L4">L4</option><option value="S1">Status 1</option><option value="S2">Status 2</option></select></div>
+          <div class="mk-filter"><label>Level</label><select id="plmLevel" class="ds-input" style="width:150px"><option value="">Semua Level</option><option value="L1">L1</option><option value="L2">L2</option><option value="L3">L3</option><option value="L4">L4</option></select></div>
           <div class="mk-filter"><label>Segmen</label><select id="plmSeg" class="ds-input" style="width:110px"></select></div>
         </div>
         <div class="ds-section">
@@ -608,20 +608,21 @@
       <!-- ================= ITEM P&L MANAGEMENT REPORT ================= -->
       <section class="screen" id="s-item-pl">
         <div class="ds-page-header">
-          <div class="ds-page-title"><h1>Item P&amp;L Corporate</h1><div class="ds-page-subtitle">Data Master · kombinasi Item P&amp;L Corporate (L1 › L4 + Status Standard) — bm_item_pl</div></div>
+          <div class="ds-page-title"><h1>Item P&amp;L Corporate</h1><div class="ds-page-subtitle">Data Master · kombinasi Item P&amp;L Corporate (L1 › L4 + Tipe Standard + Tipe Departemen) — bm_item_pl</div></div>
           <div class="ds-page-actions"><button class="ds-btn ds-btn-primary" id="ipAddBtn"><i class="bi bi-plus-lg"></i> Mapping P&amp;L</button></div>
         </div>
         <div class="ds-toolbar">
           <div class="ds-toolbar-search"><input type="search" class="ds-input" id="ipSearch" placeholder="Cari pos P&amp;L / detail…"></div>
           <div class="mk-filter"><label>Pos P&amp;L (L1)</label><select id="ipL1" class="ds-input" style="width:215px"><option value="">Semua</option></select></div>
-          <div class="mk-filter"><label>Status Standard</label><select id="ipSt" class="ds-input" style="width:160px"><option value="">Semua</option><option>Standard</option><option>Non Standard</option></select></div>
+          <div class="mk-filter"><label>Tipe Standard</label><select id="ipSt" class="ds-input" style="width:150px"><option value="">Semua</option><option>Standard</option><option>Non Standard</option></select></div>
+          <div class="mk-filter"><label>Tipe Departemen</label><select id="ipDp" class="ds-input" style="width:160px"><option value="">Semua</option><option>Departemen</option><option>Non Departemen</option></select></div>
           <div class="mk-filter"><label>Segmen</label><select id="ipSeg" class="ds-input" style="width:110px"></select></div>
           <button class="ds-btn ds-btn-ghost" id="ipReset"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
         </div>
         <div class="ds-section">
           <div class="ds-section-title"><i class="bi bi-list-nested"></i> Item P&amp;L Corporate <span class="ds-section-meta"><b id="ipCount">0</b> mapping</span></div>
-          <div class="mk-tablewrap"><table class="ds-table ds-table-sm ds-table-head-fixed" id="ipTable" style="min-width:820px">
-            <thead><tr><th style="min-width:760px">Pemetaan P&amp;L <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t-text-faint)">(L1 › L2 › L3 › L4)</span></th><th style="width:150px">Status Standard</th><th style="width:100px">Segmen</th><th style="width:90px">Aktif</th></tr></thead>
+          <div class="mk-tablewrap"><table class="ds-table ds-table-sm ds-table-head-fixed" id="ipTable" style="min-width:980px">
+            <thead><tr><th style="min-width:620px">Pemetaan P&amp;L <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t-text-faint)">(L1 › L2 › L3 › L4)</span></th><th style="width:140px">Tipe Standard</th><th style="width:150px">Tipe Departemen</th><th style="width:100px">Segmen</th><th style="width:90px">Aktif</th></tr></thead>
             <tbody></tbody>
           </table></div>
         </div>
@@ -675,7 +676,7 @@
         </div>
         <div class="ds-toolbar">
           <div class="ds-toolbar-search"><input type="search" class="ds-input" id="pluSearch" placeholder="Cari nama level…"></div>
-          <div class="mk-filter"><label>Level</label><select id="pluLevel" class="ds-input" style="width:150px"><option value="">Semua Level</option><option value="L1">L1</option><option value="L2">L2</option><option value="L3">L3</option><option value="L4">L4</option><option value="S1">Status 1</option><option value="S2">Status 2</option></select></div>
+          <div class="mk-filter"><label>Level</label><select id="pluLevel" class="ds-input" style="width:150px"><option value="">Semua Level</option><option value="L1">L1</option><option value="L2">L2</option><option value="L3">L3</option><option value="L4">L4</option></select></div>
           <div class="mk-filter"><label>Mst Unit</label><select id="pluUnit" class="ds-input" style="width:130px"><option>SSPG</option><option>SBKS</option><option>SMKG</option></select></div>
         </div>
         <div class="ds-section">
@@ -693,13 +694,14 @@
         <div class="ds-toolbar">
           <div class="ds-toolbar-search"><input type="search" class="ds-input" id="ipuSearch" placeholder="Cari pos P&amp;L / detail…"></div>
           <div class="mk-filter"><label>Pos P&amp;L (L1)</label><select id="ipuL1" class="ds-input" style="width:215px"><option value="">Semua</option></select></div>
-          <div class="mk-filter"><label>Status Standard</label><select id="ipuSt" class="ds-input" style="width:160px"><option value="">Semua</option><option>Standard</option><option>Non Standard</option></select></div>
+          <div class="mk-filter"><label>Tipe Standard</label><select id="ipuSt" class="ds-input" style="width:150px"><option value="">Semua</option><option>Standard</option><option>Non Standard</option></select></div>
+          <div class="mk-filter"><label>Tipe Departemen</label><select id="ipuDp" class="ds-input" style="width:160px"><option value="">Semua</option><option>Departemen</option><option>Non Departemen</option></select></div>
           <div class="mk-filter"><label>Mst Unit</label><select id="ipuUnit" class="ds-input" style="width:120px"><option>SSPG</option><option>SBKS</option><option>SMKG</option></select></div>
         </div>
         <div class="ds-section">
           <div class="ds-section-title"><i class="bi bi-list-nested"></i> Item P&amp;L Unit <span class="ds-section-meta">Mst Unit aktif: <b id="ipuUnitLbl">SSPG</b> · <b id="ipuCount">0</b> mapping</span></div>
-          <div class="mk-tablewrap"><table class="ds-table ds-table-sm ds-table-head-fixed" id="ipuTable" style="min-width:820px">
-            <thead><tr><th style="min-width:640px">Pemetaan P&amp;L <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t-text-faint)">(L1 › L2 › L3 › L4)</span></th><th style="width:150px">Status Standard</th><th style="width:90px">Aktif</th></tr></thead>
+          <div class="mk-tablewrap"><table class="ds-table ds-table-sm ds-table-head-fixed" id="ipuTable" style="min-width:980px">
+            <thead><tr><th style="min-width:620px">Pemetaan P&amp;L <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t-text-faint)">(L1 › L2 › L3 › L4)</span></th><th style="width:140px">Tipe Standard</th><th style="width:150px">Tipe Departemen</th><th style="width:90px">Aktif</th></tr></thead>
             <tbody></tbody>
           </table></div>
         </div>
@@ -1262,7 +1264,7 @@
         </div>
         <div class="mk-panels2">
         <div class="mk-panel">
-          <div class="mk-panel-t"><b>Pemetaan P&amp;L Corporate</b><span>pilihan menyesuaikan level di atasnya</span><span class="mk-panel-r">Status Standard: <b id="ncfStd">—</b></span></div>
+          <div class="mk-panel-t"><b>Pemetaan P&amp;L Corporate</b><span>pilihan menyesuaikan level di atasnya</span><span class="mk-panel-r">Tipe Standard: <b id="ncfStd">—</b></span></div>
           <div class="mk-fcol">
             <div class="wide"><label class="ds-label">Pos P&amp;L (L1) <span class="ds-required">*</span></label><select class="ds-input" id="ncfL1"></select></div>
             <div><label class="ds-label">L2</label><select class="ds-input" id="ncfL2"></select></div>
@@ -1272,7 +1274,7 @@
           </div>
         </div>
         <div class="mk-panel">
-          <div class="mk-panel-t"><b>Pemetaan P&amp;L Unit</b><span>opsional · terisi otomatis dari pemetaan di atas</span><span class="mk-panel-r"><span class="u" id="ncfuUnit">SPCK</span> · Status Standard: <b id="ncfuStd">—</b></span></div>
+          <div class="mk-panel-t"><b>Pemetaan P&amp;L Unit</b><span>opsional · terisi otomatis dari pemetaan di atas</span><span class="mk-panel-r"><span class="u" id="ncfuUnit">SPCK</span> · Tipe Standard: <b id="ncfuStd">—</b></span></div>
           <div class="mk-fcol">
             <div class="wide"><label class="ds-label">Pos P&amp;L Unit (L1)</label><select class="ds-input" id="ncfuL1"></select></div>
             <div><label class="ds-label">L2</label><select class="ds-input" id="ncfuL2"></select></div>
@@ -1292,7 +1294,7 @@
     <div class="mk-modal" style="max-width:470px">
       <div class="mk-modal-h"><h3>Tambah Komponen Item P&amp;L</h3><button class="mk-modal-x" data-close title="Tutup"><i class="bi bi-x-lg"></i></button></div>
       <div class="mk-modal-b"><div class="ds-form-stack ds-form-stack-2">
-        <div><label class="ds-label">Level <span class="ds-required">*</span></label><select class="ds-input" id="pfLevel"><option value="L1">L1</option><option value="L2">L2</option><option value="L3">L3</option><option value="L4">L4</option><option value="S1">Status 1</option><option value="S2">Status 2</option></select></div>
+        <div><label class="ds-label">Level <span class="ds-required">*</span></label><select class="ds-input" id="pfLevel"><option value="L1">L1</option><option value="L2">L2</option><option value="L3">L3</option><option value="L4">L4</option></select></div>
         <div><label class="ds-label">Segmen Bisnis</label><select class="ds-input" id="pfSeg"></select></div>
         <div style="grid-column:1 / -1"><label class="ds-label">Nama <span class="ds-required">*</span></label><input class="ds-input" id="pfName" placeholder="mis. Beban pemasaran digital"></div>
         <div><label class="ds-label">Status</label><select class="ds-input" id="pfAktif"><option>Aktif</option><option>Non-Aktif</option></select></div>
@@ -1308,13 +1310,14 @@
       <div class="mk-modal-b">
         <div class="ds-form-stack" style="margin-bottom:14px"><div><label class="ds-label">Segmen Bisnis</label><select class="ds-input" id="ipfSeg"></select></div></div>
         <div class="mk-panel">
-          <div class="mk-panel-t"><b>Pemetaan P&amp;L Corporate</b><span>kombinasi L1 › L2 › L3 › L4 · Status Standard</span></div>
+          <div class="mk-panel-t"><b>Pemetaan P&amp;L Corporate</b><span>kombinasi L1 › L2 › L3 › L4 · Tipe Standard · Tipe Departemen</span></div>
           <div class="mk-fcol">
             <div class="wide"><label class="ds-label">Pos P&amp;L (L1) <span class="ds-required">*</span></label><select class="ds-input" id="ipfL1"></select></div>
             <div><label class="ds-label">L2</label><select class="ds-input" id="ipfL2"></select></div>
             <div><label class="ds-label">L3</label><select class="ds-input" id="ipfL3"></select></div>
             <div class="wide"><label class="ds-label">Detail (L4)</label><select class="ds-input" id="ipfL4"></select></div>
-            <div><label class="ds-label">Status Standard</label><select class="ds-input" id="ipfSt"><option>Standard</option><option>Non Standard</option></select></div>
+            <div><label class="ds-label">Tipe Standard</label><select class="ds-input" id="ipfSt"><option>Standard</option><option>Non Standard</option></select></div>
+            <div><label class="ds-label">Tipe Departemen</label><select class="ds-input" id="ipfDp"><option>Departemen</option><option>Non Departemen</option></select></div>
           </div>
         </div>
       </div>
@@ -1516,7 +1519,7 @@
     <div class="mk-modal" style="max-width:470px">
       <div class="mk-modal-h"><h3>Tambah Komponen Item P&amp;L Unit</h3><button class="mk-modal-x" data-close title="Tutup"><i class="bi bi-x-lg"></i></button></div>
       <div class="mk-modal-b"><div class="ds-form-stack ds-form-stack-2">
-        <div><label class="ds-label">Level <span class="ds-required">*</span></label><select class="ds-input" id="plufLevel"><option value="L1">L1</option><option value="L2">L2</option><option value="L3">L3</option><option value="L4">L4</option><option value="S1">Status 1</option><option value="S2">Status 2</option></select></div>
+        <div><label class="ds-label">Level <span class="ds-required">*</span></label><select class="ds-input" id="plufLevel"><option value="L1">L1</option><option value="L2">L2</option><option value="L3">L3</option><option value="L4">L4</option></select></div>
         <div><label class="ds-label">Mst Unit</label><select class="ds-input" id="plufUnit"><option>SSPG</option><option>SBKS</option><option>SMKG</option></select></div>
         <div style="grid-column:1 / -1"><label class="ds-label">Nama <span class="ds-required">*</span></label><input class="ds-input" id="plufName" placeholder="mis. Beban pemasaran digital"></div>
         <div><label class="ds-label">Status</label><select class="ds-input" id="plufAktif"><option>Aktif</option><option>Non-Aktif</option></select></div>
@@ -1532,7 +1535,8 @@
       <div class="mk-modal-b">
         <div class="ds-form-stack ds-form-stack-2" style="margin-bottom:14px">
           <div><label class="ds-label">Mst Unit <span class="ds-required">*</span></label><select class="ds-input" id="ipufUnit"><option>SSPG</option><option>SBKS</option><option>SMKG</option></select></div>
-          <div><label class="ds-label">Status Standard</label><select class="ds-input" id="ipufSt"><option>Standard</option><option>Non Standard</option></select></div>
+          <div><label class="ds-label">Tipe Standard</label><select class="ds-input" id="ipufSt"><option>Standard</option><option>Non Standard</option></select></div>
+          <div><label class="ds-label">Tipe Departemen</label><select class="ds-input" id="ipufDp"><option>Departemen</option><option>Non Departemen</option></select></div>
         </div>
         <div class="mk-panel">
           <div class="mk-panel-t"><b>Pemetaan P&amp;L per Unit</b><span>kombinasi L1 › L2 › L3 › L4 (level dari struktur unit terpilih)</span></div>
@@ -1944,73 +1948,73 @@ window.mkPhasingDetail=function(td, item, thn){
 
   // ============================================================
   // Data P&L (kombinasi Item P&L Corporate) — dipakai form
-  // Tambah Item Anggaran untuk cascading L1→L4 + Status Standard auto.
+  // Tambah Item Anggaran untuk cascading L1→L4 + Tipe Standard auto.
   // (sumber: sheet Master kolom AS–AW)
   // ============================================================
   var plItems=[
-    ["GA Expense standard","Beban Kepegawaian","Beban gaji","Gaji tetap","Standard"],
-    ["GA Expense standard","Beban Kepegawaian","Beban gaji","Beban pensiun & pisah","Standard"],
-    ["GA Expense standard","Beban Kepegawaian","Beban gaji","Beban jamsostek","Standard"],
-    ["GA Expense standard","Beban Kepegawaian","Beban gaji","Beban THR & Bonus","Standard"],
-    ["GA Expense standard","Beban Kepegawaian","Beban gaji","Beban karyawan proyek","Standard"],
-    ["GA Expense standard","Beban Kepegawaian","NA","Beban Perekrutan, Pengembangan, dan Pelatihan","Standard"],
-    ["GA Expense standard","Beban Kepegawaian","NA","Beban tenaga kerja lain","Standard"],
-    ["GA Expense standard","Beban Kepegawaian","NA","Reimbursement","Standard"],
-    ["GA Expense standard","Beban Kepegawaian","NA","Insentif","Standard"],
-    ["GA Expense standard","Beban Kepegawaian","NA","Tunjangan lainnya","Standard"],
-    ["GA Expense standard","Beban Kepegawaian","NA","Lembur","Standard"],
-    ["GA Expense standard","Beban Kepegawaian","NA","Uang saku & makan perjalanan dinas","Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban jamuan","Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban asuransi","Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban sumbangan","Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban CSR","Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban rumah tangga kantor","Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban keamanan","Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban honor profesional","Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban inventaris","Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban perbaikan & pemeliharaan","Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban kantor","Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban akomodasi perjalanan dinas","Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban kendaraan dan transportasi","Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban pemeliharaan lingkungan","Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban gedung","Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban ijin dan keanggotaan","Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban operasional transaksi keuangan","Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban acara perusahaan","Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban umum lainnya","Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban PBB","Non Standard"],
-    ["Beban Umum dan Administrasi","NA","NA","Beban manajemen","Non Standard"],
-    ["Selling Expense","NA","NA","Event","Standard"],
-    ["Selling Expense","NA","NA","Purna jual","Standard"],
-    ["Selling Expense","NA","NA","Media promosi","Standard"],
-    ["Selling Expense","NA","NA","Souvenir dan hadiah","Standard"],
-    ["Selling Expense","NA","NA","Beban Operasional Bangunan Contoh dan maket","Standard"],
-    ["Selling Expense","Komisi penjualan","NA","Komisi penjualan Internal","Standard"],
-    ["Selling Expense","Komisi penjualan","NA","Komisi penjualan External","Standard"],
-    ["Selling Expense","NA","NA","Riset pemasaran dan survei (R&D)","Standard"],
-    ["Selling Expense","NA","NA","Biaya penjualan Lainnya","Standard"],
-    ["Selling Expense","NA","NA","Bangunan Contoh Sementara","Non Standard"],
-    ["Selling Expense","NA","NA","Ready stock","Non Standard"],
-    ["Revenue","NA","NA","Insentif penjualan","Standard"],
-    ["Revenue","Revenue 50% PPJB","NA","House Landed","Standard"],
-    ["Revenue","Revenue 50% PPJB","NA","Commercial Landed","Standard"],
-    ["Revenue","Revenue 50% PPJB","NA","Landplot","Standard"],
-    ["Revenue","Revenue 50% PPJB","NA","Residential Strata","Standard"],
-    ["Revenue","Revenue 50% PPJB","NA","Commercial Space Strata","Standard"],
-    ["Revenue","Revenue 50% ST","NA","House Landed","Standard"],
-    ["Revenue","Revenue 50% ST","NA","Commercial Landed","Standard"],
-    ["Revenue","Revenue 50% ST","NA","Landplot","Standard"],
-    ["Revenue","Revenue 50% ST","NA","Residential Strata","Standard"],
-    ["Revenue","Revenue 50% ST","NA","Commercial Space Strata","Standard"],
-    ["Net Other Optg (Expense)/Income","NA","NA","Net Other Optg (Expense)/Income","Standard"],
-    ["Depreciation","NA","NA","Depreciation","Standard"],
-    ["Finance Income","NA","NA","Interest Income","Standard"],
-    ["Finance Income","NA","NA","Other Finance Income","Standard"],
-    ["Finance Cost","NA","NA","Interest Expense","Standard"],
-    ["Finance Cost","NA","NA","Other Finance Expense","Standard"],
-    ["Taxation","NA","NA","Tax PPJB & ST","Standard"],
-    ["Taxation","NA","NA","Tax Other","Standard"],
-    ["Management Interest","NA","NA","Management Interest","Standard"]
+    ["GA Expense standard","Beban Kepegawaian","Beban gaji","Gaji tetap","Standard","Departemen"],
+    ["GA Expense standard","Beban Kepegawaian","Beban gaji","Beban pensiun & pisah","Standard","Departemen"],
+    ["GA Expense standard","Beban Kepegawaian","Beban gaji","Beban jamsostek","Standard","Departemen"],
+    ["GA Expense standard","Beban Kepegawaian","Beban gaji","Beban THR & Bonus","Standard","Departemen"],
+    ["GA Expense standard","Beban Kepegawaian","Beban gaji","Beban karyawan proyek","Standard","Departemen"],
+    ["GA Expense standard","Beban Kepegawaian","NA","Beban Perekrutan, Pengembangan, dan Pelatihan","Standard","Departemen"],
+    ["GA Expense standard","Beban Kepegawaian","NA","Beban tenaga kerja lain","Standard","Departemen"],
+    ["GA Expense standard","Beban Kepegawaian","NA","Reimbursement","Standard","Departemen"],
+    ["GA Expense standard","Beban Kepegawaian","NA","Insentif","Standard","Departemen"],
+    ["GA Expense standard","Beban Kepegawaian","NA","Tunjangan lainnya","Standard","Departemen"],
+    ["GA Expense standard","Beban Kepegawaian","NA","Lembur","Standard","Departemen"],
+    ["GA Expense standard","Beban Kepegawaian","NA","Uang saku & makan perjalanan dinas","Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban jamuan","Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban asuransi","Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban sumbangan","Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban CSR","Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban rumah tangga kantor","Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban keamanan","Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban honor profesional","Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban inventaris","Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban perbaikan & pemeliharaan","Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban kantor","Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban akomodasi perjalanan dinas","Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban kendaraan dan transportasi","Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban pemeliharaan lingkungan","Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban gedung","Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban ijin dan keanggotaan","Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban operasional transaksi keuangan","Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban acara perusahaan","Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban umum lainnya","Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban PBB","Non Standard","Departemen"],
+    ["Beban Umum dan Administrasi","NA","NA","Beban manajemen","Non Standard","Departemen"],
+    ["Selling Expense","NA","NA","Event","Standard","Departemen"],
+    ["Selling Expense","NA","NA","Purna jual","Standard","Departemen"],
+    ["Selling Expense","NA","NA","Media promosi","Standard","Departemen"],
+    ["Selling Expense","NA","NA","Souvenir dan hadiah","Standard","Departemen"],
+    ["Selling Expense","NA","NA","Beban Operasional Bangunan Contoh dan maket","Standard","Departemen"],
+    ["Selling Expense","Komisi penjualan","NA","Komisi penjualan Internal","Standard","Departemen"],
+    ["Selling Expense","Komisi penjualan","NA","Komisi penjualan External","Standard","Departemen"],
+    ["Selling Expense","NA","NA","Riset pemasaran dan survei (R&D)","Standard","Departemen"],
+    ["Selling Expense","NA","NA","Biaya penjualan Lainnya","Standard","Departemen"],
+    ["Selling Expense","NA","NA","Bangunan Contoh Sementara","Non Standard","Departemen"],
+    ["Selling Expense","NA","NA","Ready stock","Non Standard","Departemen"],
+    ["Revenue","NA","NA","Insentif penjualan","Standard","Non Departemen"],
+    ["Revenue","Revenue 50% PPJB","NA","House Landed","Standard","Non Departemen"],
+    ["Revenue","Revenue 50% PPJB","NA","Commercial Landed","Standard","Non Departemen"],
+    ["Revenue","Revenue 50% PPJB","NA","Landplot","Standard","Non Departemen"],
+    ["Revenue","Revenue 50% PPJB","NA","Residential Strata","Standard","Non Departemen"],
+    ["Revenue","Revenue 50% PPJB","NA","Commercial Space Strata","Standard","Non Departemen"],
+    ["Revenue","Revenue 50% ST","NA","House Landed","Standard","Non Departemen"],
+    ["Revenue","Revenue 50% ST","NA","Commercial Landed","Standard","Non Departemen"],
+    ["Revenue","Revenue 50% ST","NA","Landplot","Standard","Non Departemen"],
+    ["Revenue","Revenue 50% ST","NA","Residential Strata","Standard","Non Departemen"],
+    ["Revenue","Revenue 50% ST","NA","Commercial Space Strata","Standard","Non Departemen"],
+    ["Net Other Optg (Expense)/Income","NA","NA","Net Other Optg (Expense)/Income","Standard","Non Departemen"],
+    ["Depreciation","NA","NA","Depreciation","Standard","Non Departemen"],
+    ["Finance Income","NA","NA","Interest Income","Standard","Non Departemen"],
+    ["Finance Income","NA","NA","Other Finance Income","Standard","Non Departemen"],
+    ["Finance Cost","NA","NA","Interest Expense","Standard","Non Departemen"],
+    ["Finance Cost","NA","NA","Other Finance Expense","Standard","Non Departemen"],
+    ["Taxation","NA","NA","Tax PPJB & ST","Standard","Non Departemen"],
+    ["Taxation","NA","NA","Tax Other","Standard","Non Departemen"],
+    ["Management Interest","NA","NA","Management Interest","Standard","Non Departemen"]
   ];
 
   // ============================================================
@@ -2029,95 +2033,95 @@ window.mkPhasingDetail=function(td, item, thn){
   var PLU_UNITS=window.MK_MST_UNITS.map(function(m){return m.kd;});
   // Pohon dasar P&L unit (dipakai semua unit) — [L1, L2, L3, L4, Status]
   var PLU_BASE=[
-    ["Pendapatan Unit","Penjualan Rumah","NA","Rumah tapak","Standard"],
-    ["Pendapatan Unit","Penjualan Rumah","NA","Rumah toko","Standard"],
-    ["Pendapatan Unit","Penjualan Kavling","NA","Kavling hunian","Standard"],
-    ["Pendapatan Unit","Penjualan Kavling","NA","Kavling komersial","Standard"],
-    ["Pendapatan Unit","Penjualan Strata","NA","Apartemen","Standard"],
-    ["Pendapatan Unit","Penjualan Strata","NA","Ruang komersial","Standard"],
-    ["Pendapatan Unit","NA","NA","Insentif penjualan","Standard"],
-    ["Beban Pokok Penjualan","NA","NA","Beban pokok rumah","Standard"],
-    ["Beban Pokok Penjualan","NA","NA","Beban pokok kavling","Standard"],
-    ["Beban Pokok Penjualan","NA","NA","Beban pokok strata","Standard"],
-    ["Beban Penjualan","Promosi","NA","Media promosi","Standard"],
-    ["Beban Penjualan","Promosi","NA","Pameran & open house","Standard"],
-    ["Beban Penjualan","Promosi","NA","Souvenir & hadiah","Standard"],
-    ["Beban Penjualan","Promosi","NA","Riset & survei pasar","Standard"],
-    ["Beban Penjualan","Event","NA","Event & aktivasi","Standard"],
-    ["Beban Penjualan","Event","NA","Purna jual","Standard"],
-    ["Beban Penjualan","Komisi","NA","Komisi internal","Standard"],
-    ["Beban Penjualan","Komisi","NA","Komisi agen properti","Standard"],
-    ["Beban Penjualan","NA","NA","Bangunan contoh & maket","Standard"],
-    ["Beban Penjualan","NA","NA","Bangunan contoh sementara","Non Standard"],
-    ["Beban Penjualan","NA","NA","Ready stock","Non Standard"],
-    ["Beban Penjualan","NA","NA","Beban penjualan lainnya","Standard"],
-    ["Beban Kepegawaian","Gaji & Tunjangan","NA","Gaji tetap","Standard"],
-    ["Beban Kepegawaian","Gaji & Tunjangan","NA","Tunjangan & lembur","Standard"],
-    ["Beban Kepegawaian","Gaji & Tunjangan","NA","THR & bonus","Standard"],
-    ["Beban Kepegawaian","Gaji & Tunjangan","NA","Pensiun & pesangon","Standard"],
-    ["Beban Kepegawaian","Jaminan Sosial","NA","BPJS kesehatan","Standard"],
-    ["Beban Kepegawaian","Jaminan Sosial","NA","BPJS ketenagakerjaan","Standard"],
-    ["Beban Kepegawaian","Pengembangan","NA","Rekrutmen & pelatihan","Standard"],
-    ["Beban Kepegawaian","NA","NA","Reimbursement","Standard"],
-    ["Beban Kepegawaian","NA","NA","Tenaga kerja alih daya","Non Standard"],
-    ["Beban Operasional Kantor","Utilitas","NA","Listrik & air","Standard"],
-    ["Beban Operasional Kantor","Utilitas","NA","Internet & telekomunikasi","Standard"],
-    ["Beban Operasional Kantor","Pemeliharaan","NA","Gedung & taman","Standard"],
-    ["Beban Operasional Kantor","Pemeliharaan","NA","Kendaraan operasional","Standard"],
-    ["Beban Operasional Kantor","Pemeliharaan","NA","Pemeliharaan lingkungan","Standard"],
-    ["Beban Operasional Kantor","Pemeliharaan","NA","Perbaikan & pemeliharaan","Standard"],
-    ["Beban Operasional Kantor","NA","NA","ATK & rumah tangga","Standard"],
-    ["Beban Operasional Kantor","NA","NA","Inventaris kantor","Standard"],
-    ["Beban Operasional Kantor","NA","NA","Asuransi","Standard"],
-    ["Beban Operasional Kantor","NA","NA","Honor profesional","Standard"],
-    ["Beban Operasional Kantor","NA","NA","Jamuan & representasi","Standard"],
-    ["Beban Operasional Kantor","NA","NA","Perjalanan dinas","Standard"],
-    ["Beban Operasional Kantor","NA","NA","Keamanan & kebersihan","Standard"],
-    ["Beban Operasional Kantor","NA","NA","CSR & sumbangan","Standard"],
-    ["Beban Operasional Kantor","NA","NA","Perizinan & keanggotaan","Standard"],
-    ["Beban Operasional Kantor","NA","NA","Administrasi bank","Standard"],
-    ["Beban Operasional Kantor","NA","NA","Acara perusahaan","Standard"],
-    ["Beban Operasional Kantor","NA","NA","Beban umum lainnya","Standard"],
-    ["Beban Operasional Kantor","NA","NA","PBB & retribusi","Non Standard"],
-    ["Pendapatan Lain-lain Unit","NA","NA","Selisih barang gudang","Standard"],
-    ["Pendapatan Lain-lain Unit","NA","NA","Denda & sanksi kontrak","Non Standard"]
+    ["Pendapatan Unit","Penjualan Rumah","NA","Rumah tapak","Standard","Non Departemen"],
+    ["Pendapatan Unit","Penjualan Rumah","NA","Rumah toko","Standard","Non Departemen"],
+    ["Pendapatan Unit","Penjualan Kavling","NA","Kavling hunian","Standard","Non Departemen"],
+    ["Pendapatan Unit","Penjualan Kavling","NA","Kavling komersial","Standard","Non Departemen"],
+    ["Pendapatan Unit","Penjualan Strata","NA","Apartemen","Standard","Non Departemen"],
+    ["Pendapatan Unit","Penjualan Strata","NA","Ruang komersial","Standard","Non Departemen"],
+    ["Pendapatan Unit","NA","NA","Insentif penjualan","Standard","Non Departemen"],
+    ["Beban Pokok Penjualan","NA","NA","Beban pokok rumah","Standard","Non Departemen"],
+    ["Beban Pokok Penjualan","NA","NA","Beban pokok kavling","Standard","Non Departemen"],
+    ["Beban Pokok Penjualan","NA","NA","Beban pokok strata","Standard","Non Departemen"],
+    ["Beban Penjualan","Promosi","NA","Media promosi","Standard","Departemen"],
+    ["Beban Penjualan","Promosi","NA","Pameran & open house","Standard","Departemen"],
+    ["Beban Penjualan","Promosi","NA","Souvenir & hadiah","Standard","Departemen"],
+    ["Beban Penjualan","Promosi","NA","Riset & survei pasar","Standard","Departemen"],
+    ["Beban Penjualan","Event","NA","Event & aktivasi","Standard","Departemen"],
+    ["Beban Penjualan","Event","NA","Purna jual","Standard","Departemen"],
+    ["Beban Penjualan","Komisi","NA","Komisi internal","Standard","Departemen"],
+    ["Beban Penjualan","Komisi","NA","Komisi agen properti","Standard","Departemen"],
+    ["Beban Penjualan","NA","NA","Bangunan contoh & maket","Standard","Departemen"],
+    ["Beban Penjualan","NA","NA","Bangunan contoh sementara","Non Standard","Departemen"],
+    ["Beban Penjualan","NA","NA","Ready stock","Non Standard","Departemen"],
+    ["Beban Penjualan","NA","NA","Beban penjualan lainnya","Standard","Departemen"],
+    ["Beban Kepegawaian","Gaji & Tunjangan","NA","Gaji tetap","Standard","Departemen"],
+    ["Beban Kepegawaian","Gaji & Tunjangan","NA","Tunjangan & lembur","Standard","Departemen"],
+    ["Beban Kepegawaian","Gaji & Tunjangan","NA","THR & bonus","Standard","Departemen"],
+    ["Beban Kepegawaian","Gaji & Tunjangan","NA","Pensiun & pesangon","Standard","Departemen"],
+    ["Beban Kepegawaian","Jaminan Sosial","NA","BPJS kesehatan","Standard","Departemen"],
+    ["Beban Kepegawaian","Jaminan Sosial","NA","BPJS ketenagakerjaan","Standard","Departemen"],
+    ["Beban Kepegawaian","Pengembangan","NA","Rekrutmen & pelatihan","Standard","Departemen"],
+    ["Beban Kepegawaian","NA","NA","Reimbursement","Standard","Departemen"],
+    ["Beban Kepegawaian","NA","NA","Tenaga kerja alih daya","Non Standard","Departemen"],
+    ["Beban Operasional Kantor","Utilitas","NA","Listrik & air","Standard","Departemen"],
+    ["Beban Operasional Kantor","Utilitas","NA","Internet & telekomunikasi","Standard","Departemen"],
+    ["Beban Operasional Kantor","Pemeliharaan","NA","Gedung & taman","Standard","Departemen"],
+    ["Beban Operasional Kantor","Pemeliharaan","NA","Kendaraan operasional","Standard","Departemen"],
+    ["Beban Operasional Kantor","Pemeliharaan","NA","Pemeliharaan lingkungan","Standard","Departemen"],
+    ["Beban Operasional Kantor","Pemeliharaan","NA","Perbaikan & pemeliharaan","Standard","Departemen"],
+    ["Beban Operasional Kantor","NA","NA","ATK & rumah tangga","Standard","Departemen"],
+    ["Beban Operasional Kantor","NA","NA","Inventaris kantor","Standard","Departemen"],
+    ["Beban Operasional Kantor","NA","NA","Asuransi","Standard","Departemen"],
+    ["Beban Operasional Kantor","NA","NA","Honor profesional","Standard","Departemen"],
+    ["Beban Operasional Kantor","NA","NA","Jamuan & representasi","Standard","Departemen"],
+    ["Beban Operasional Kantor","NA","NA","Perjalanan dinas","Standard","Departemen"],
+    ["Beban Operasional Kantor","NA","NA","Keamanan & kebersihan","Standard","Departemen"],
+    ["Beban Operasional Kantor","NA","NA","CSR & sumbangan","Standard","Departemen"],
+    ["Beban Operasional Kantor","NA","NA","Perizinan & keanggotaan","Standard","Departemen"],
+    ["Beban Operasional Kantor","NA","NA","Administrasi bank","Standard","Departemen"],
+    ["Beban Operasional Kantor","NA","NA","Acara perusahaan","Standard","Departemen"],
+    ["Beban Operasional Kantor","NA","NA","Beban umum lainnya","Standard","Departemen"],
+    ["Beban Operasional Kantor","NA","NA","PBB & retribusi","Non Standard","Departemen"],
+    ["Pendapatan Lain-lain Unit","NA","NA","Selisih barang gudang","Standard","Non Departemen"],
+    ["Pendapatan Lain-lain Unit","NA","NA","Denda & sanksi kontrak","Non Standard","Non Departemen"]
   ];
   // Karakter tiap MST UNIT: `add` = kombinasi LOKAL, `dropL4` = detail dasar yg tak dipakai.
   // Berkunci kd_mst_unit (bm_item_pl_unit.kd_mst_unit) — seluruh kd_unit di bawahnya
   // memakai pohon yang sama.
   var PLU_LOCAL={
     SSPG:{dropL4:[],add:[
-      ["Beban Kawasan Scientia","Pengelolaan Kawasan","Utilitas Kawasan","Listrik & air kawasan","Standard"],
-      ["Beban Kawasan Scientia","Pengelolaan Kawasan","Utilitas Kawasan","Penerangan jalan umum","Standard"],
-      ["Beban Kawasan Scientia","Pengelolaan Kawasan","NA","Pengelolaan Sinpasa","Standard"],
-      ["Beban Kawasan Scientia","Pengelolaan Kawasan","NA","Taman & landscape kawasan","Standard"],
-      ["Beban Kawasan Scientia","NA","NA","Klub Sinpasa","Non Standard"],
-      ["Beban Kawasan Scientia","NA","NA","Shuttle bus Serpong","Standard"],
-      ["Pendapatan Kawasan","Jasa Pengelolaan","NA","IPL & keamanan","Standard"],
-      ["Pendapatan Kawasan","Jasa Pengelolaan","NA","Sewa fasilitas","Non Standard"],
-      ["Beban Penjualan","Promosi","NA","Pameran Serpong","Standard"],
-      ["Beban Kepegawaian","Gaji & Tunjangan","NA","Tunjangan shift petugas kawasan","Standard"]
+      ["Beban Kawasan Scientia","Pengelolaan Kawasan","Utilitas Kawasan","Listrik & air kawasan","Standard","Departemen"],
+      ["Beban Kawasan Scientia","Pengelolaan Kawasan","Utilitas Kawasan","Penerangan jalan umum","Standard","Departemen"],
+      ["Beban Kawasan Scientia","Pengelolaan Kawasan","NA","Pengelolaan Sinpasa","Standard","Departemen"],
+      ["Beban Kawasan Scientia","Pengelolaan Kawasan","NA","Taman & landscape kawasan","Standard","Departemen"],
+      ["Beban Kawasan Scientia","NA","NA","Klub Sinpasa","Non Standard","Departemen"],
+      ["Beban Kawasan Scientia","NA","NA","Shuttle bus Serpong","Standard","Departemen"],
+      ["Pendapatan Kawasan","Jasa Pengelolaan","NA","IPL & keamanan","Standard","Non Departemen"],
+      ["Pendapatan Kawasan","Jasa Pengelolaan","NA","Sewa fasilitas","Non Standard","Non Departemen"],
+      ["Beban Penjualan","Promosi","NA","Pameran Serpong","Standard","Departemen"],
+      ["Beban Kepegawaian","Gaji & Tunjangan","NA","Tunjangan shift petugas kawasan","Standard","Departemen"]
     ]},
     SMKG:{dropL4:["Kavling hunian","Kavling komersial"],add:[
-      ["Beban Pengelolaan Mall","Operasional Mall","Utilitas Mall","Listrik mall","Standard"],
-      ["Beban Pengelolaan Mall","Operasional Mall","Utilitas Mall","AC & chiller mall","Standard"],
-      ["Beban Pengelolaan Mall","Operasional Mall","NA","Parkir & keamanan mall","Standard"],
-      ["Beban Pengelolaan Mall","Operasional Mall","NA","Pengelolaan Mall Kelapa Gading","Standard"],
-      ["Beban Pengelolaan Mall","NA","NA","Tenant relation","Non Standard"],
-      ["Pendapatan Mall","Sewa & Service","NA","Sewa tenant","Standard"],
-      ["Pendapatan Mall","Sewa & Service","NA","Service charge","Standard"],
-      ["Pendapatan Mall","NA","NA","Parkir","Standard"],
-      ["Beban Penjualan","Promosi","NA","Promosi mall & atrium","Standard"],
-      ["Beban Operasional Kantor","NA","NA","Retribusi & perizinan mall","Non Standard"]
+      ["Beban Pengelolaan Mall","Operasional Mall","Utilitas Mall","Listrik mall","Standard","Departemen"],
+      ["Beban Pengelolaan Mall","Operasional Mall","Utilitas Mall","AC & chiller mall","Standard","Departemen"],
+      ["Beban Pengelolaan Mall","Operasional Mall","NA","Parkir & keamanan mall","Standard","Departemen"],
+      ["Beban Pengelolaan Mall","Operasional Mall","NA","Pengelolaan Mall Kelapa Gading","Standard","Departemen"],
+      ["Beban Pengelolaan Mall","NA","NA","Tenant relation","Non Standard","Departemen"],
+      ["Pendapatan Mall","Sewa & Service","NA","Sewa tenant","Standard","Non Departemen"],
+      ["Pendapatan Mall","Sewa & Service","NA","Service charge","Standard","Non Departemen"],
+      ["Pendapatan Mall","NA","NA","Parkir","Standard","Non Departemen"],
+      ["Beban Penjualan","Promosi","NA","Promosi mall & atrium","Standard","Departemen"],
+      ["Beban Operasional Kantor","NA","NA","Retribusi & perizinan mall","Non Standard","Departemen"]
     ]},
     SBKS:{dropL4:["Apartemen","Ruang komersial"],add:[
-      ["Beban Kawasan Bekasi","Pengelolaan Kawasan","Utilitas Kawasan","Listrik & air kawasan","Standard"],
-      ["Beban Kawasan Bekasi","Pengelolaan Kawasan","NA","Pengelolaan Kawasan Bekasi","Standard"],
-      ["Beban Kawasan Bekasi","Pengelolaan Kawasan","NA","Taman & landscape kawasan","Standard"],
-      ["Beban Kawasan Bekasi","NA","NA","Shuttle bus Bekasi","Non Standard"],
-      ["Pendapatan Kawasan","Jasa Pengelolaan","NA","IPL & keamanan","Standard"],
-      ["Beban Penjualan","Promosi","NA","Pameran Bekasi","Standard"],
-      ["Beban Operasional Kantor","NA","NA","Kantor pemasaran Bekasi","Standard"]
+      ["Beban Kawasan Bekasi","Pengelolaan Kawasan","Utilitas Kawasan","Listrik & air kawasan","Standard","Departemen"],
+      ["Beban Kawasan Bekasi","Pengelolaan Kawasan","NA","Pengelolaan Kawasan Bekasi","Standard","Departemen"],
+      ["Beban Kawasan Bekasi","Pengelolaan Kawasan","NA","Taman & landscape kawasan","Standard","Departemen"],
+      ["Beban Kawasan Bekasi","NA","NA","Shuttle bus Bekasi","Non Standard","Departemen"],
+      ["Pendapatan Kawasan","Jasa Pengelolaan","NA","IPL & keamanan","Standard","Non Departemen"],
+      ["Beban Penjualan","Promosi","NA","Pameran Bekasi","Standard","Departemen"],
+      ["Beban Operasional Kantor","NA","NA","Kantor pemasaran Bekasi","Standard","Departemen"]
     ]}
   };
   function pluInList(arr,v){return arr.indexOf(v)>-1;}
@@ -2442,22 +2446,20 @@ window.mkPhasingDetail=function(td, item, thn){
   // ============================================================
   // Komponen Item P&L Corporate (master level) + modal
   // ============================================================
-  var LV=[['L1','L1 · Pos P&L'],['L2','L2'],['L3','L3'],['L4','L4 · Detail'],['S1','Status 1'],['S2','Status 2']];
-  function lvShort(k){return k.charAt(0)==='S'?('Status '+k.charAt(1)):k;}
+  var LV=[['L1','L1 · Pos P&L'],['L2','L2'],['L3','L3'],['L4','L4 · Detail']];
+  function lvShort(k){return k;}
   var plMaster={
     L1:[{n:"GA Expense standard",s:"PDV"},{n:"Beban Umum dan Administrasi",s:"PDV"},{n:"Selling Expense",s:"PDV"},{n:"Revenue",s:"PDV"},{n:"CoS",s:"PDV"},{n:"Net Other Optg (Expense)/Income",s:"PDV"},{n:"Finance Income",s:"PDV"},{n:"Finance Cost",s:"PDV"},{n:"Taxation",s:"PDV"},{n:"Selisih cara bayar (net)",s:"PDV"},{n:"Management Interest",s:"PDV"},{n:"Depreciation",s:"PDV"}],
     L2:[{n:"NA",s:"PDV"},{n:"Beban Kepegawaian",s:"PDV"},{n:"Komisi penjualan",s:"PDV"},{n:"Revenue 50% PPJB",s:"PDV"},{n:"Revenue 50% ST",s:"PDV"},{n:"CoS 50% PPJB",s:"PDV"},{n:"CoS 50% ST",s:"PDV"},{n:"Selisih cara bayar (net) 50% PPJB",s:"PDV"},{n:"Selisih cara bayar (net) 50% ST",s:"PDV"}],
     L3:[{n:"NA",s:"PDV"},{n:"Beban gaji",s:"PDV"}],
-    L4:[{n:"Gaji tetap",s:"PDV"},{n:"Beban pensiun & pisah",s:"PDV"},{n:"Beban jamsostek",s:"PDV"},{n:"Beban THR & Bonus",s:"PDV"},{n:"Beban karyawan proyek",s:"PDV"},{n:"Beban Perekrutan, Pengembangan, dan Pelatihan",s:"PDV"},{n:"Beban tenaga kerja lain",s:"PDV"},{n:"Reimbursement",s:"PDV"},{n:"Insentif",s:"PDV"},{n:"Tunjangan lainnya",s:"PDV"},{n:"Lembur",s:"PDV"},{n:"Uang saku & makan perjalanan dinas",s:"PDV"},{n:"Beban jamuan",s:"PDV"},{n:"Beban asuransi",s:"PDV"},{n:"Beban sumbangan",s:"PDV"},{n:"Beban CSR",s:"PDV"},{n:"Beban rumah tangga kantor",s:"PDV"},{n:"Beban keamanan",s:"PDV"},{n:"Beban honor profesional",s:"PDV"},{n:"Beban inventaris",s:"PDV"},{n:"Beban perbaikan & pemeliharaan",s:"PDV"},{n:"Beban kantor",s:"PDV"},{n:"Beban akomodasi perjalanan dinas",s:"PDV"},{n:"Beban kendaraan dan transportasi",s:"PDV"},{n:"Beban pemeliharaan lingkungan",s:"PDV"},{n:"Beban gedung",s:"PDV"},{n:"Beban ijin dan keanggotaan",s:"PDV"},{n:"Beban operasional transaksi keuangan",s:"PDV"},{n:"Beban acara perusahaan",s:"PDV"},{n:"Beban umum lainnya",s:"PDV"},{n:"Beban PBB",s:"PDV"},{n:"Beban manajemen",s:"PDV"},{n:"Event",s:"PDV"},{n:"Purna jual",s:"PDV"},{n:"Media promosi",s:"PDV"},{n:"Souvenir dan hadiah",s:"PDV"},{n:"Beban Operasional Bangunan Contoh dan maket",s:"PDV"},{n:"Komisi penjualan Internal",s:"PDV"},{n:"Komisi penjualan External",s:"PDV"},{n:"Riset pemasaran dan survei (R&D)",s:"PDV"},{n:"Biaya penjualan Lainnya",s:"PDV"},{n:"Bangunan Contoh Sementara",s:"PDV"},{n:"Ready stock",s:"PDV"},{n:"Insentif penjualan",s:"PDV"},{n:"House Landed",s:"PDV"},{n:"Commercial Landed",s:"PDV"},{n:"Landplot",s:"PDV"},{n:"Residential Strata",s:"PDV"},{n:"Commercial Space Strata",s:"PDV"},{n:"Net Other Optg (Expense)/Income",s:"PDV"},{n:"Depreciation",s:"PDV"},{n:"Interest Income",s:"PDV"},{n:"Other Finance Income",s:"PDV"},{n:"Interest Expense",s:"PDV"},{n:"Other Finance Expense",s:"PDV"},{n:"Tax PPJB & ST",s:"PDV"},{n:"Tax Other",s:"PDV"},{n:"Selisih cara bayar (gross)",s:"PDV"},{n:"Tax selisih cara bayar",s:"PDV"}],
-    S1:[{n:"Standard",s:"N/A"},{n:"Non Standard",s:"N/A"}],
-    S2:[{n:"Dept",s:"N/A"},{n:"Non Dept",s:"N/A"}]
+    L4:[{n:"Gaji tetap",s:"PDV"},{n:"Beban pensiun & pisah",s:"PDV"},{n:"Beban jamsostek",s:"PDV"},{n:"Beban THR & Bonus",s:"PDV"},{n:"Beban karyawan proyek",s:"PDV"},{n:"Beban Perekrutan, Pengembangan, dan Pelatihan",s:"PDV"},{n:"Beban tenaga kerja lain",s:"PDV"},{n:"Reimbursement",s:"PDV"},{n:"Insentif",s:"PDV"},{n:"Tunjangan lainnya",s:"PDV"},{n:"Lembur",s:"PDV"},{n:"Uang saku & makan perjalanan dinas",s:"PDV"},{n:"Beban jamuan",s:"PDV"},{n:"Beban asuransi",s:"PDV"},{n:"Beban sumbangan",s:"PDV"},{n:"Beban CSR",s:"PDV"},{n:"Beban rumah tangga kantor",s:"PDV"},{n:"Beban keamanan",s:"PDV"},{n:"Beban honor profesional",s:"PDV"},{n:"Beban inventaris",s:"PDV"},{n:"Beban perbaikan & pemeliharaan",s:"PDV"},{n:"Beban kantor",s:"PDV"},{n:"Beban akomodasi perjalanan dinas",s:"PDV"},{n:"Beban kendaraan dan transportasi",s:"PDV"},{n:"Beban pemeliharaan lingkungan",s:"PDV"},{n:"Beban gedung",s:"PDV"},{n:"Beban ijin dan keanggotaan",s:"PDV"},{n:"Beban operasional transaksi keuangan",s:"PDV"},{n:"Beban acara perusahaan",s:"PDV"},{n:"Beban umum lainnya",s:"PDV"},{n:"Beban PBB",s:"PDV"},{n:"Beban manajemen",s:"PDV"},{n:"Event",s:"PDV"},{n:"Purna jual",s:"PDV"},{n:"Media promosi",s:"PDV"},{n:"Souvenir dan hadiah",s:"PDV"},{n:"Beban Operasional Bangunan Contoh dan maket",s:"PDV"},{n:"Komisi penjualan Internal",s:"PDV"},{n:"Komisi penjualan External",s:"PDV"},{n:"Riset pemasaran dan survei (R&D)",s:"PDV"},{n:"Biaya penjualan Lainnya",s:"PDV"},{n:"Bangunan Contoh Sementara",s:"PDV"},{n:"Ready stock",s:"PDV"},{n:"Insentif penjualan",s:"PDV"},{n:"House Landed",s:"PDV"},{n:"Commercial Landed",s:"PDV"},{n:"Landplot",s:"PDV"},{n:"Residential Strata",s:"PDV"},{n:"Commercial Space Strata",s:"PDV"},{n:"Net Other Optg (Expense)/Income",s:"PDV"},{n:"Depreciation",s:"PDV"},{n:"Interest Income",s:"PDV"},{n:"Other Finance Income",s:"PDV"},{n:"Interest Expense",s:"PDV"},{n:"Other Finance Expense",s:"PDV"},{n:"Tax PPJB & ST",s:"PDV"},{n:"Tax Other",s:"PDV"},{n:"Selisih cara bayar (gross)",s:"PDV"},{n:"Tax selisih cara bayar",s:"PDV"}]
   };
   // Master level versi UNIT diturunkan SEPENUHNYA dari pohon unit (pluItems), bukan dari
   // master Corporate → nama & jenjangnya memang beda, dan master selalu sinkron dg mapping.
   var PLU_MST_CACHE={};
   function pluMaster(u){
     if(PLU_MST_CACHE[u])return PLU_MST_CACHE[u];
-    var rows=pluItems(u),m={L1:[],L2:[],L3:[],L4:[],S1:[{n:'Standard'},{n:'Non Standard'}],S2:[{n:'Dept'},{n:'Non Dept'}]};
+    var rows=pluItems(u),m={L1:[],L2:[],L3:[],L4:[]};
     ['L1','L2','L3','L4'].forEach(function(k,col){
       rows.forEach(function(o){
         var v=o[col];if(!v)return;
@@ -2480,27 +2482,29 @@ window.mkPhasingDetail=function(td, item, thn){
   // Item P&L Corporate (render dari plItems) + modal
   // ============================================================
   var ipBody=document.querySelector('#ipTable tbody');
-  var ipSearch=$('ipSearch'),ipL1=$('ipL1'),ipSt=$('ipSt'),ipSeg=$('ipSeg'),ipReset=$('ipReset'),ipCount=$('ipCount');
+  var ipSearch=$('ipSearch'),ipL1=$('ipL1'),ipSt=$('ipSt'),ipDp=$('ipDp'),ipSeg=$('ipSeg'),ipReset=$('ipReset'),ipCount=$('ipCount');
   window.mkFillSegFilter(ipSeg);window.mkFillSegForm($('ipfSeg'));
   var l1opt='<option value="">Semua</option>';plMaster.L1.forEach(function(o){l1opt+='<option>'+esc(o.n)+'</option>';});ipL1.innerHTML=l1opt;
   function segCell(v){return (!v||v==='NA')?'<span class="sep na">N/A</span>':'<span class="sep">'+esc(v)+'</span>';}
   function stBadge(s){return s==='Standard'?'<span class="ds-badge ds-badge-brand">Standard</span>':'<span class="ds-badge ds-badge-neutral">Non Standard</span>';}
-  function plChain(o){return o[0]+' › '+o[1]+' › '+o[2]+' › '+o[3]+' · '+o[4];}
+  // tipe_departemen: item beban operasional dianggarkan per departemen, pendapatan/beban pokok tidak
+  function dpBadge(v){return v==='Departemen'?'<span class="ds-badge ds-badge-info">Departemen</span>':'<span class="ds-badge ds-badge-neutral">Non Departemen</span>';}
+  function plChain(o){return o[0]+' › '+o[1]+' › '+o[2]+' › '+o[3]+' · '+o[4]+(o[5]?' · '+o[5]:'');}
   function ipRow(o,sg){
     var srch=(o[0]+' '+o[1]+' '+o[2]+' '+o[3]).toLowerCase();
-    return '<tr data-search="'+esc(srch)+'" data-l1="'+esc(o[0])+'" data-st="'+esc(o[4])+'" data-seg="'+esc(sg)+'" title="'+esc(plChain(o))+'">'+
+    return '<tr data-search="'+esc(srch)+'" data-l1="'+esc(o[0])+'" data-st="'+esc(o[4])+'" data-dp="'+esc(o[5]||'')+'" data-seg="'+esc(sg)+'" title="'+esc(plChain(o))+'">'+
       '<td><div class="plmap"><span class="l1">'+esc(o[0])+'</span>'+segCell(o[1])+segCell(o[2])+segCell(o[3])+'</div></td>'+
-      '<td>'+stBadge(o[4])+'</td><td>'+esc(sg)+'</td><td><span class="ds-badge ds-badge-success">Aktif</span></td></tr>';
+      '<td>'+stBadge(o[4])+'</td><td>'+dpBadge(o[5])+'</td><td>'+esc(sg)+'</td><td><span class="ds-badge ds-badge-success">Aktif</span></td></tr>';
   }
-  function filterIP(){var t=(ipSearch.value||'').toLowerCase(),p=ipL1.value,st=ipSt.value,sg=ipSeg.value,n=0;[].forEach.call(ipBody.querySelectorAll('tr'),function(r){var ok=(!t||r.dataset.search.indexOf(t)>-1)&&(!p||r.dataset.l1===p)&&(!st||r.dataset.st===st)&&(!sg||r.dataset.seg===sg);r.style.display=ok?'':'none';if(ok)n++;});ipCount.textContent=n;}
+  function filterIP(){var t=(ipSearch.value||'').toLowerCase(),p=ipL1.value,st=ipSt.value,dp=ipDp.value,sg=ipSeg.value,n=0;[].forEach.call(ipBody.querySelectorAll('tr'),function(r){var ok=(!t||r.dataset.search.indexOf(t)>-1)&&(!p||r.dataset.l1===p)&&(!st||r.dataset.st===st)&&(!dp||r.dataset.dp===dp)&&(!sg||r.dataset.seg===sg);r.style.display=ok?'':'none';if(ok)n++;});ipCount.textContent=n;}
   function renderIP(){var rows='';plItems.forEach(function(o){rows+=ipRow(o,'PDV');});ipBody.innerHTML=rows;filterIP();}
-  [ipSearch,ipL1,ipSt,ipSeg].forEach(function(el){el.addEventListener('input',filterIP);});
-  ipReset.addEventListener('click',function(){ipSearch.value='';ipL1.value='';ipSt.value='';ipSeg.value='';filterIP();});
+  [ipSearch,ipL1,ipSt,ipDp,ipSeg].forEach(function(el){el.addEventListener('input',filterIP);});
+  ipReset.addEventListener('click',function(){ipSearch.value='';ipL1.value='';ipSt.value='';ipDp.value='';ipSeg.value='';filterIP();});
   renderIP();
-  var ipOv=$('ipOv'),ipfL1=$('ipfL1'),ipfL2=$('ipfL2'),ipfL3=$('ipfL3'),ipfL4=$('ipfL4'),ipfSt=$('ipfSt'),ipfSeg=$('ipfSeg');
+  var ipOv=$('ipOv'),ipfL1=$('ipfL1'),ipfL2=$('ipfL2'),ipfL3=$('ipfL3'),ipfL4=$('ipfL4'),ipfSt=$('ipfSt'),ipfDp=$('ipfDp'),ipfSeg=$('ipfSeg');
   function fillSel(sel,arr){var h='';arr.forEach(function(o){h+='<option>'+esc(o.n)+'</option>';});sel.innerHTML=h;}
-  $('ipAddBtn').addEventListener('click',function(){fillSel(ipfL1,plMaster.L1);fillSel(ipfL2,plMaster.L2);fillSel(ipfL3,plMaster.L3);fillSel(ipfL4,plMaster.L4);ipfSt.value='Standard';ipfSeg.value='PDV';ipOv.classList.add('open');});
-  $('ipfSave').addEventListener('click',function(){var o=[ipfL1.value,ipfL2.value,ipfL3.value,ipfL4.value,ipfSt.value],sg=ipfSeg.value;plItems.push(o);var tmp=document.createElement('tbody');tmp.innerHTML=ipRow(o,sg);var tr=tmp.firstChild;tr.classList.add('mk-row-new');ipBody.appendChild(tr);ipOv.classList.remove('open');filterIP();toast('Mapping P&L "'+o[0]+' › '+o[3]+'" ditambahkan');});
+  $('ipAddBtn').addEventListener('click',function(){fillSel(ipfL1,plMaster.L1);fillSel(ipfL2,plMaster.L2);fillSel(ipfL3,plMaster.L3);fillSel(ipfL4,plMaster.L4);ipfSt.value='Standard';ipfDp.value='Departemen';ipfSeg.value='PDV';ipOv.classList.add('open');});
+  $('ipfSave').addEventListener('click',function(){var o=[ipfL1.value,ipfL2.value,ipfL3.value,ipfL4.value,ipfSt.value,ipfDp.value],sg=ipfSeg.value;plItems.push(o);var tmp=document.createElement('tbody');tmp.innerHTML=ipRow(o,sg);var tr=tmp.firstChild;tr.classList.add('mk-row-new');ipBody.appendChild(tr);ipOv.classList.remove('open');filterIP();toast('Mapping P&L "'+o[0]+' › '+o[3]+'" ditambahkan');});
 
   // ============================================================
   // Komponen Item P&L Unit (bm_mst_item_pl_unit)
@@ -2525,18 +2529,18 @@ window.mkPhasingDetail=function(td, item, thn){
   // ============================================================
   var ipuBody=document.querySelector('#ipuTable tbody');
   if(ipuBody){
-    var ipuSearch=$('ipuSearch'),ipuL1=$('ipuL1'),ipuSt=$('ipuSt'),ipuUnit=$('ipuUnit'),ipuUnitLbl=$('ipuUnitLbl'),ipuCount=$('ipuCount');
+    var ipuSearch=$('ipuSearch'),ipuL1=$('ipuL1'),ipuSt=$('ipuSt'),ipuDp=$('ipuDp'),ipuUnit=$('ipuUnit'),ipuUnitLbl=$('ipuUnitLbl'),ipuCount=$('ipuCount');
     var ipuFillL1=function(u){var keep=ipuL1.value,h='<option value="">Semua</option>';pluMaster(u).L1.forEach(function(o){h+='<option>'+esc(o.n)+'</option>';});ipuL1.innerHTML=h;ipuL1.value=[].some.call(ipuL1.options,function(op){return op.value===keep;})?keep:'';};
-    var ipuRow=function(o){var srch=(o[0]+' '+o[1]+' '+o[2]+' '+o[3]).toLowerCase();return '<tr data-search="'+esc(srch)+'" data-l1="'+esc(o[0])+'" data-st="'+esc(o[4])+'" title="'+esc(plChain(o))+'"><td><div class="plmap"><span class="l1">'+esc(o[0])+'</span>'+segCell(o[1])+segCell(o[2])+segCell(o[3])+'</div></td><td>'+stBadge(o[4])+'</td><td><span class="ds-badge ds-badge-success">Aktif</span></td></tr>';};
-    var ipuFilter=function(){var t=(ipuSearch.value||'').toLowerCase(),p=ipuL1.value,st=ipuSt.value,n=0;[].forEach.call(ipuBody.querySelectorAll('tr'),function(r){var ok=(!t||r.dataset.search.indexOf(t)>-1)&&(!p||r.dataset.l1===p)&&(!st||r.dataset.st===st);r.style.display=ok?'':'none';if(ok)n++;});ipuCount.textContent=n;};
+    var ipuRow=function(o){var srch=(o[0]+' '+o[1]+' '+o[2]+' '+o[3]).toLowerCase();return '<tr data-search="'+esc(srch)+'" data-l1="'+esc(o[0])+'" data-st="'+esc(o[4])+'" data-dp="'+esc(o[5]||'')+'" title="'+esc(plChain(o))+'"><td><div class="plmap"><span class="l1">'+esc(o[0])+'</span>'+segCell(o[1])+segCell(o[2])+segCell(o[3])+'</div></td><td>'+stBadge(o[4])+'</td><td>'+dpBadge(o[5])+'</td><td><span class="ds-badge ds-badge-success">Aktif</span></td></tr>';};
+    var ipuFilter=function(){var t=(ipuSearch.value||'').toLowerCase(),p=ipuL1.value,st=ipuSt.value,dp=ipuDp.value,n=0;[].forEach.call(ipuBody.querySelectorAll('tr'),function(r){var ok=(!t||r.dataset.search.indexOf(t)>-1)&&(!p||r.dataset.l1===p)&&(!st||r.dataset.st===st)&&(!dp||r.dataset.dp===dp);r.style.display=ok?'':'none';if(ok)n++;});ipuCount.textContent=n;};
     var ipuRender=function(){var u=ipuUnit.value,rows='';ipuUnitLbl.textContent=u;ipuFillL1(u);pluItems(u).forEach(function(o){rows+=ipuRow(o);});ipuBody.innerHTML=rows;ipuFilter();};
-    [ipuSearch,ipuL1,ipuSt].forEach(function(el){el.addEventListener('input',ipuFilter);});
+    [ipuSearch,ipuL1,ipuSt,ipuDp].forEach(function(el){el.addEventListener('input',ipuFilter);});
     ipuUnit.addEventListener('change',ipuRender);
     ipuRender();
     var ipuOv=$('ipuOv'),ipufL1=$('ipufL1'),ipufL2=$('ipufL2'),ipufL3=$('ipufL3'),ipufL4=$('ipufL4');
     var ipuFill=function(sel,arr){var h='';arr.forEach(function(o){h+='<option>'+esc(o.n)+'</option>';});sel.innerHTML=h;};
-    $('ipuAddBtn').addEventListener('click',function(){var m=pluMaster(ipuUnit.value);ipuFill(ipufL1,m.L1);ipuFill(ipufL2,m.L2);ipuFill(ipufL3,m.L3);ipuFill(ipufL4,m.L4);$('ipufUnit').value=ipuUnit.value;$('ipufSt').value='Standard';ipuOv.classList.add('open');});
-    $('ipufSave').addEventListener('click',function(){var u=$('ipufUnit').value,o=[ipufL1.value,ipufL2.value,ipufL3.value,ipufL4.value,$('ipufSt').value];pluItems(u).push(o);if(u!==ipuUnit.value){ipuUnit.value=u;ipuRender();}else{var tmp=document.createElement('tbody');tmp.innerHTML=ipuRow(o);var tr=tmp.firstChild;tr.classList.add('mk-row-new');ipuBody.appendChild(tr);ipuFilter();}ipuOv.classList.remove('open');toast('Mapping P&L Unit '+u+' "'+o[0]+' › '+o[3]+'" ditambahkan');});
+    $('ipuAddBtn').addEventListener('click',function(){var m=pluMaster(ipuUnit.value);ipuFill(ipufL1,m.L1);ipuFill(ipufL2,m.L2);ipuFill(ipufL3,m.L3);ipuFill(ipufL4,m.L4);$('ipufUnit').value=ipuUnit.value;$('ipufSt').value='Standard';$('ipufDp').value='Departemen';ipuOv.classList.add('open');});
+    $('ipufSave').addEventListener('click',function(){var u=$('ipufUnit').value,o=[ipufL1.value,ipufL2.value,ipufL3.value,ipufL4.value,$('ipufSt').value,$('ipufDp').value];pluItems(u).push(o);if(u!==ipuUnit.value){ipuUnit.value=u;ipuRender();}else{var tmp=document.createElement('tbody');tmp.innerHTML=ipuRow(o);var tr=tmp.firstChild;tr.classList.add('mk-row-new');ipuBody.appendChild(tr);ipuFilter();}ipuOv.classList.remove('open');toast('Mapping P&L Unit '+u+' "'+o[0]+' › '+o[3]+'" ditambahkan');});
   }
 })();
 
