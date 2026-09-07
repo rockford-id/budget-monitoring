@@ -3417,15 +3417,15 @@ window.mkPhasingDetail=function(td, item, thn){
   ];
 
   // ---- Komponen Cash Flow ----
-  // kd_grup_bisnis (Segmen) — master di window.MK_SEGMEN. Yang tidak terdaftar di sini = 'N/A'.
-  var CF_SEG={
-    'Sales Receipts from AR':'PDV','Development Cost Payments':'PDV','Land':'PDV',
-    'Pematangan lahan':'PDV','Main Infrastructure':'PDV',
-    'Investment property':'IVP',
-    'Anak perusahaan':'OBZ','Other operating':'OBZ',
-    'Deviden':'OTH','Hubungan RK':'OTH'
-  };
-  function cfSeg(n){return CF_SEG[n]||window.MK_SEG_DEF;}
+  // kd_grup_bisnis (Segmen) — SUMBER: 'Budget Monitoring 20260423.xlsx' Sheet Master.
+  // Segmen ditulis SEKALI sebagai header blok, bukan per baris: Master!R4 (blok struktur
+  // Q/R) dan Master!X4 (blok mapping W/X/Y) dua-duanya berisi 'PDV'. Jadi SELURUH kode
+  // cash flow bersegmen PDV — jangan dikembalikan ke 'N/A' atau ditebak per baris.
+  // CF_SEG hanya untuk pengecualian: skema mengizinkan satu kd_cash_flow muncul di
+  // beberapa segmen (unique kd_cash_flow + kd_grup_bisnis), tapi Excel belum memberinya.
+  var CF_SEG_DEF='PDV';
+  var CF_SEG={};
+  function cfSeg(n){return CF_SEG[n]||CF_SEG_DEF;}
   var segBadge=window.segBadge;
   var cfmSearch=document.getElementById('cfmSearch'),cfmLevel=document.getElementById('cfmLevel'),cfmSegF=document.getElementById('cfmSeg'),
       cfmCount=document.getElementById('cfmCount'),cfmBody=document.querySelector('#cfmTable tbody');
