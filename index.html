@@ -858,7 +858,6 @@
         <div class="ds-toolbar">
           <div class="ds-toolbar-search"><input type="search" class="ds-input" id="mapcxSearch" placeholder="Cari item capex unit / corporate&hellip;"></div>
           <div class="mk-filter"><label>Mst Unit</label><select id="mapcxUnit" class="ds-input" style="width:120px"><option>SSPG</option><option>SBKS</option><option>SMKG</option></select></div>
-          <div class="mk-filter"><label>Status Mapping</label><select id="mapcxSt" class="ds-input" style="width:160px"><option value="">Semua</option><option value="ok">Sudah dimapping</option><option value="no">Belum dimapping</option></select></div>
         </div>
         <div class="ds-section">
           <div class="ds-section-title"><i class="bi bi-arrow-left-right"></i> Mapping Item Anggaran Capex Unit <span class="ds-section-meta">Mst Unit aktif: <b id="mapcxUnitLbl">SSPG</b> &middot; <b id="mapcxCount">0</b> item</span></div>
@@ -881,7 +880,6 @@
           <div class="ds-toolbar-search"><input type="search" class="ds-input" id="mapncSearch" placeholder="Cari item / pos P&amp;L&hellip;"></div>
           <div class="mk-filter"><label>Mst Unit</label><select id="mapncUnit" class="ds-input" style="width:120px"><option>SSPG</option><option>SBKS</option><option>SMKG</option></select></div>
           <div class="mk-filter"><label>Pos P&amp;L (L1)</label><select id="mapncL1" class="ds-input" style="width:215px"><option value="">Semua</option></select></div>
-          <div class="mk-filter"><label>Status Mapping</label><select id="mapncSt" class="ds-input" style="width:160px"><option value="">Semua</option><option value="ok">Sudah dimapping</option><option value="no">Belum dimapping</option></select></div>
           <button class="ds-btn ds-btn-ghost" id="mapncReset"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
         </div>
         <div class="ds-section">
@@ -2551,26 +2549,22 @@ window.mkPhasingDetail=function(td, item, thn){
   // Sumbernya sama dengan layar Item Anggaran: baris ncData yang punya l1 = sudah
   // dimapping; NC_MST_EXTRA = item master yang belum punya baris sama sekali.
   // ============================================================
-  var mncpS=$('mapncSearch'),mncpU=$('mapncUnit'),mncpL1=$('mapncL1'),mncpSt=$('mapncSt'),
+  var mncpS=$('mapncSearch'),mncpU=$('mapncUnit'),mncpL1=$('mapncL1'),
       mncpReset=$('mapncReset'),mncpLbl=$('mapncUnitLbl'),mncpCount=$('mapncCount'),
       mncpBody=document.querySelector('#mapncTable tbody');
-  var MAPNC_NONE='<span class="mk-unmapped">— belum dimapping —</span>';
-  function mapncList(){
-    var rows=ncData.map(function(o){return {kode:o.kode,nama:o.name,ref:o};});
-    NC_MST_EXTRA.forEach(function(m){rows.push({kode:m.kode,nama:m.nama,ref:null});});
-    return rows;
-  }
-  function mapncRow(r){
-    var o=r.ref,ada=!!(o&&o.l1);
-    var akt=(o&&o.aktif===false)?'<span class="ds-badge ds-badge-neutral">Non-Aktif</span>':'<span class="ds-badge ds-badge-success">Aktif</span>';
-    return '<tr data-search="'+esc((r.kode+' '+r.nama+' '+(ada?o.l1+' '+o.l4:'')).toLowerCase())+'" data-l1="'+esc(ada?o.l1:'')+'" data-map="'+(ada?'ok':'no')+'">'+
-      '<td><span class="mk-code">'+esc(r.kode)+'</span></td>'+
-      '<td><b class="mk-1line" title="'+esc(r.nama)+'">'+esc(r.nama)+'</b></td>'+
-      '<td>'+(ada?plmapC([o.l1,o.l2,o.l3,o.l4,o.st]):MAPNC_NONE)+'</td>'+
-      '<td>'+(ada&&o.st?stBadge(o.st):NC_EMPTY)+'</td>'+
+  // Hanya baris yang sudah punya item_pl_id yang tampil di sini — mapping WAJIB diisi
+  // saat dibuat, jadi tidak ada baris tanpa pemetaan P&L Corporate.
+  function mapncList(){return ncData.filter(function(o){return !!o.l1;});}
+  function mapncRow(o){
+    var akt=(o.aktif===false)?'<span class="ds-badge ds-badge-neutral">Non-Aktif</span>':'<span class="ds-badge ds-badge-success">Aktif</span>';
+    return '<tr data-search="'+esc((o.kode+' '+o.name+' '+o.l1+' '+o.l4).toLowerCase())+'" data-l1="'+esc(o.l1)+'">'+
+      '<td><span class="mk-code">'+esc(o.kode)+'</span></td>'+
+      '<td><b class="mk-1line" title="'+esc(o.name)+'">'+esc(o.name)+'</b></td>'+
+      '<td>'+plmapC([o.l1,o.l2,o.l3,o.l4,o.st])+'</td>'+
+      '<td>'+(o.st?stBadge(o.st):NC_EMPTY)+'</td>'+
       '<td>'+akt+'</td></tr>';
   }
-  function mapncApply(){var t=(mncpS.value||'').toLowerCase(),p=mncpL1.value,st=mncpSt.value,n=0;[].forEach.call(mncpBody.querySelectorAll('tr'),function(r){var ok=(!t||r.dataset.search.indexOf(t)>-1)&&(!p||r.dataset.l1===p)&&(!st||r.dataset.map===st);r.style.display=ok?'':'none';if(ok)n++;});mncpCount.textContent=n;}
+  function mapncApply(){var t=(mncpS.value||'').toLowerCase(),p=mncpL1.value,n=0;[].forEach.call(mncpBody.querySelectorAll('tr'),function(r){var ok=(!t||r.dataset.search.indexOf(t)>-1)&&(!p||r.dataset.l1===p);r.style.display=ok?'':'none';if(ok)n++;});mncpCount.textContent=n;}
   function mapncFillL1(){
     var keep=mncpL1.value,seen={},opt='<option value="">Semua</option>';
     ncData.forEach(function(o){if(o.l1&&!seen[o.l1]){seen[o.l1]=1;opt+='<option>'+esc(o.l1)+'</option>';}});
@@ -2605,16 +2599,23 @@ window.mkPhasingDetail=function(td, item, thn){
   mpnItem.addEventListener('change',mpnSyncItem);
   $('mapncAddBtn').addEventListener('click',function(){
     mpnU.value=mncpU.value;
-    var opt='';
-    NC_MST_EXTRA.forEach(function(m){opt+='<option value="'+esc(m.nama)+'">'+esc(m.nama)+' · belum dimapping</option>';});
-    ncData.forEach(function(o){opt+='<option value="'+esc(o.name)+'">'+esc(o.name)+(o.l1?'':' · belum dimapping')+'</option>';});
-    mpnItem.innerHTML=opt||'<option value="">— tidak ada item —</option>';
+    var baru='',ubah='';
+    NC_MST_EXTRA.forEach(function(m){baru+='<option value="'+esc(m.nama)+'">'+esc(m.nama)+'</option>';});
+    ncData.forEach(function(o){
+      var op='<option value="'+esc(o.name)+'">'+esc(o.name)+'</option>';
+      if(o.l1)ubah+=op;else baru+=op;
+    });
+    mpnItem.innerHTML=(baru?'<optgroup label="Item baru">'+baru+'</optgroup>':'')+
+                      (ubah?'<optgroup label="Ubah mapping">'+ubah+'</optgroup>':'')||
+                      '<option value="">— tidak ada item —</option>';
     mpnL1.innerHTML=optsHTML(distinct(plItems.map(function(o){return o[0];})));
     mpnSyncItem();
     mncpOv.classList.add('open');
   });
   $('mapncfSave').addEventListener('click',function(){
     var nama=mpnItem.value;if(!nama)return;
+    if(!mpnL1.value||!mpnL4.value){mpnL1.classList.add('is-error');mpnL1.focus();toast('Pemetaan P&L Corporate wajib diisi');return;}
+    mpnL1.classList.remove('is-error');
     var hit=null;ncData.forEach(function(o){if(o.name===nama)hit=o;});
     if(!hit){
       // item master belum punya baris bm_item_non_capex_unit → dibuat sekarang.
@@ -2629,9 +2630,9 @@ window.mkPhasingDetail=function(td, item, thn){
     mapncRender();ncRender();ncFillL1();mncpOv.classList.remove('open');
     toast('Mapping Non Capex Unit '+mpnU.value+' "'+nama+' → '+hit.l1+' › '+hit.l4+'" disimpan');
   });
-  [mncpS,mncpL1,mncpSt].forEach(function(el){el.addEventListener('input',mapncApply);});
+  [mncpS,mncpL1].forEach(function(el){el.addEventListener('input',mapncApply);});
   mncpU.addEventListener('change',mapncRender);
-  mncpReset.addEventListener('click',function(){mncpS.value='';mncpL1.value='';mncpSt.value='';mapncApply();});
+  mncpReset.addEventListener('click',function(){mncpS.value='';mncpL1.value='';mapncApply();});
   mapncRender();ncRender();   // ncRender pertama jalan sebelum NC_MST_EXTRA terisi
 
   // ============================================================
@@ -3351,23 +3352,32 @@ window.MCX={};   // dipakai Input Budget Capex (item rincian = item capex unit)
   // satu mapping dipakai seluruh kd_unit di bawahnya. Cash Flow per kd_unit diisi di
   // menu Item Anggaran · Item Anggaran Capex Unit.
   var mpS=document.getElementById('mapcxSearch'),mpU=document.getElementById('mapcxUnit'),
-      mpSt=document.getElementById('mapcxSt'),mpLbl=document.getElementById('mapcxUnitLbl'),
+      mpLbl=document.getElementById('mapcxUnitLbl'),
       mpCount=document.getElementById('mapcxCount'),mpBody=document.querySelector('#mapcxTable tbody');
+  // Hanya item yang sudah punya kd_item_capex yang jadi baris di sini — mapping WAJIB
+  // diisi saat dibuat, jadi tidak ada baris tanpa Item Anggaran Capex Corporate.
+  function mpRows(u){return data(u).filter(function(o){return !!o.mr;});}
   function mpRow(o){
     var akt=o.na?'<span class="ds-badge ds-badge-neutral">Non-Aktif</span>':'<span class="ds-badge ds-badge-success">Aktif</span>';
-    return '<tr data-search="'+esc((o.kode+' '+o.nama+' '+(o.mr||'')).toLowerCase())+'" data-map="'+(o.mr?'ok':'no')+'">'+
+    return '<tr data-search="'+esc((o.kode+' '+o.nama+' '+o.mr).toLowerCase())+'">'+
       '<td><span class="mk-code">'+esc(o.kode)+'</span></td><td><b>'+esc(o.nama)+'</b></td>'+
-      '<td>'+(o.mr?'<span class="ds-badge ds-badge-brand">'+esc(o.mr)+'</span>':MAP_NONE)+'</td><td>'+akt+'</td></tr>';
+      '<td><span class="ds-badge ds-badge-brand">'+esc(o.mr)+'</span></td><td>'+akt+'</td></tr>';
   }
-  function mpApply(){var t=(mpS.value||'').toLowerCase(),st=mpSt.value,n=0;[].forEach.call(mpBody.querySelectorAll('tr'),function(r){var ok=(!t||r.dataset.search.indexOf(t)>-1)&&(!st||r.dataset.map===st);r.style.display=ok?'':'none';if(ok)n++;});mpCount.textContent=n;}
-  function mpRender(){mpLbl.textContent=mpU.value;mpBody.innerHTML=data(mpU.value).map(mpRow).join("");mpApply();}
+  function mpApply(){var t=(mpS.value||'').toLowerCase(),n=0;[].forEach.call(mpBody.querySelectorAll('tr'),function(r){var ok=!t||r.dataset.search.indexOf(t)>-1;r.style.display=ok?'':'none';if(ok)n++;});mpCount.textContent=n;}
+  function mpRender(){mpLbl.textContent=mpU.value;mpBody.innerHTML=mpRows(mpU.value).map(mpRow).join("");mpApply();}
   var mpOv=document.getElementById('mapcxOv'),mpfU=document.getElementById('mapcxfUnit'),
       mpfIU=document.getElementById('mapcxfItemUnit'),mpfI=document.getElementById('mapcxfItem'),
       mpfA=document.getElementById('mapcxfAktif');
   function mpItemOf(u,kode){var hit=null;data(u).forEach(function(o){if(o.kode===kode)hit=o;});return hit;}
   function mpFillItemUnit(){
     var u=mpfU.value||mpU.value;
-    mpfIU.innerHTML=data(u).map(function(o){return '<option value="'+esc(o.kode)+'">'+esc(o.kode+' · '+o.nama)+(o.mr?'':' · belum dimapping')+'</option>';}).join('');
+    var baru='',ubah='';
+    data(u).forEach(function(o){
+      var op='<option value="'+esc(o.kode)+'">'+esc(o.kode+' · '+o.nama)+'</option>';
+      if(o.mr)ubah+=op;else baru+=op;
+    });
+    mpfIU.innerHTML=(baru?'<optgroup label="Item baru">'+baru+'</optgroup>':'')+
+                    (ubah?'<optgroup label="Ubah mapping">'+ubah+'</optgroup>':'');
     mpSyncItem();
   }
   function mpSyncItem(){
@@ -3380,12 +3390,14 @@ window.MCX={};   // dipakai Input Budget Capex (item rincian = item capex unit)
   document.getElementById('mapcxAddBtn').addEventListener('click',function(){mpfU.value=mpU.value;mpFillItemUnit();mpOv.classList.add('open');});
   document.getElementById('mapcxfSave').addEventListener('click',function(){
     var u=mpfU.value,hit=mpItemOf(u,mpfIU.value);if(!hit)return;
+    if(!mpfI.value){mpfI.classList.add('is-error');mpfI.focus();toast('Item Anggaran Capex Corporate wajib dipilih');return;}
+    mpfI.classList.remove('is-error');
     hit.mr=mpfI.value;hit.na=mpfA.value!=='Aktif';
     if(u!==mpU.value)mpU.value=u;
     mpRender();render();mpOv.classList.remove('open');
     toast('Mapping Capex Unit '+u+' "'+hit.nama+' → '+hit.mr+'" disimpan');
   });
-  [mpS,mpSt].forEach(function(el){el.addEventListener('input',mpApply);});
+  mpS.addEventListener('input',mpApply);
   mpU.addEventListener('change',mpRender);
   mpRender();
 
