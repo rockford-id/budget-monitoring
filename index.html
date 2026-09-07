@@ -180,6 +180,15 @@
 
   /* KPI grid pakai ds-stat-card */
   .mk-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  /* caption di atas tiap baris KPI (Capex / Non Capex) */
+  .mk-kpi-cap{display:flex;align-items:center;gap:9px;margin:0 0 8px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--t-text-muted)}
+  .mk-kpi-cap .t{font-weight:700;letter-spacing:.02em;text-transform:none;font-size:12.5px;color:var(--t-text)}
+  /* strip TOTAL di bawah dua baris KPI */
+  .mk-tot-strip{display:flex;flex-wrap:wrap;align-items:center;gap:6px 22px;margin-top:14px;padding:11px 14px;border:1px solid var(--t-border);border-radius:10px;background:var(--t-surf-2);font-size:12.5px}
+  .mk-tot-strip .lb{font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:11px;color:var(--t-text-muted)}
+  .mk-tot-strip .v{font-variant-numeric:tabular-nums}
+  .mk-tot-strip .v b{font-size:13.5px}
+  .mk-tot-strip .sp{margin-left:auto}
   @media (max-width:1180px){.mk-kpis{grid-template-columns:repeat(2,1fr)}}
   .mk-grid2{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;margin-top:14px}
   @media (max-width:1100px){.mk-grid2{grid-template-columns:1fr}}
@@ -194,9 +203,13 @@
   .mk-chart{display:flex;align-items:flex-end;gap:14px;height:200px;padding:10px 4px 0}
   .mk-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
   .mk-col .stack{display:flex;align-items:flex-end;gap:4px;height:100%;width:100%;justify-content:center}
-  .mk-col .b1,.mk-col .b2{width:14px;border-radius:5px 5px 0 0}
+  .mk-col .b1,.mk-col .rs{width:14px;border-radius:5px 5px 0 0}
   .mk-col .b1{background:var(--t-border-strong)}
-  .mk-col .b2{background:var(--smra-orange)}
+  /* batang realisasi = 1 batang bertumpuk: Capex di bawah, Non Capex di atas */
+  .mk-col .rs{display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
+  .mk-col .rs .b2,.mk-col .rs .b3{width:100%;border-radius:0}
+  .mk-col .rs .b2{background:var(--smra-orange)}
+  .mk-col .rs .b3{background:var(--t-success)}
   .mk-col .xl{font-size:10.5px;color:var(--t-text-faint);font-weight:600}
   .mk-legend{display:flex;gap:18px;align-items:center;font-size:12px;color:var(--t-text-muted);font-weight:600}
   .mk-legend i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:6px;vertical-align:-1px}
@@ -370,11 +383,11 @@
       </div>
 
       <div class="header-right">
-        <a id="unit-pill" class="unit-picker" href="#" onclick="return false" aria-label="Ganti Unit &amp; Lokasi">
+        <a id="unit-pill" class="unit-picker" href="#" onclick="return false" aria-label="Ganti Unit">
           <span class="unit-pill-icon">SP</span>
           <span class="unit-pill-content">
             <span class="unit-pill-title">SPCK</span>
-            <span class="unit-pill-subtitle">Lokasi: SPCK</span>
+            <span class="unit-pill-subtitle">Unit: SPCK</span>
           </span>
           <span class="unit-pill-switch"><i class="bi bi-arrow-left-right"></i></span>
         </a>
@@ -437,20 +450,39 @@
           <span style="margin-left:auto;color:var(--t-text-faint)">Alur proses budget monitoring</span>
         </div>
 
-        <div class="mk-kpis">
-          <!-- Nilai KPI diisi dari MK_UNITS (blok Dashboard di script) — jangan diketik tangan -->
-          <div class="ds-stat-card"><div class="ds-stat-label">Total Budget 2026</div><div class="ds-stat-value">Rp <span id="kpiCoBud">—</span> <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta"><span class="ds-badge ds-badge-neutral" id="kpiCoUnit">—</span></div></div>
-          <div class="ds-stat-card"><div class="ds-stat-label">Realisasi YTD</div><div class="ds-stat-value">Rp <span id="kpiCoReal">—</span> <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta mk-vpos">▲ +12,0 jt vs bln lalu</div></div>
-          <div class="ds-stat-card"><div class="ds-stat-label">Sisa Budget</div><div class="ds-stat-value">Rp <span id="kpiCoSisa">—</span> <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta mk-muted"><span id="kpiCoSisaPct">—</span> tersisa</div></div>
-          <div class="ds-stat-card"><div class="ds-stat-label">Serapan</div><div class="ds-stat-value"><span id="kpiCoPct">—</span><span style="font-size:14px;color:var(--t-text-muted)">%</span></div><div class="ds-stat-delta"><span class="ds-badge ds-badge-warning">di bawah kurva</span></div></div>
-        </div>
+        <!-- KPI dipecah Capex / Non Capex; nilainya diisi dari MK_UNITS (blok Dashboard di
+             script) — jangan diketik tangan. Strip TOTAL di bawah = jumlah kedua baris. -->
+          <div class="mk-kpi-cap"><span class="ds-badge ds-badge-warning">Capex</span><span class="t">Anggaran investasi</span></div>
+          <div class="mk-kpis">
+            <div class="ds-stat-card"><div class="ds-stat-label">Budget 2026</div><div class="ds-stat-value">Rp <span id="kpiCoBudCx">—</span> <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta "><span class="ds-badge ds-badge-neutral" id="kpiCoPorsiCx">—</span></div></div>
+            <div class="ds-stat-card"><div class="ds-stat-label">Realisasi YTD</div><div class="ds-stat-value">Rp <span id="kpiCoRealCx">—</span> <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta mk-vpos">▲ +5,0 jt vs bln lalu</div></div>
+            <div class="ds-stat-card"><div class="ds-stat-label">Sisa Budget</div><div class="ds-stat-value">Rp <span id="kpiCoSisaCx">—</span> <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta mk-muted"><span id="kpiCoSisaPctCx">—</span> tersisa</div></div>
+            <div class="ds-stat-card"><div class="ds-stat-label">Serapan</div><div class="ds-stat-value"><span id="kpiCoPctCx">—</span><span style="font-size:14px;color:var(--t-text-muted)">%</span></div><div class="ds-stat-delta "><span class="ds-badge ds-badge-warning">di bawah kurva</span></div></div>
+          </div>
+
+          <div class="mk-kpi-cap"><span class="ds-badge ds-badge-info">Non Capex</span><span class="t">Anggaran operasional</span></div>
+          <div class="mk-kpis">
+            <div class="ds-stat-card"><div class="ds-stat-label">Budget 2026</div><div class="ds-stat-value">Rp <span id="kpiCoBudNc">—</span> <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta "><span class="ds-badge ds-badge-neutral" id="kpiCoPorsiNc">—</span></div></div>
+            <div class="ds-stat-card"><div class="ds-stat-label">Realisasi YTD</div><div class="ds-stat-value">Rp <span id="kpiCoRealNc">—</span> <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta mk-vpos">▲ +7,0 jt vs bln lalu</div></div>
+            <div class="ds-stat-card"><div class="ds-stat-label">Sisa Budget</div><div class="ds-stat-value">Rp <span id="kpiCoSisaNc">—</span> <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta mk-muted"><span id="kpiCoSisaPctNc">—</span> tersisa</div></div>
+            <div class="ds-stat-card"><div class="ds-stat-label">Serapan</div><div class="ds-stat-value"><span id="kpiCoPctNc">—</span><span style="font-size:14px;color:var(--t-text-muted)">%</span></div><div class="ds-stat-delta "><span class="ds-badge ds-badge-warning">di bawah kurva</span></div></div>
+          </div>
+
+          <div class="mk-tot-strip">
+            <span class="lb">Total 2026</span>
+            <span class="v">Budget <b>Rp <span id="kpiCoBud">—</span> jt</b></span>
+            <span class="v">Realisasi <b>Rp <span id="kpiCoReal">—</span> jt</b></span>
+            <span class="v">Sisa <b>Rp <span id="kpiCoSisa">—</span> jt</b></span>
+            <span class="v">Serapan <b><span id="kpiCoPct">—</span>%</b></span>
+            <span class="sp"><span class="ds-badge ds-badge-neutral" id="kpiCoUnit">—</span></span>
+          </div>
 
         <div class="mk-grid2">
           <div class="ds-section">
             <div class="mk-sec-head">
               <span class="mk-sec-label"><i class="bi bi-bar-chart"></i> Budget vs Realisasi per Bulan</span>
               <span class="mk-sec-meta">2026 · juta Rp</span>
-              <span class="mk-sec-actions mk-legend"><span><i style="background:var(--t-border-strong)"></i>Budget</span><span><i style="background:var(--smra-orange)"></i>Realisasi</span></span>
+              <span class="mk-sec-actions mk-legend"><span><i style="background:var(--t-border-strong)"></i>Budget</span><span><i style="background:var(--smra-orange)"></i>Realisasi Capex</span><span><i style="background:var(--t-success)"></i>Realisasi Non Capex</span></span>
             </div>
             <div class="mk-chart" id="chart1"></div>
           </div>
@@ -473,8 +505,21 @@
           <div class="ds-section-title"><i class="bi bi-buildings"></i> Serapan per Unit <span class="ds-section-meta">dikelompokkan per Mst Unit</span></div>
           <div class="mk-tablewrap">
             <!-- Baris digenerate dari MK_UNITS: baris Mst Unit (subtotal) + baris kd_unit di bawahnya -->
-            <table class="ds-table ds-table-sm">
-              <thead><tr><th>Mst Unit / Unit</th><th>Lokasi</th><th class="mk-r">Budget</th><th class="mk-r">Realisasi</th><th class="mk-r">Sisa</th><th style="width:200px">Serapan</th></tr></thead>
+            <table class="ds-table ds-table-sm" style="min-width:1080px">
+              <thead>
+                <tr>
+                  <th rowspan="2" style="min-width:250px">Mst Unit / Unit</th>
+                  <th colspan="2" class="mk-c">Capex</th>
+                  <th colspan="2" class="mk-c">Non Capex</th>
+                  <th colspan="2" class="mk-c">Total</th>
+                  <th rowspan="2" style="width:180px">Serapan</th>
+                </tr>
+                <tr>
+                  <th class="mk-r">Budget</th><th class="mk-r">Realisasi</th>
+                  <th class="mk-r">Budget</th><th class="mk-r">Realisasi</th>
+                  <th class="mk-r">Budget</th><th class="mk-r">Sisa</th>
+                </tr>
+              </thead>
               <tbody id="dcUnitBody"></tbody>
             </table>
           </div>
@@ -484,27 +529,54 @@
       <!-- ================= DASHBOARD UNIT ================= -->
       <section class="screen" id="s-dash-unit">
         <div class="ds-page-header"><div class="ds-page-title"><h1>Dashboard Unit</h1><div class="ds-page-subtitle">Beranda · ringkasan unit aktif — SPCK · 2026</div></div><div class="ds-page-actions"><span class="ds-badge ds-badge-brand"><i class="bi bi-building"></i> Unit SPCK</span></div></div>
-        <div class="mk-kpis">
-          <div class="ds-stat-card"><div class="ds-stat-label">Budget Unit 2026</div><div class="ds-stat-value">Rp <span id="kpiUBud">—</span> <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta"><span class="ds-badge ds-badge-neutral" id="kpiUKd">—</span></div></div>
-          <div class="ds-stat-card"><div class="ds-stat-label">Realisasi YTD</div><div class="ds-stat-value">Rp <span id="kpiUReal">—</span> <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta mk-vpos">▲ +4,0 jt vs bln lalu</div></div>
-          <div class="ds-stat-card"><div class="ds-stat-label">Sisa Budget</div><div class="ds-stat-value">Rp <span id="kpiUSisa">—</span> <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta mk-muted"><span id="kpiUSisaPct">—</span> tersisa</div></div>
-          <div class="ds-stat-card"><div class="ds-stat-label">Serapan</div><div class="ds-stat-value"><span id="kpiUPct">—</span><span style="font-size:14px;color:var(--t-text-muted)">%</span></div><div class="ds-stat-delta"><span class="ds-badge ds-badge-warning">di bawah kurva</span></div></div>
-        </div>
+          <div class="mk-kpi-cap"><span class="ds-badge ds-badge-warning">Capex</span><span class="t">Anggaran investasi unit</span></div>
+          <div class="mk-kpis">
+            <div class="ds-stat-card"><div class="ds-stat-label">Budget 2026</div><div class="ds-stat-value">Rp <span id="kpiUBudCx">—</span> <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta "><span class="ds-badge ds-badge-neutral" id="kpiUPorsiCx">—</span></div></div>
+            <div class="ds-stat-card"><div class="ds-stat-label">Realisasi YTD</div><div class="ds-stat-value">Rp <span id="kpiURealCx">—</span> <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta mk-vpos">▲ +1,5 jt vs bln lalu</div></div>
+            <div class="ds-stat-card"><div class="ds-stat-label">Sisa Budget</div><div class="ds-stat-value">Rp <span id="kpiUSisaCx">—</span> <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta mk-muted"><span id="kpiUSisaPctCx">—</span> tersisa</div></div>
+            <div class="ds-stat-card"><div class="ds-stat-label">Serapan</div><div class="ds-stat-value"><span id="kpiUPctCx">—</span><span style="font-size:14px;color:var(--t-text-muted)">%</span></div><div class="ds-stat-delta "><span class="ds-badge ds-badge-warning">di bawah kurva</span></div></div>
+          </div>
+
+          <div class="mk-kpi-cap"><span class="ds-badge ds-badge-info">Non Capex</span><span class="t">Anggaran operasional unit</span></div>
+          <div class="mk-kpis">
+            <div class="ds-stat-card"><div class="ds-stat-label">Budget 2026</div><div class="ds-stat-value">Rp <span id="kpiUBudNc">—</span> <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta "><span class="ds-badge ds-badge-neutral" id="kpiUPorsiNc">—</span></div></div>
+            <div class="ds-stat-card"><div class="ds-stat-label">Realisasi YTD</div><div class="ds-stat-value">Rp <span id="kpiURealNc">—</span> <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta mk-vpos">▲ +2,5 jt vs bln lalu</div></div>
+            <div class="ds-stat-card"><div class="ds-stat-label">Sisa Budget</div><div class="ds-stat-value">Rp <span id="kpiUSisaNc">—</span> <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta mk-muted"><span id="kpiUSisaPctNc">—</span> tersisa</div></div>
+            <div class="ds-stat-card"><div class="ds-stat-label">Serapan</div><div class="ds-stat-value"><span id="kpiUPctNc">—</span><span style="font-size:14px;color:var(--t-text-muted)">%</span></div><div class="ds-stat-delta "><span class="ds-badge ds-badge-warning">di bawah kurva</span></div></div>
+          </div>
+
+          <div class="mk-tot-strip">
+            <span class="lb">Total Unit 2026</span>
+            <span class="v">Budget <b>Rp <span id="kpiUBud">—</span> jt</b></span>
+            <span class="v">Realisasi <b>Rp <span id="kpiUReal">—</span> jt</b></span>
+            <span class="v">Sisa <b>Rp <span id="kpiUSisa">—</span> jt</b></span>
+            <span class="v">Serapan <b><span id="kpiUPct">—</span>%</b></span>
+            <span class="sp"><span class="ds-badge ds-badge-neutral" id="kpiUKd">—</span></span>
+          </div>
         <div class="ds-section" style="margin-top:14px">
-          <div class="mk-sec-head"><span class="mk-sec-label"><i class="bi bi-bar-chart"></i> Budget vs Realisasi per Bulan</span><span class="mk-sec-meta">SPCK · 2026 · juta Rp</span><span class="mk-sec-actions mk-legend"><span><i style="background:var(--t-border-strong)"></i>Budget</span><span><i style="background:var(--smra-orange)"></i>Realisasi</span></span></div>
+          <div class="mk-sec-head"><span class="mk-sec-label"><i class="bi bi-bar-chart"></i> Budget vs Realisasi per Bulan</span><span class="mk-sec-meta">SPCK · 2026 · juta Rp</span><span class="mk-sec-actions mk-legend"><span><i style="background:var(--t-border-strong)"></i>Budget</span><span><i style="background:var(--smra-orange)"></i>Realisasi Capex</span><span><i style="background:var(--t-success)"></i>Realisasi Non Capex</span></span></div>
           <div class="mk-chart" id="chartU"></div>
         </div>
         <div class="ds-section" style="margin-top:14px">
           <div class="ds-section-title"><i class="bi bi-people"></i> Serapan per Departemen — SPCK</div>
-          <div class="mk-tablewrap"><table class="ds-table ds-table-sm">
-            <thead><tr><th>Departemen</th><th class="mk-r">Budget</th><th class="mk-r">Realisasi</th><th class="mk-r">Sisa</th><th style="width:200px">Serapan</th></tr></thead>
-            <tbody>
-              <!-- Jumlah 4 departemen = budget & realisasi SPCK di KPI atas (300,0 jt / 64,0 jt) -->
-              <tr><td><b>HR &amp; GA</b></td><td class="mk-r mk-num">140.000.000</td><td class="mk-r mk-num">30.000.000</td><td class="mk-r mk-num">110.000.000</td><td><div class="mk-barwrap"><div class="mk-bar"><i style="width:21%;background:var(--smra-orange)"></i></div><span class="pct">21,4%</span></div></td></tr>
-              <tr><td><b>Marketing</b></td><td class="mk-r mk-num">100.000.000</td><td class="mk-r mk-num">21.000.000</td><td class="mk-r mk-num">79.000.000</td><td><div class="mk-barwrap"><div class="mk-bar"><i style="width:21%;background:var(--smra-orange)"></i></div><span class="pct">21,0%</span></div></td></tr>
-              <tr><td><b>Information Technology</b></td><td class="mk-r mk-num">40.000.000</td><td class="mk-r mk-num">8.000.000</td><td class="mk-r mk-num">32.000.000</td><td><div class="mk-barwrap"><div class="mk-bar"><i style="width:20%;background:var(--t-success)"></i></div><span class="pct">20,0%</span></div></td></tr>
-              <tr><td><b>Finance &amp; Accounting</b></td><td class="mk-r mk-num">20.000.000</td><td class="mk-r mk-num">5.000.000</td><td class="mk-r mk-num">15.000.000</td><td><div class="mk-barwrap"><div class="mk-bar"><i style="width:25%;background:var(--t-success)"></i></div><span class="pct">25,0%</span></div></td></tr>
-            </tbody>
+          <!-- Baris digenerate dari MK_DEPT_SPCK (blok Dashboard di script); jumlahnya
+               HARUS = budget & realisasi SPCK di KPI atas. Jangan diketik tangan. -->
+          <div class="mk-tablewrap"><table class="ds-table ds-table-sm" style="min-width:1040px">
+            <thead>
+              <tr>
+                <th rowspan="2" style="min-width:210px">Departemen</th>
+                <th colspan="2" class="mk-c">Capex</th>
+                <th colspan="2" class="mk-c">Non Capex</th>
+                <th colspan="2" class="mk-c">Total</th>
+                <th rowspan="2" style="width:180px">Serapan</th>
+              </tr>
+              <tr>
+                <th class="mk-r">Budget</th><th class="mk-r">Realisasi</th>
+                <th class="mk-r">Budget</th><th class="mk-r">Realisasi</th>
+                <th class="mk-r">Budget</th><th class="mk-r">Sisa</th>
+              </tr>
+            </thead>
+            <tbody id="duDeptBody"></tbody>
           </table></div>
         </div>
       </section>
@@ -512,29 +584,47 @@
       <!-- ================= DASHBOARD DEPARTEMEN ================= -->
       <section class="screen" id="s-dash-dept">
         <div class="ds-page-header"><div class="ds-page-title"><h1>Dashboard Departemen</h1><div class="ds-page-subtitle">Beranda · ringkasan departemen — HR &amp; GA · SPCK · 2026</div></div><div class="ds-page-actions"><span class="ds-badge ds-badge-brand"><i class="bi bi-people"></i> HR &amp; GA</span></div></div>
+        <!-- Angka HARUS = baris HR & GA di tabel "Serapan per Departemen" (Dashboard Unit):
+             Capex 50,0/10,0 · Non Capex 90,0/20,0 · total 140,0/30,0 jt -->
+        <div class="mk-kpi-cap"><span class="ds-badge ds-badge-warning">Capex</span><span class="t">Anggaran investasi departemen</span></div>
         <div class="mk-kpis">
-          <!-- Angka HARUS = baris HR & GA di tabel "Serapan per Departemen" (Dashboard Unit): 140,0 / 30,0 jt -->
-          <div class="ds-stat-card"><div class="ds-stat-label">Budget Departemen</div><div class="ds-stat-value">Rp 140,0 <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta"><span class="ds-badge ds-badge-neutral">HR &amp; GA · SPCK</span></div></div>
-          <div class="ds-stat-card"><div class="ds-stat-label">Realisasi YTD</div><div class="ds-stat-value">Rp 30,0 <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta mk-vpos">▲ +2,0 jt vs bln lalu</div></div>
-          <div class="ds-stat-card"><div class="ds-stat-label">Sisa Budget</div><div class="ds-stat-value">Rp 110,0 <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta mk-muted">78,6% tersisa</div></div>
-          <div class="ds-stat-card"><div class="ds-stat-label">Serapan</div><div class="ds-stat-value">21,4<span style="font-size:14px;color:var(--t-text-muted)">%</span></div><div class="ds-stat-delta"><span class="ds-badge ds-badge-success">sesuai kurva</span></div></div>
+          <div class="ds-stat-card"><div class="ds-stat-label">Budget 2026</div><div class="ds-stat-value">Rp 50,0 <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta"><span class="ds-badge ds-badge-neutral">35,7% dari budget dept</span></div></div>
+          <div class="ds-stat-card"><div class="ds-stat-label">Realisasi YTD</div><div class="ds-stat-value">Rp 10,0 <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta mk-vpos">▲ +0,5 jt vs bln lalu</div></div>
+          <div class="ds-stat-card"><div class="ds-stat-label">Sisa Budget</div><div class="ds-stat-value">Rp 40,0 <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta mk-muted">80,0% tersisa</div></div>
+          <div class="ds-stat-card"><div class="ds-stat-label">Serapan</div><div class="ds-stat-value">20,0<span style="font-size:14px;color:var(--t-text-muted)">%</span></div><div class="ds-stat-delta"><span class="ds-badge ds-badge-success">sesuai kurva</span></div></div>
+        </div>
+
+        <div class="mk-kpi-cap" style="margin-top:14px"><span class="ds-badge ds-badge-info">Non Capex</span><span class="t">Anggaran operasional departemen</span></div>
+        <div class="mk-kpis">
+          <div class="ds-stat-card"><div class="ds-stat-label">Budget 2026</div><div class="ds-stat-value">Rp 90,0 <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta"><span class="ds-badge ds-badge-neutral">64,3% dari budget dept</span></div></div>
+          <div class="ds-stat-card"><div class="ds-stat-label">Realisasi YTD</div><div class="ds-stat-value">Rp 20,0 <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta mk-vpos">▲ +1,5 jt vs bln lalu</div></div>
+          <div class="ds-stat-card"><div class="ds-stat-label">Sisa Budget</div><div class="ds-stat-value">Rp 70,0 <span style="font-size:14px;color:var(--t-text-muted)">jt</span></div><div class="ds-stat-delta mk-muted">77,8% tersisa</div></div>
+          <div class="ds-stat-card"><div class="ds-stat-label">Serapan</div><div class="ds-stat-value">22,2<span style="font-size:14px;color:var(--t-text-muted)">%</span></div><div class="ds-stat-delta"><span class="ds-badge ds-badge-success">sesuai kurva</span></div></div>
+        </div>
+
+        <div class="mk-tot-strip">
+          <span class="lb">Total Departemen 2026</span>
+          <span class="v">Budget <b>Rp 140,0 jt</b></span>
+          <span class="v">Realisasi <b>Rp 30,0 jt</b></span>
+          <span class="v">Sisa <b>Rp 110,0 jt</b></span>
+          <span class="v">Serapan <b>21,4%</b></span>
+          <span class="sp"><span class="ds-badge ds-badge-neutral">HR &amp; GA · SPCK</span></span>
         </div>
         <div class="ds-section" style="margin-top:14px">
-          <div class="mk-sec-head"><span class="mk-sec-label"><i class="bi bi-bar-chart"></i> Budget vs Realisasi per Bulan</span><span class="mk-sec-meta">HR &amp; GA · 2026 · juta Rp</span><span class="mk-sec-actions mk-legend"><span><i style="background:var(--t-border-strong)"></i>Budget</span><span><i style="background:var(--smra-orange)"></i>Realisasi</span></span></div>
+          <div class="mk-sec-head"><span class="mk-sec-label"><i class="bi bi-bar-chart"></i> Budget vs Realisasi per Bulan</span><span class="mk-sec-meta">HR &amp; GA · 2026 · juta Rp</span><span class="mk-sec-actions mk-legend"><span><i style="background:var(--t-border-strong)"></i>Budget</span><span><i style="background:var(--smra-orange)"></i>Realisasi Capex</span><span><i style="background:var(--t-success)"></i>Realisasi Non Capex</span></span></div>
           <div class="mk-chart" id="chartD"></div>
         </div>
         <div class="ds-section" style="margin-top:14px">
           <div class="ds-section-title"><i class="bi bi-list-ul"></i> Serapan per Item Anggaran — HR &amp; GA</div>
-          <div class="mk-tablewrap"><table class="ds-table ds-table-sm">
-            <thead><tr><th>Item Anggaran</th><th class="mk-r">Budget</th><th class="mk-r">Realisasi</th><th class="mk-r">Sisa</th><th style="width:200px">Serapan</th></tr></thead>
-            <tbody>
-              <!-- Jumlah 4 item = KPI di atas (140,0 jt / 30,0 jt). Beban asuransi di sini
-                   = porsi HR & GA saja; total unit 75,0 jt ada di Kartu Kontrol Budget. -->
-              <tr><td><b>Gaji tetap</b></td><td class="mk-r mk-num">70.000.000</td><td class="mk-r mk-num">15.000.000</td><td class="mk-r mk-num">55.000.000</td><td><div class="mk-barwrap"><div class="mk-bar"><i style="width:21%;background:var(--smra-orange)"></i></div><span class="pct">21,4%</span></div></td></tr>
-              <tr><td><b>Beban gedung</b></td><td class="mk-r mk-num">35.000.000</td><td class="mk-r mk-num">8.000.000</td><td class="mk-r mk-num">27.000.000</td><td><div class="mk-barwrap"><div class="mk-bar"><i style="width:23%;background:var(--smra-orange)"></i></div><span class="pct">22,9%</span></div></td></tr>
-              <tr><td><b>Beban asuransi</b></td><td class="mk-r mk-num">25.000.000</td><td class="mk-r mk-num">5.000.000</td><td class="mk-r mk-num">20.000.000</td><td><div class="mk-barwrap"><div class="mk-bar"><i style="width:20%;background:var(--t-success)"></i></div><span class="pct">20,0%</span></div></td></tr>
-              <tr><td><b>Beban kantor</b></td><td class="mk-r mk-num">10.000.000</td><td class="mk-r mk-num">2.000.000</td><td class="mk-r mk-num">8.000.000</td><td><div class="mk-barwrap"><div class="mk-bar"><i style="width:20%;background:var(--t-success)"></i></div><span class="pct">20,0%</span></div></td></tr>
-            </tbody>
+          <!-- Baris digenerate dari MK_ITEM_HRGA (blok Dashboard di script), dikelompokkan
+               Capex / Non Capex. Satu item anggaran hanya bisa SALAH SATU jenis, jadi kolom
+               angkanya tetap 4 + kolom Jenis (bukan kolom Capex & Non Capex bersebelahan).
+               Jumlah tiap grup HARUS = KPI di atas: Capex 50,0/10,0 · Non Capex 90,0/20,0.
+               Beban asuransi di sini = porsi HR & GA saja; total unit 75,0 jt ada di
+               Kartu Kontrol Budget. -->
+          <div class="mk-tablewrap"><table class="ds-table ds-table-sm" style="min-width:840px">
+            <thead><tr><th style="min-width:230px">Item Anggaran</th><th style="width:110px">Jenis</th><th class="mk-r">Budget</th><th class="mk-r">Realisasi</th><th class="mk-r">Sisa</th><th style="width:180px">Serapan</th></tr></thead>
+            <tbody id="ddItemBody"></tbody>
           </table></div>
         </div>
       </section>
@@ -1743,18 +1833,24 @@ window.MK_MST_UNITS=[
 ];
 // bud/real = rupiah. Total 1.000,0 jt budget · 214,0 jt realisasi (21,4%).
 // Angka ini dipakai Dashboard Corporate/Unit & Laporan — jangan diketik ulang di layar.
+// budget & realisasi DIPECAH Capex / Non Capex (permintaan user 2026-09-07). `bud`/`real`
+// tidak diketik lagi — diturunkan dari penjumlahannya di bawah, supaya Laporan P&L
+// (yang memakai .bud/.real) tidak pernah beda dengan angka di dashboard.
+// `lok` = nama cluster/proyek, TETAP dipakai Laporan P&L per Lokasi (MK_LOKASI).
 window.MK_UNITS=[
-  {kd:'SPCK',nm:'PT. SERPONG CIPTA KREASI',        mst:'SSPG',lok:'Scientia Garden',bud:300000000,real:64000000},
-  {kd:'SSPG',nm:'KSO. SUMMARECON SERPONG',         mst:'SSPG',lok:'Scientia Garden',bud:150000000,real:32000000},
-  {kd:'KSLL',nm:'KSO SUMMARECON LESTARI LAKEVIEW', mst:'SSPG',lok:'Scientia Garden',bud:90000000, real:19500000},
-  {kd:'KSLV',nm:'KSO. SUMMARECON LAKE VIEW',       mst:'SSPG',lok:'Symphonia',      bud:60000000, real:12500000},
-  {kd:'KSVT',nm:'KSO SUMMARECON VARIATATA',        mst:'SSPG',lok:'Nava Park',      bud:45000000, real:9500000},
-  {kd:'SPCH',nm:'SERPONG CAHAYA HARMONI',          mst:'SSPG',lok:'Symphonia',      bud:40000000, real:8500000},
-  {kd:'SPCL',nm:'SERPONG CIPTA LESTARI',           mst:'SSPG',lok:'Nava Park',      bud:35000000, real:7000000},
-  {kd:'SBKS',nm:'Summarecon Bekasi',               mst:'SBKS',lok:'Grand Orchard',  bud:130000000,real:28000000},
-  {kd:'SMSF',nm:'Summa Sinar Fajar',               mst:'SBKS',lok:'Burgundy',       bud:50000000, real:11000000},
-  {kd:'SMKG',nm:'SENTRA KELAPA GADING',            mst:'SMKG',lok:'Kelapa Gading',  bud:100000000,real:22000000}
+  {kd:'SPCK',nm:'PT. SERPONG CIPTA KREASI',        mst:'SSPG',lok:'Scientia Garden',budCx:120000000,budNc:180000000,realCx:26000000,realNc:38000000},
+  {kd:'SSPG',nm:'KSO. SUMMARECON SERPONG',         mst:'SSPG',lok:'Scientia Garden',budCx:60000000, budNc:90000000, realCx:13000000,realNc:19000000},
+  {kd:'KSLL',nm:'KSO SUMMARECON LESTARI LAKEVIEW', mst:'SSPG',lok:'Scientia Garden',budCx:36000000, budNc:54000000, realCx:8000000, realNc:11500000},
+  {kd:'KSLV',nm:'KSO. SUMMARECON LAKE VIEW',       mst:'SSPG',lok:'Symphonia',      budCx:21000000, budNc:39000000, realCx:4500000, realNc:8000000},
+  {kd:'KSVT',nm:'KSO SUMMARECON VARIATATA',        mst:'SSPG',lok:'Nava Park',      budCx:18000000, budNc:27000000, realCx:4000000, realNc:5500000},
+  {kd:'SPCH',nm:'SERPONG CAHAYA HARMONI',          mst:'SSPG',lok:'Symphonia',      budCx:14000000, budNc:26000000, realCx:3000000, realNc:5500000},
+  {kd:'SPCL',nm:'SERPONG CIPTA LESTARI',           mst:'SSPG',lok:'Nava Park',      budCx:11000000, budNc:24000000, realCx:2000000, realNc:5000000},
+  {kd:'SBKS',nm:'Summarecon Bekasi',               mst:'SBKS',lok:'Grand Orchard',  budCx:55000000, budNc:75000000, realCx:12000000,realNc:16000000},
+  {kd:'SMSF',nm:'Summa Sinar Fajar',               mst:'SBKS',lok:'Burgundy',       budCx:18000000, budNc:32000000, realCx:4000000, realNc:7000000},
+  {kd:'SMKG',nm:'SENTRA KELAPA GADING',            mst:'SMKG',lok:'Kelapa Gading',  budCx:45000000, budNc:55000000, realCx:10000000,realNc:12000000}
 ];
+// total 1.000,0 jt (Capex 398,0 · Non Capex 602,0) · realisasi 214,0 jt (Capex 86,5 · Non Capex 127,5)
+window.MK_UNITS.forEach(function(u){u.bud=u.budCx+u.budNc;u.real=u.realCx+u.realNc;});
 // Unit & mst unit yang aktif di konteks login (bm_budget_req.kd_unit dari sesi).
 window.MK_UNIT_LOGIN='SPCK';
 window.MK_MST_LOGIN='SSPG';
@@ -2766,50 +2862,141 @@ window.mkPhasingDetail=function(td, item, thn){
 // ============================================================
 (function(){
   var months=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
-  function draw(id,b,vals,max){var c=document.getElementById(id);if(!c)return;var html='';for(var i=0;i<12;i++){var real=vals[i]||0;html+='<div class="mk-col"><div class="stack">'+
-    '<div class="b1" style="height:'+(b/max*100)+'%" title="Budget '+b+' jt"></div>'+
-    '<div class="b2" style="height:'+(real/max*100)+'%" title="Realisasi '+real+' jt"></div>'+
-    '</div><div class="xl">'+months[i]+'</div></div>';}c.innerHTML=html;}
+  // Batang realisasi = SATU batang bertumpuk: Capex di bawah (oranye), Non Capex di atas
+  // (hijau). Tinggi luar = realisasi total, tinggi dalam = porsi tiap jenis.
+  function draw(id,b,cx,nc,max){var c=document.getElementById(id);if(!c)return;var html='';
+    for(var i=0;i<12;i++){
+      var rc=cx[i]||0,rn=nc[i]||0,rt=rc+rn;
+      html+='<div class="mk-col"><div class="stack">'+
+        '<div class="b1" style="height:'+(b/max*100)+'%" title="Budget '+b+' jt"></div>'+
+        '<div class="rs" style="height:'+(rt/max*100)+'%" title="Realisasi '+rt+' jt · Capex '+rc+' · Non Capex '+rn+'">'+
+          '<div class="b3" style="height:'+(rt?rn/rt*100:0)+'%"></div>'+
+          '<div class="b2" style="height:'+(rt?rc/rt*100:0)+'%"></div>'+
+        '</div>'+
+        '</div><div class="xl">'+months[i]+'</div></div>';
+    }
+    c.innerHTML=html;}
   // Budget/bulan = budget setahun ÷ 12; jumlah realisasi 4 bulan = realisasi YTD di KPI.
-  draw('chart1',83.3,[22,58,80,54,0,0,0,0,0,0,0,0],90);  // Corporate: 1.000 jt · realisasi 214 jt
-  draw('chartU',25,[8,18,22,16,0,0,0,0,0,0,0,0],28);     // Unit SPCK: 300 jt · realisasi 64 jt
-  draw('chartD',11.7,[4,8,11,7,0,0,0,0,0,0,0,0],13);     // Dept HR & GA di SPCK: 140 jt · realisasi 30 jt
+  // Corporate: 1.000 jt · realisasi 214 jt (Capex 86,5 · Non Capex 127,5)
+  draw('chart1',83.3,[9,23,32,22.5,0,0,0,0,0,0,0,0],[13,35,48,31.5,0,0,0,0,0,0,0,0],90);
+  // Unit SPCK: 300 jt · realisasi 64 jt (Capex 26 · Non Capex 38)
+  draw('chartU',25,[3,7,9,7,0,0,0,0,0,0,0,0],[5,11,13,9,0,0,0,0,0,0,0,0],28);
+  // Dept HR & GA di SPCK: 140 jt · realisasi 30 jt (Capex 10 · Non Capex 20)
+  draw('chartD',11.7,[1,3,4,2,0,0,0,0,0,0,0,0],[3,5,7,5,0,0,0,0,0,0,0,0],13);
 
   // ---- KPI & tabel Dashboard, seluruhnya dari MK_UNITS ----
   function rp(n){var s=String(Math.round(n||0)),o='';for(var i=0;i<s.length;i++){if(i>0&&(s.length-i)%3===0)o+='.';o+=s.charAt(i);}return o;}
   function jt(n){var x=(Math.round((n||0)/1e5)/10).toFixed(1).split('.');return rp(+x[0])+','+x[1];}
   function p1(a,b){return b>0?(Math.round(a/b*1000)/10).toFixed(1).replace('.',',')+'%':'—';}
   function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
-  var U=window.MK_UNITS,TB=0,TR=0;
-  U.forEach(function(u){TB+=u.bud;TR+=u.real;});
-  set('kpiCoBud',jt(TB));set('kpiCoReal',jt(TR));set('kpiCoSisa',jt(TB-TR));
-  set('kpiCoSisaPct',p1(TB-TR,TB));set('kpiCoPct',p1(TR,TB).replace('%',''));
+  // Satu helper untuk mengisi 1 baris KPI (Capex / Non Capex / total) supaya angka
+  // Budget-Realisasi-Sisa-Serapan tidak mungkin saling beda.
+  function kpi(pre,b,r){set(pre+'Bud',jt(b));set(pre+'Real',jt(r));set(pre+'Sisa',jt(b-r));
+    set(pre+'SisaPct',p1(b-r,b));set(pre+'Pct',p1(r,b).replace('%',''));}
+  var U=window.MK_UNITS,TB=0,TR=0,TBcx=0,TRcx=0,TBnc=0,TRnc=0;
+  U.forEach(function(u){TBcx+=u.budCx;TRcx+=u.realCx;TBnc+=u.budNc;TRnc+=u.realNc;});
+  TB=TBcx+TBnc;TR=TRcx+TRnc;
+  kpi('kpiCo',TB,TR);
+  set('kpiCoBudCx',jt(TBcx));set('kpiCoRealCx',jt(TRcx));set('kpiCoSisaCx',jt(TBcx-TRcx));
+  set('kpiCoSisaPctCx',p1(TBcx-TRcx,TBcx));set('kpiCoPctCx',p1(TRcx,TBcx).replace('%',''));
+  set('kpiCoPorsiCx',p1(TBcx,TB)+' dari total budget');
+  set('kpiCoBudNc',jt(TBnc));set('kpiCoRealNc',jt(TRnc));set('kpiCoSisaNc',jt(TBnc-TRnc));
+  set('kpiCoSisaPctNc',p1(TBnc-TRnc,TBnc));set('kpiCoPctNc',p1(TRnc,TBnc).replace('%',''));
+  set('kpiCoPorsiNc',p1(TBnc,TB)+' dari total budget');
   set('kpiCoUnit','gabungan '+U.length+' unit · '+window.MK_MST_UNITS.length+' mst unit');
   var ul=window.mkUnit(window.MK_UNIT_LOGIN);
-  if(ul){set('kpiUBud',jt(ul.bud));set('kpiUReal',jt(ul.real));set('kpiUSisa',jt(ul.bud-ul.real));
-    set('kpiUSisaPct',p1(ul.bud-ul.real,ul.bud));set('kpiUPct',p1(ul.real,ul.bud).replace('%',''));
+  if(ul){
+    kpi('kpiU',ul.bud,ul.real);
+    set('kpiUBudCx',jt(ul.budCx));set('kpiURealCx',jt(ul.realCx));set('kpiUSisaCx',jt(ul.budCx-ul.realCx));
+    set('kpiUSisaPctCx',p1(ul.budCx-ul.realCx,ul.budCx));set('kpiUPctCx',p1(ul.realCx,ul.budCx).replace('%',''));
+    set('kpiUPorsiCx',p1(ul.budCx,ul.bud)+' dari budget unit');
+    set('kpiUBudNc',jt(ul.budNc));set('kpiURealNc',jt(ul.realNc));set('kpiUSisaNc',jt(ul.budNc-ul.realNc));
+    set('kpiUSisaPctNc',p1(ul.budNc-ul.realNc,ul.budNc));set('kpiUPctNc',p1(ul.realNc,ul.budNc).replace('%',''));
+    set('kpiUPorsiNc',p1(ul.budNc,ul.bud)+' dari budget unit');
     set('kpiUKd',ul.kd+' · '+ul.mst);}
+  // helper sel angka & sel bar serapan — dipakai ketiga tabel dashboard
+  function num(v,b){return '<td class="mk-r mk-num">'+(b?'<b>'+rp(v)+'</b>':rp(v))+'</td>';}
+  function bar(r,b,warna){return '<td><div class="mk-barwrap"><div class="mk-bar"><i style="width:'+(b>0?Math.round(r/b*100):0)+'%;background:'+warna+'"></i></div><span class="pct">'+p1(r,b)+'</span></div></td></tr>';}
   var dcb=document.getElementById('dcUnitBody');
   if(dcb){
     var h='';
     window.MK_MST_UNITS.forEach(function(m){
       var us=window.unitsOf(m.kd),mb=0,mr=0;
       us.forEach(function(u){mb+=u.bud;mr+=u.real;});
-      h+='<tr style="background:var(--t-surf-2)"><td><b>'+m.kd+'</b> <span class="mk-muted" style="font-weight:400">'+m.nm+'</span></td>'
-        +'<td class="mk-muted">'+us.length+' unit</td><td class="mk-r mk-num"><b>'+rp(mb)+'</b></td><td class="mk-r mk-num"><b>'+rp(mr)+'</b></td>'
-        +'<td class="mk-r mk-num"><b>'+rp(mb-mr)+'</b></td>'
-        +'<td><div class="mk-barwrap"><div class="mk-bar"><i style="width:'+Math.round(mr/mb*100)+'%;background:var(--smra-orange)"></i></div><span class="pct">'+p1(mr,mb)+'</span></div></td></tr>';
+      var mbc=0,mrc=0,mbn=0,mrn=0;
+      us.forEach(function(u){mbc+=u.budCx;mrc+=u.realCx;mbn+=u.budNc;mrn+=u.realNc;});
+      h+='<tr style="background:var(--t-surf-2)"><td><b>'+m.kd+'</b> <span class="mk-muted" style="font-weight:400">'+m.nm+'</span> <span class="mk-muted" style="font-weight:400">· '+us.length+' unit</span></td>'
+        +num(mbc,1)+num(mrc,1)+num(mbn,1)+num(mrn,1)+num(mb,1)+num(mb-mr,1)
+        +bar(mr,mb,'var(--smra-orange)');
       us.forEach(function(u){
         h+='<tr><td style="padding-left:24px">'+u.kd+' <span class="mk-muted">'+u.nm+'</span></td>'
-          +'<td class="mk-muted">'+u.lok+'</td><td class="mk-r mk-num">'+rp(u.bud)+'</td><td class="mk-r mk-num">'+rp(u.real)+'</td>'
-          +'<td class="mk-r mk-num">'+rp(u.bud-u.real)+'</td>'
-          +'<td><div class="mk-barwrap"><div class="mk-bar"><i style="width:'+Math.round(u.real/u.bud*100)+'%;background:var(--t-success)"></i></div><span class="pct">'+p1(u.real,u.bud)+'</span></div></td></tr>';
+          +num(u.budCx)+num(u.realCx)+num(u.budNc)+num(u.realNc)+num(u.bud)+num(u.bud-u.real)
+          +bar(u.real,u.bud,'var(--t-success)');
       });
     });
-    h+='<tr class="mk-tot" style="border-top:2px solid var(--t-border-strong)"><td><b>TOTAL KONSOLIDASI</b></td><td class="mk-muted">'+U.length+' unit</td>'
-      +'<td class="mk-r mk-num"><b>'+rp(TB)+'</b></td><td class="mk-r mk-num"><b>'+rp(TR)+'</b></td><td class="mk-r mk-num"><b>'+rp(TB-TR)+'</b></td>'
-      +'<td><div class="mk-barwrap"><div class="mk-bar"><i style="width:'+Math.round(TR/TB*100)+'%;background:var(--smra-orange)"></i></div><span class="pct">'+p1(TR,TB)+'</span></div></td></tr>';
+    h+='<tr class="mk-tot" style="border-top:2px solid var(--t-border-strong)"><td><b>TOTAL KONSOLIDASI</b> <span class="mk-muted" style="font-weight:400">· '+U.length+' unit</span></td>'
+      +num(TBcx,1)+num(TRcx,1)+num(TBnc,1)+num(TRnc,1)+num(TB,1)+num(TB-TR,1)
+      +bar(TR,TB,'var(--smra-orange)');
     dcb.innerHTML=h;
+  }
+
+  // ---- Dashboard Unit · Serapan per Departemen (SPCK) ----
+  // Jumlah keempat dept HARUS = budCx/budNc & realCx/realNc SPCK di MK_UNITS
+  // (120/180 jt budget · 26/38 jt realisasi). Angka juta rupiah.
+  var MK_DEPT_SPCK=[
+    {nm:'HR & GA',                bCx:50,rCx:10,bNc:90,rNc:20},
+    {nm:'Marketing',              bCx:25,rCx:5, bNc:75,rNc:16},
+    {nm:'Information Technology', bCx:32,rCx:7, bNc:8, rNc:1},
+    {nm:'Finance & Accounting',   bCx:13,rCx:4, bNc:7, rNc:1}
+  ];
+  var dub=document.getElementById('duDeptBody');
+  if(dub){
+    var hd='',jtx=function(v){return v*1e6;},sbc=0,src=0,sbn=0,srn=0;
+    MK_DEPT_SPCK.forEach(function(d){
+      var bt=jtx(d.bCx+d.bNc),rt=jtx(d.rCx+d.rNc);
+      sbc+=d.bCx;src+=d.rCx;sbn+=d.bNc;srn+=d.rNc;
+      hd+='<tr><td><b>'+d.nm+'</b></td>'
+        +num(jtx(d.bCx))+num(jtx(d.rCx))+num(jtx(d.bNc))+num(jtx(d.rNc))+num(bt)+num(bt-rt)
+        +bar(rt,bt,'var(--t-success)');
+    });
+    var SB=jtx(sbc+sbn),SR=jtx(src+srn);
+    hd+='<tr class="mk-tot" style="border-top:2px solid var(--t-border-strong)"><td><b>TOTAL UNIT SPCK</b></td>'
+      +num(jtx(sbc),1)+num(jtx(src),1)+num(jtx(sbn),1)+num(jtx(srn),1)+num(SB,1)+num(SB-SR,1)
+      +bar(SR,SB,'var(--smra-orange)');
+    dub.innerHTML=hd;
+  }
+
+  // ---- Dashboard Departemen · Serapan per Item Anggaran (HR & GA di SPCK) ----
+  // Satu item anggaran hanya bisa SALAH SATU jenis, jadi tabelnya dikelompokkan
+  // (subtotal Capex lalu subtotal Non Capex), bukan kolom bersebelahan.
+  // Subtotal HARUS = baris HR & GA di MK_DEPT_SPCK: Capex 50/10 · Non Capex 90/20 jt.
+  var MK_ITEM_HRGA=[
+    {jenis:'Capex',    nm:'Furniture Ruang Kerja',b:22,r:5},
+    {jenis:'Capex',    nm:'Laptop & Desktop',     b:18,r:4},
+    {jenis:'Capex',    nm:'Mobil Operasional',    b:10,r:1},
+    {jenis:'Non Capex',nm:'Gaji tetap',           b:45,r:11},
+    {jenis:'Non Capex',nm:'Beban gedung',         b:25,r:5},
+    {jenis:'Non Capex',nm:'Beban asuransi',       b:14,r:3},
+    {jenis:'Non Capex',nm:'Beban kantor',         b:6, r:1}
+  ];
+  var ddb=document.getElementById('ddItemBody');
+  if(ddb){
+    var hi='',jm=function(v){return v*1e6;};
+    [['Capex','ds-badge-warning','var(--smra-orange)'],['Non Capex','ds-badge-info','var(--t-success)']].forEach(function(g){
+      var rows=MK_ITEM_HRGA.filter(function(x){return x.jenis===g[0];}),gb=0,gr=0;
+      rows.forEach(function(x){gb+=x.b;gr+=x.r;});
+      hi+='<tr style="background:var(--t-surf-2)"><td><b>'+g[0].toUpperCase()+'</b> <span class="mk-muted" style="font-weight:400">· '+rows.length+' item</span></td>'
+        +'<td></td>'+num(jm(gb),1)+num(jm(gr),1)+num(jm(gb-gr),1)+bar(jm(gr),jm(gb),g[2]);
+      rows.forEach(function(x){
+        hi+='<tr><td style="padding-left:24px">'+x.nm+'</td>'
+          +'<td><span class="ds-badge '+g[1]+'">'+g[0]+'</span></td>'
+          +num(jm(x.b))+num(jm(x.r))+num(jm(x.b-x.r))+bar(jm(x.r),jm(x.b),g[2]);
+      });
+    });
+    var IB=0,IR=0;MK_ITEM_HRGA.forEach(function(x){IB+=x.b;IR+=x.r;});
+    hi+='<tr class="mk-tot" style="border-top:2px solid var(--t-border-strong)"><td><b>TOTAL HR & GA</b></td><td></td>'
+      +num(jm(IB),1)+num(jm(IR),1)+num(jm(IB-IR),1)+bar(jm(IR),jm(IB),'var(--smra-orange)');
+    ddb.innerHTML=hi;
   }
 })();
 
