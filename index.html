@@ -1150,24 +1150,35 @@
             <div><label class="ds-label">Mst Unit</label><input class="ds-input" id="alkhUnit" value="SSPG" readonly></div>
           </div>
         </div>
-        <!-- bm_allocation_unit: unit (kd_unit_hrms + kd_mst_unit-nya) yang boleh memakai budget alokasi ini.
-             Boleh lintas mst unit. -->
-        <div class="ds-section" style="margin-bottom:14px">
-          <div class="mk-sec-head"><span class="mk-sec-label"><i class="bi bi-people"></i> Unit Pengguna Alokasi</span><span class="mk-sec-meta">unit lain yang boleh memakai budget alokasi ini · <b id="alkUnitCount">0</b> unit</span><span class="mk-sec-actions"><button class="ds-btn ds-btn-primary ds-btn-sm" id="alkUnitAddBtn"><i class="bi bi-plus-lg"></i> Unit</button></span></div>
-          <div class="mk-tablewrap"><table class="ds-table ds-table-sm" id="alkUnitTable" style="min-width:560px">
-            <thead><tr><th style="width:140px">Mst Unit</th><th style="width:140px">Unit</th><th>Nama Unit</th><th class="mk-c" style="width:80px">Aksi</th></tr></thead>
-            <tbody></tbody>
-          </table></div>
-        </div>
+        <!-- 2 tab: Rincian (bm_budget_allocation) · Unit Pengguna (bm_allocation_unit = unit lain,
+             boleh lintas mst unit, yang boleh memakai budget alokasi ini). -->
         <div class="ds-section">
-          <div class="mk-sec-head"><span class="mk-sec-label"><i class="bi bi-list-ul"></i> Rincian Alokasi</span><span class="mk-sec-meta">per budget plan &amp; bulan</span><span class="mk-sec-actions"><button class="ds-btn ds-btn-primary ds-btn-sm" id="alkAddBtn"><i class="bi bi-plus-lg"></i> Baris</button></span></div>
-          <!-- No. Pengajuan Budget = no_budget dari bm_budget_req yang memiliki budget_plan_id
-               yang direferensikan (bm_budget_allocation.budget_plan_id → bm_budget_plan → bm_budget_req). -->
-          <div class="mk-tablewrap"><table class="ds-table ds-table-sm" id="alkTable" style="min-width:1000px">
-            <thead><tr><th>Nama Budget Alokasi</th><th style="width:168px">No. Pengajuan</th><th>Ref Budget Plan</th><th>Periode</th><th class="mk-r">Qty</th><th>Satuan</th><th class="mk-r">Harga Satuan</th><th class="mk-r">Total</th></tr></thead>
-            <tbody></tbody>
-            <tfoot><tr><td colspan="7" style="text-align:right;font-weight:700">Total Alokasi</td><td class="mk-r mk-num" id="alkTotal" style="font-weight:800;font-size:14px;color:var(--smra-orange)">0</td></tr></tfoot>
-          </table></div>
+          <div class="mk-sec-head">
+            <ul class="ds-tabs" id="alkTabs">
+              <li><button class="ds-tabs-link is-active" data-t="rincian"><i class="bi bi-list-ul"></i> Rincian <span class="ds-badge ds-badge-neutral" id="alkRinCount">0</span></button></li>
+              <li><button class="ds-tabs-link" data-t="unit"><i class="bi bi-people"></i> Unit Pengguna <span class="ds-badge ds-badge-neutral" id="alkUnitCount">0</span></button></li>
+            </ul>
+            <span class="mk-sec-meta" id="alkTabMeta">per budget plan &amp; bulan</span>
+            <span class="mk-sec-actions">
+              <button class="ds-btn ds-btn-primary ds-btn-sm" id="alkAddBtn"><i class="bi bi-plus-lg"></i> Baris</button>
+              <button class="ds-btn ds-btn-primary ds-btn-sm" id="alkUnitAddBtn" style="display:none"><i class="bi bi-plus-lg"></i> Unit</button>
+            </span>
+          </div>
+          <div id="alkPaneRincian">
+            <!-- No. Pengajuan Budget = no_budget dari bm_budget_req yang memiliki budget_plan_id
+                 yang direferensikan (bm_budget_allocation.budget_plan_id → bm_budget_plan → bm_budget_req). -->
+            <div class="mk-tablewrap"><table class="ds-table ds-table-sm" id="alkTable" style="min-width:1000px">
+              <thead><tr><th>Nama Budget Alokasi</th><th style="width:168px">No. Pengajuan</th><th>Ref Budget Plan</th><th>Periode</th><th class="mk-r">Qty</th><th>Satuan</th><th class="mk-r">Harga Satuan</th><th class="mk-r">Total</th></tr></thead>
+              <tbody></tbody>
+              <tfoot><tr><td colspan="7" style="text-align:right;font-weight:700">Total Alokasi</td><td class="mk-r mk-num" id="alkTotal" style="font-weight:800;font-size:14px;color:var(--smra-orange)">0</td></tr></tfoot>
+            </table></div>
+          </div>
+          <div id="alkPaneUnit" style="display:none">
+            <div class="mk-tablewrap"><table class="ds-table ds-table-sm" id="alkUnitTable" style="min-width:560px">
+              <thead><tr><th style="width:140px">Mst Unit</th><th style="width:140px">Unit</th><th>Nama Unit</th><th class="mk-c" style="width:80px">Aksi</th></tr></thead>
+              <tbody></tbody>
+            </table></div>
+          </div>
         </div>
       </section>
 
@@ -4015,7 +4026,18 @@ window.MCX={};   // dipakai Input Budget Capex (item rincian = item capex unit)
       alkDetNo=document.getElementById('alkDetNo'),alkStatus=document.getElementById('alkStatus'),
       body=document.querySelector('#alkTable tbody'),totalEl=document.getElementById('alkTotal');
   alkhNama.addEventListener('input',function(){ALLOC[cur].nama=alkhNama.value;});
-  function renderRincian(){var a=ALLOC[cur],h='';a.items.forEach(function(it){var tot=it.qty*it.harga;h+='<tr><td><b>'+esc(it.nama)+'</b></td><td><span class="mk-code">'+esc(it.no||refNo(it.ref))+'</span></td><td class="mk-muted">'+esc(it.ref)+'</td><td>'+esc(it.bln)+' '+a.thn+'</td><td class="mk-r mk-num">'+fmt(it.qty)+'</td><td>'+esc(it.sat)+'</td><td class="mk-r mk-num">'+fmt(it.harga)+'</td><td class="mk-r mk-num">'+fmt(tot)+'</td></tr>';});body.innerHTML=h;totalEl.textContent=fmt(total(a));}
+  function renderRincian(){var a=ALLOC[cur],h='';a.items.forEach(function(it){var tot=it.qty*it.harga;h+='<tr><td><b>'+esc(it.nama)+'</b></td><td><span class="mk-code">'+esc(it.no||refNo(it.ref))+'</span></td><td class="mk-muted">'+esc(it.ref)+'</td><td>'+esc(it.bln)+' '+a.thn+'</td><td class="mk-r mk-num">'+fmt(it.qty)+'</td><td>'+esc(it.sat)+'</td><td class="mk-r mk-num">'+fmt(it.harga)+'</td><td class="mk-r mk-num">'+fmt(tot)+'</td></tr>';});body.innerHTML=h;totalEl.textContent=fmt(total(a));document.getElementById('alkRinCount').textContent=a.items.length;}
+  // ---- Tab Rincian / Unit Pengguna ----
+  var TAB_META={rincian:'per budget plan &amp; bulan',unit:'unit lain yang boleh memakai budget alokasi ini'};
+  function alkTab(t){
+    [].forEach.call(document.querySelectorAll('#alkTabs .ds-tabs-link'),function(x){x.classList.toggle('is-active',x.dataset.t===t);});
+    document.getElementById('alkPaneRincian').style.display=t==='rincian'?'':'none';
+    document.getElementById('alkPaneUnit').style.display=t==='unit'?'':'none';
+    document.getElementById('alkAddBtn').style.display=t==='rincian'?'':'none';
+    document.getElementById('alkUnitAddBtn').style.display=t==='unit'?'':'none';
+    document.getElementById('alkTabMeta').innerHTML=TAB_META[t];
+  }
+  document.getElementById('alkTabs').addEventListener('click',function(e){var b=e.target.closest('[data-t]');if(b)alkTab(b.dataset.t);});
   // ---- Unit Pengguna Alokasi (bm_allocation_unit) ----
   var uBody=document.querySelector('#alkUnitTable tbody'),uCount=document.getElementById('alkUnitCount');
   function renderUnits(){
