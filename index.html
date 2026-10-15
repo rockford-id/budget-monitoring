@@ -1064,11 +1064,11 @@
               <button class="ds-btn ds-btn-secondary" id="ibOverBudget"><i class="bi bi-cash-coin"></i> Over Budget</button>
             </span>
           </div>
-          <!-- Sub Tipe = bm_budget_req.sub_tipe (turunan tipe): G General · R Reallocation · A Addition -->
+          <!-- Sub Tipe = bm_budget_req.sub_tipe (turunan tipe): G General · S Switch (pengalihan dari pengajuan lain) -->
           <div class="ds-form-stack ds-form-stack-5">
             <div><label class="ds-label">No. Pengajuan</label><input class="ds-input" id="ibhNo" readonly></div>
             <div><label class="ds-label">Jenis Pengajuan</label><select class="ds-input" id="ibhJenis"><option>Budget</option><option>Non Budget</option></select></div>
-            <div><label class="ds-label">Sub Tipe</label><select class="ds-input" id="ibhSub"><option value="G">General</option><option value="R">Reallocation</option><option value="A">Addition</option></select></div>
+            <div><label class="ds-label">Sub Tipe</label><select class="ds-input" id="ibhSub"><option value="G">General</option><option value="S">Switch</option></select></div>
             <div><label class="ds-label">Tahun Pengajuan</label><select class="ds-input" id="ibhThn"><option>2026</option><option>2027</option></select></div>
             <div><label class="ds-label">Departemen</label><select class="ds-input" id="ibhDept"><option>HR &amp; GA</option><option>Marketing</option><option>Finance &amp; Accounting</option><option>Information Technology</option><option>General Affairs</option></select></div>
           </div>
@@ -1110,7 +1110,7 @@
           <div class="ds-form-stack ds-form-stack-5">
             <div><label class="ds-label">No. Pengajuan</label><input class="ds-input" id="cxhNo" readonly></div>
             <div><label class="ds-label">Jenis Pengajuan</label><select class="ds-input" id="cxhJenis"><option>Budget</option><option>Non Budget</option></select></div>
-            <div><label class="ds-label">Sub Tipe</label><select class="ds-input" id="cxhSub"><option value="G">General</option><option value="R">Reallocation</option><option value="A">Addition</option></select></div>
+            <div><label class="ds-label">Sub Tipe</label><select class="ds-input" id="cxhSub"><option value="G">General</option><option value="S">Switch</option></select></div>
             <div><label class="ds-label">Tahun Pengajuan</label><select class="ds-input" id="cxhThn"><option>2026</option><option>2027</option></select></div>
             <div><label class="ds-label">Departemen</label><select class="ds-input" id="cxhDept"><option>HR &amp; GA</option><option>Marketing</option><option>Finance &amp; Accounting</option><option>Information Technology</option><option>General Affairs</option></select></div>
           </div>
@@ -1149,6 +1149,13 @@
             <div><label class="ds-label">Tipe</label><input class="ds-input" id="alkhTipe" value="Event" readonly></div>
             <div><label class="ds-label">Mst Unit</label><input class="ds-input" id="alkhUnit" value="SSPG" readonly></div>
           </div>
+          <!-- periode_start/end = rentang pemakaian budget alokasi · event_start/end = tanggal pelaksanaan event -->
+          <div class="ds-form-stack ds-form-stack-4" style="margin-top:14px">
+            <div><label class="ds-label">Periode Mulai <span class="ds-required">*</span></label><input class="ds-input" type="date" id="alkhPerStart"></div>
+            <div><label class="ds-label">Periode Selesai <span class="ds-required">*</span></label><input class="ds-input" type="date" id="alkhPerEnd"></div>
+            <div><label class="ds-label">Event Mulai <span class="ds-required">*</span></label><input class="ds-input" type="date" id="alkhEvStart"></div>
+            <div><label class="ds-label">Event Selesai <span class="ds-required">*</span></label><input class="ds-input" type="date" id="alkhEvEnd"></div>
+          </div>
         </div>
         <!-- 2 tab: Rincian (bm_budget_allocation) · Unit Pengguna (bm_allocation_unit = unit lain,
              boleh lintas mst unit, yang boleh memakai budget alokasi ini). -->
@@ -1165,8 +1172,8 @@
             </span>
           </div>
           <div id="alkPaneRincian">
-            <!-- No. Pengajuan Budget = no_budget dari bm_budget_req yang memiliki budget_plan_id
-                 yang direferensikan (bm_budget_allocation.budget_plan_id → bm_budget_plan → bm_budget_req). -->
+            <!-- No. Pengajuan Budget = no_budget dari bm_budget_req yang memiliki no_budget_plan
+                 yang direferensikan (bm_budget_allocation.no_budget_plan → bm_budget_plan rev terbaru → bm_budget_req). -->
             <div class="mk-tablewrap"><table class="ds-table ds-table-sm" id="alkTable" style="min-width:1000px">
               <thead><tr><th>Nama Budget Alokasi</th><th style="width:168px">No. Pengajuan</th><th>Ref Budget Plan</th><th>Periode</th><th class="mk-r">Qty</th><th>Satuan</th><th class="mk-r">Harga Satuan</th><th class="mk-r">Total</th></tr></thead>
               <tbody></tbody>
@@ -1243,8 +1250,8 @@
         </div>
         <div class="ds-section">
           <div class="ds-section-title"><i class="bi bi-inbox"></i> Antrian Persetujuan Alokasi</div>
-          <div class="mk-tablewrap"><table class="ds-table ds-table-sm" id="apalk-table" style="min-width:960px">
-            <thead><tr><th>No. Alokasi</th><th>Nama Alokasi</th><th>Mst Unit</th><th>Unit Pengguna</th><th class="mk-c">Tahun</th><th class="mk-r">Total</th><th>Status</th><th class="mk-c" style="width:200px">Aksi</th></tr></thead>
+          <div class="mk-tablewrap"><table class="ds-table ds-table-sm" id="apalk-table" style="min-width:1180px">
+            <thead><tr><th>No. Alokasi</th><th>Nama Alokasi</th><th>Periode</th><th>Tanggal Event</th><th>Mst Unit</th><th>Unit Pengguna</th><th class="mk-r">Total</th><th>Status</th><th class="mk-c" style="width:200px">Aksi</th></tr></thead>
             <tbody></tbody>
           </table></div>
         </div>
@@ -1265,9 +1272,8 @@
               <span style="text-align:right"><span class="mk-eyebrow">Sisa</span><div class="v" style="color:var(--t-success)" id="kbSisa">—</div></span>
             </span>
           </div>
-          <!-- Budget = plan dokumen dengan rev TERTINGGI berstatus A. Realisasi dari rev
-               lama TETAP dihitung karena bm_budget_usage menempel ke budget_plan_id
-               tertentu — pemakaian sebelum revisi/over budget tidak hilang. -->
+          <!-- Budget = plan dokumen dengan rev TERTINGGI berstatus A. Realisasi sebelum revisi
+               TETAP dihitung karena bm_budget_usage menunjuk no_budget_plan (ID tetap lintas rev). -->
           <div class="ds-toolbar" style="margin-bottom:10px">
             <label class="mk-chk"><input type="checkbox" id="kbShowOld"> Tampilkan budget rev sebelumnya</label>
             <span class="mk-faint" style="font-size:11px">budget rev lama tampil redup &amp; dicoret — tidak ikut dijumlahkan</span>
@@ -1518,7 +1524,14 @@
     <div class="mk-modal">
       <div class="mk-modal-h"><h3>Tambah Baris Item</h3><button class="mk-modal-x" data-close title="Tutup"><i class="bi bi-x-lg"></i></button></div>
       <div class="mk-modal-b">
-        <div class="ds-form-stack" style="margin-bottom:14px" id="ibDariWrap"><div><label class="ds-label">Dialihkan dari <span class="ds-required">*</span></label><select class="ds-input" id="ibDari"></select></div></div>
+        <!-- Switch: pilih plan SUMBER (bm_budget_plan_replace.budget_plan_id) + qty yang dialihkan (replace_plan_id_qty) -->
+        <div id="ibDariWrap" style="margin-bottom:14px">
+          <div class="ds-form-stack" style="margin-bottom:14px"><div><label class="ds-label">Dialihkan dari <span class="ds-required">*</span></label><select class="ds-input" id="ibDari"></select></div></div>
+          <div class="ds-form-stack ds-form-stack-2">
+            <div><label class="ds-label">Sisa Qty Sumber</label><input class="ds-input" id="ibDariSisa" readonly></div>
+            <div><label class="ds-label">Qty Dialihkan <span class="ds-required">*</span></label><input class="ds-input" id="ibDariQty" type="number" min="1" value="1"></div>
+          </div>
+        </div>
         <div class="ds-form-stack" style="margin-bottom:14px"><div><label class="ds-label">Item Anggaran <span class="ds-required">*</span></label><select class="ds-input" id="ibItem"></select></div></div>
         <div class="ds-form-stack" style="margin-bottom:14px"><div><label class="ds-label">Nama Item Budget</label><input class="ds-input" id="ibKet" placeholder="mis. Asuransi Gedung Kantor SPCK"></div></div>
         <div class="ds-form-stack ds-form-stack-3">
@@ -1558,7 +1571,14 @@
     <div class="mk-modal">
       <div class="mk-modal-h"><h3>Tambah Baris Item Capex</h3><button class="mk-modal-x" data-close title="Tutup"><i class="bi bi-x-lg"></i></button></div>
       <div class="mk-modal-b">
-        <div class="ds-form-stack" style="margin-bottom:14px" id="cxDariWrap"><div><label class="ds-label">Dialihkan dari <span class="ds-required">*</span></label><select class="ds-input" id="cxDari"></select></div></div>
+        <!-- Switch: pilih plan SUMBER (bm_budget_plan_replace.budget_plan_id) + qty yang dialihkan (replace_plan_id_qty) -->
+        <div id="cxDariWrap" style="margin-bottom:14px">
+          <div class="ds-form-stack" style="margin-bottom:14px"><div><label class="ds-label">Dialihkan dari <span class="ds-required">*</span></label><select class="ds-input" id="cxDari"></select></div></div>
+          <div class="ds-form-stack ds-form-stack-2">
+            <div><label class="ds-label">Sisa Qty Sumber</label><input class="ds-input" id="cxDariSisa" readonly></div>
+            <div><label class="ds-label">Qty Dialihkan <span class="ds-required">*</span></label><input class="ds-input" id="cxDariQty" type="number" min="1" value="1"></div>
+          </div>
+        </div>
         <div class="ds-form-stack" style="margin-bottom:14px"><div><label class="ds-label">Item Anggaran (Kategori Barang) <span class="ds-required">*</span></label><select class="ds-input" id="cxItem"></select></div></div>
         <div class="ds-form-stack" style="margin-bottom:14px"><div><label class="ds-label">Nama Item Budget</label><input class="ds-input" id="cxKet" placeholder="mis. Mobil Operasional Toyota Innova"></div></div>
         <div class="ds-form-stack ds-form-stack-3">
@@ -1811,8 +1831,8 @@
           <div style="flex:1"><label class="ds-label">Cari</label><input id="alkSubSearch" class="ds-input" placeholder="Cari no. alokasi / unit…"></div>
           <button class="ds-btn ds-btn-primary" id="alkSubNew"><i class="bi bi-plus-lg"></i> Alokasi Baru</button>
         </div>
-        <div class="mk-tablewrap"><table class="ds-table ds-table-sm" id="alkSubs" style="min-width:680px">
-          <thead><tr><th>No. Alokasi</th><th class="mk-c">Tahun</th><th>Tipe</th><th>Mst Unit</th><th>Unit Pengguna</th><th class="mk-r">Total</th><th class="mk-c">Status</th></tr></thead>
+        <div class="mk-tablewrap"><table class="ds-table ds-table-sm" id="alkSubs" style="min-width:760px">
+          <thead><tr><th>No. Alokasi</th><th class="mk-c">Tahun</th><th>Tipe</th><th>Tanggal Event</th><th>Mst Unit</th><th>Unit Pengguna</th><th class="mk-r">Total</th><th class="mk-c">Status</th></tr></thead>
           <tbody></tbody>
         </table></div>
       </div>
@@ -1996,17 +2016,27 @@ window.mkApvChanged=function(){window.MK_APV_RERENDER.forEach(function(f){try{f(
 
 // ============================================================
 // NILAI EFEKTIF bm_budget_plan
-// Sejak Addition mengikuti pola Revisi (kolom fg_addition & ref_addition_budget_plan_id
-// dihapus), tidak ada lagi rantai baris yang harus dijumlahkan. Budget efektif =
+// Over Budget mengikuti pola Revisi (dokumen rev+1), jadi tidak ada rantai baris yang harus
+// dijumlahkan. Tiap baris punya no_budget_plan yang SAMA di semua rev. Budget efektif =
 // baris plan milik dokumen dengan rev TERTINGGI yang berstatus A (per no_budget+kd_mst_unit).
-// Rev lama yang sudah berstatus R atau O tidak ikut dihitung, begitu pula baris yang sudah
-// dialihkan lewat pengajuan Reallocation (fg_replace = Y → replacedBy terisi).
+// Rev lama yang sudah berstatus R atau O tidak ikut dihitung.
+// Baris yang sebagian qty-nya dialihkan lewat Switch TETAP ikut, tapi budget-nya tinggal
+// (qty - qty_replaced) × harga — lihat mkQtySisa.
 // docs = [{rev, status, plan:[...]}]
 // ============================================================
+// Rentang tanggal ['2026-03-27','2026-03-29'] → "27–29 Mar 2026" (dipakai Alokasi & Approval Alokasi)
+window.mkRentang=function(r){
+  var B=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  if(!r||!r[0]||!r[1])return '—';
+  var a=r[0].split('-'),b=r[1].split('-'),d1=+a[2],d2=+b[2];
+  if(a[0]===b[0]&&a[1]===b[1])return (d1===d2?d1:d1+'–'+d2)+' '+B[+a[1]-1]+' '+a[0];
+  if(a[0]===b[0])return d1+' '+B[+a[1]-1]+' – '+d2+' '+B[+b[1]-1]+' '+a[0];
+  return d1+' '+B[+a[1]-1]+' '+a[0]+' – '+d2+' '+B[+b[1]-1]+' '+b[0];
+};
 window.planEfektif=function(docs){
   var hit=null;
   (docs||[]).forEach(function(d){if(d.status==='A'&&(!hit||d.rev>hit.rev))hit=d;});
-  return hit?hit.plan.filter(function(p){return !p.replacedBy;}):[];
+  return hit?hit.plan.slice():[];
 };
 
 window.mkFillUnit=function(sel,val){if(!sel)return;sel.innerHTML=window.MK_MST_UNITS.map(function(m){
@@ -2042,8 +2072,7 @@ window.mkMonthCombo=function(host, initVal, thn, onChange, noBertahap){
   window.addEventListener('scroll',function(){if(pop&&!pop.hidden)hide();},true);
 };
 // Status bm_budget_req — Revisi & Over Budget memakai alur yang SAMA, bedanya hanya huruf:
-// R* untuk Revisi, O* untuk Over Budget. (Addition sekarang SUB TIPE pengajuan — G/R/A —
-// bukan tombol; tombolnya diganti nama jadi "Over Budget" supaya tidak rancu.)
+// R* untuk Revisi, O* untuk Over Budget (dulu disebut Addition).
 //   Pengajuan awal :  N  → A0 → A1 → A2 → A
 //   Revisi         :  A  → R0 → R1 → R2 → R  → dokumen baru rev+1 status N
 //   Over Budget    :  A  → O0 → O1 → O2 → O  → dokumen baru rev+1 status N
@@ -2139,26 +2168,34 @@ window.mkAsalBadge=function(sub){
 };
 
 // Sub Tipe pengajuan (bm_budget_req.sub_tipe) — turunan dari tipe (Budget / Non Budget).
-//   G General · R Reallocation (pengalihan budget yang sudah ada) · A Addition (penambahan)
-// Reallocation: baris plan lama diberi fg_replace = Y dan replaced_by = baris plan baru.
-// Di mockup: item baru menyimpan .dari {no,nama}, item lama menyimpan .replacedBy = no baru.
-window.MK_SUBTIPE={G:{lbl:'General',c:'neutral'},R:{lbl:'Reallocation',c:'info'},A:{lbl:'Addition',c:'brand'}};
+//   G General · S Switch (pengalihan budget dari pengajuan lain yang sudah Approved)
+// Switch BUKAN revisi: dokumen baru sendiri (no_budget baru, rev 0) yang tiap barisnya
+// memilih plan SUMBER. Satu plan sumber boleh dialihkan sebagian, beberapa kali:
+//   bm_budget_plan_replace : 1 baris per pengalihan (budget_plan_id = sumber,
+//                            replace_plan_id = baris di dokumen Switch, replace_plan_id_qty)
+//   bm_budget_plan.qty_replaced (di sumber) = total qty yang sudah dialihkan
+// Di mockup: sumber menyimpan .replaced [{no, qty}], baris Switch menyimpan .dari {no, nama, qty, sat}.
+window.MK_SUBTIPE={G:{lbl:'General',c:'neutral'},S:{lbl:'Switch',c:'info'}};
 window.mkSubBadge=function(k){var o=window.MK_SUBTIPE[k||'G']||window.MK_SUBTIPE.G;return '<span class="ds-badge ds-badge-'+o.c+'">'+o.lbl+'</span>';};
-// sel "Dialihkan dari" (kolom pertama Rincian bila sub tipe R) & penanda di baris lama
+window.mkQtyReplaced=function(it){var t=0;(it.replaced||[]).forEach(function(r){t+=r.qty;});return t;};
+window.mkQtySisa=function(it){return (it.qty||0)-window.mkQtyReplaced(it);};
+window.mkFmtQty=function(n){return String(n).replace(/B(?=(d{3})+(?!d))/g,'.');};
+// sel "Dialihkan dari" (kolom pertama Rincian bila sub tipe S) & penanda di baris sumber
 window.mkDariCell=function(it,esc){
   if(!it.dari)return '<td><span class="mk-unmapped">—</span></td>';
-  return '<td><span class="mk-code">'+esc(it.dari.no)+'</span><div class="mk-muted" style="font-size:11px">'+esc(it.dari.nama)+'</div></td>';
+  return '<td><span class="mk-code">'+esc(it.dari.no)+'</span><div class="mk-muted" style="font-size:11px">'+esc(it.dari.nama)+(it.dari.qty?' · '+window.mkFmtQty(it.dari.qty)+' '+esc(it.dari.sat||''):'')+'</div></td>';
 };
 window.mkReplacedTag=function(it,esc){
-  if(!it.replacedBy)return '';
-  return ' <span class="ds-badge ds-badge-neutral" title="Budget baris ini sudah dialihkan lewat pengajuan Reallocation">Dialihkan ke '+esc(it.replacedBy)+'</span>';
+  var q=window.mkQtyReplaced(it);if(!q)return '';
+  var tip=(it.replaced||[]).map(function(r){return r.no+': '+window.mkFmtQty(r.qty)+' '+(it.sat||'');}).join(' · ');
+  return ' <span class="ds-badge ds-badge-neutral" title="Dialihkan lewat Switch — '+esc(tip)+'">Dialihkan '+window.mkFmtQty(q)+' dari '+window.mkFmtQty(it.qty)+' '+esc(it.sat||'')+'</span>';
 };
-// pilihan plan yang boleh dialihkan: item milik dokumen Approved yang belum dialihkan
+// pilihan plan sumber: item milik dokumen Approved yang qty-nya masih tersisa
 window.mkDariOpts=function(SUBS,curSub,esc){
   var h='';
   SUBS.forEach(function(s,si){
     if(si===curSub||s.status!=='A')return;
-    s.items.forEach(function(it,ii){if(!it.replacedBy)h+='<option value="'+si+':'+ii+'">'+esc(s.no+' · '+it.nama)+'</option>';});
+    s.items.forEach(function(it,ii){var sisa=window.mkQtySisa(it);if(sisa>0)h+='<option value="'+si+':'+ii+'">'+esc(s.no+' · '+it.nama+' (sisa '+window.mkFmtQty(sisa)+' '+it.sat+')')+'</option>';});
   });
   return h;
 };
@@ -2999,7 +3036,7 @@ window.mkPhasingDetail=function(td, item, thn){
     ]},
     // status A → tombol Revisi & Over Budget aktif di layar ini
     {no:'BR-2026-SPCK-0040',kat:'Umum',dept:'HR & GA',thn:2026,jenis:'Budget',rev:0,status:'A',items:[
-      {item:'Beban kantor',nama:'Langganan Internet Kantor',qty:12,sat:'Bulan',harga:3500000,jns:'BARU',ket:'Kontrak 12 bulan',bln:'bertahap',replacedBy:'BR-2026-SPCK-0048',
+      {item:'Beban kantor',nama:'Langganan Internet Kantor',qty:12,sat:'Bulan',harga:3500000,jns:'BARU',ket:'Kontrak 12 bulan',bln:'bertahap',replaced:[{no:'BR-2026-SPCK-0048',qty:6}],
         phasing:[{bln:'Jan',qty:1},{bln:'Feb',qty:1},{bln:'Mar',qty:1},{bln:'Apr',qty:1},{bln:'Mei',qty:1},{bln:'Jun',qty:1},{bln:'Jul',qty:1},{bln:'Agu',qty:1},{bln:'Sep',qty:1},{bln:'Okt',qty:1},{bln:'Nov',qty:1},{bln:'Des',qty:1}]},
       {item:'Beban kantor',nama:'Sewa Mesin Fotokopi',qty:12,sat:'Bulan',harga:2000000,jns:'BARU',ket:'Sewa bulanan',bln:'bertahap',
         phasing:[{bln:'Jan',qty:1},{bln:'Feb',qty:1},{bln:'Mar',qty:1},{bln:'Apr',qty:1},{bln:'Mei',qty:1},{bln:'Jun',qty:1},{bln:'Jul',qty:1},{bln:'Agu',qty:1},{bln:'Sep',qty:1},{bln:'Okt',qty:1},{bln:'Nov',qty:1},{bln:'Des',qty:1}]}
@@ -3009,12 +3046,12 @@ window.mkPhasingDetail=function(td, item, thn){
       {item:'Beban asuransi',nama:'Asuransi Gedung Kantor SPCK',qty:12,sat:'Bulan',harga:6250000,jns:'BARU',ket:'Premi naik — hanya harga yang diubah',bln:'bertahap',
         phasing:[{bln:'Jan',qty:1},{bln:'Feb',qty:1},{bln:'Mar',qty:1},{bln:'Apr',qty:1},{bln:'Mei',qty:1},{bln:'Jun',qty:1},{bln:'Jul',qty:1},{bln:'Agu',qty:1},{bln:'Sep',qty:1},{bln:'Okt',qty:1},{bln:'Nov',qty:1},{bln:'Des',qty:1}]}
     ]},
-    // sub tipe Reallocation: budget internet kantor (0040) dialihkan ke vendor baru.
-    // Baris lama di 0040 bertanda "Dialihkan ke BR-2026-SPCK-0048" (fg_replace = Y).
-    {no:'BR-2026-SPCK-0048',kat:'Umum',dept:'HR & GA',thn:2026,jenis:'Budget',sub:'R',rev:0,status:'A',items:[
-      {item:'Beban kantor',nama:'Langganan Internet Fiber (vendor baru)',qty:12,sat:'Bulan',harga:3500000,jns:'EFISIENSI',ket:'Pindah vendor, nilai sama',bln:'bertahap',
-        dari:{no:'BR-2026-SPCK-0040',nama:'Langganan Internet Kantor'},
-        phasing:[{bln:'Jan',qty:1},{bln:'Feb',qty:1},{bln:'Mar',qty:1},{bln:'Apr',qty:1},{bln:'Mei',qty:1},{bln:'Jun',qty:1},{bln:'Jul',qty:1},{bln:'Agu',qty:1},{bln:'Sep',qty:1},{bln:'Okt',qty:1},{bln:'Nov',qty:1},{bln:'Des',qty:1}]}
+    // sub tipe Switch: 6 dari 12 bulan budget internet kantor (0040) dialihkan ke vendor baru.
+    // Baris sumber di 0040 bertanda "Dialihkan 6 dari 12 Bulan" (qty_replaced = 6).
+    {no:'BR-2026-SPCK-0048',kat:'Umum',dept:'HR & GA',thn:2026,jenis:'Budget',sub:'S',rev:0,status:'A',items:[
+      {item:'Beban kantor',nama:'Langganan Internet Fiber (vendor baru)',qty:6,sat:'Bulan',harga:3500000,jns:'EFISIENSI',ket:'Pindah vendor mulai Jul',bln:'bertahap',
+        dari:{no:'BR-2026-SPCK-0040',nama:'Langganan Internet Kantor',qty:6,sat:'Bulan'},
+        phasing:[{bln:'Jul',qty:1},{bln:'Agu',qty:1},{bln:'Sep',qty:1},{bln:'Okt',qty:1},{bln:'Nov',qty:1},{bln:'Des',qty:1}]}
     ]},
     {no:'BR-2026-SPCK-0046',kat:'Inventaris',dept:'General Affairs',thn:2026,jenis:'Budget',rev:0,status:'A0',items:[
       {item:'Beban inventaris',nama:'Meja & Kursi Kerja Karyawan',qty:50,sat:'Unit',harga:1200000,jns:'BARU',ket:'2 tahap: Mar & Sep',bln:'bertahap',
@@ -3035,17 +3072,17 @@ window.mkPhasingDetail=function(td, item, thn){
       ibDetNo=document.getElementById('ibDetNo'),ibKatLabel=document.getElementById('ibKatLabel'),ibStatus=document.getElementById('ibStatus'),
       tbody=document.querySelector('#ibTable tbody'),total=document.getElementById('ibTotal');
   function renderRincian(){
-    var s=SUBS[curSub],realloc=(s.sub==='R'),ncol=realloc?10:9,h=window.mkLockRow(s,ncol);
-    document.getElementById('ibThDari').style.display=realloc?'':'none';
-    document.getElementById('ibFootLbl').colSpan=realloc?6:5;
-    document.getElementById('ibTable').style.minWidth=realloc?'1240px':'960px';
+    var s=SUBS[curSub],isSwitch=(s.sub==='S'),ncol=isSwitch?10:9,h=window.mkLockRow(s,ncol);
+    document.getElementById('ibThDari').style.display=isSwitch?'':'none';
+    document.getElementById('ibFootLbl').colSpan=isSwitch?6:5;
+    document.getElementById('ibTable').style.minWidth=isSwitch?'1240px':'960px';
     tbody.classList.toggle('rr-locked',window.mkQtyTerkunci(s));
     tbody.classList.toggle('rr-readonly',window.mkDokReadonly(s));
     (function(){var ab=document.getElementById('ibAddBtn');if(!ab)return;var lk=window.mkQtyTerkunci(s)||window.mkDokReadonly(s);ab.disabled=lk;ab.style.opacity=lk?'.45':'';ab.style.pointerEvents=lk?'none':'';})();
     s.items.forEach(function(it,i){
       if(it.bln===undefined)it.bln=(it.sat==='Bulan')?'bertahap':'Jan';
       var tot=it.qty*it.harga;
-      h+='<tr class="rr-parent" data-idx="'+i+'">'+(realloc?window.mkDariCell(it,esc):'')+'<td><b>'+esc(it.item)+'</b></td><td class="mk-muted">'+esc(it.nama)+window.mkReplacedTag(it,esc)+'</td><td class="mk-r mk-num">'+fmt(it.qty)+'</td><td>'+esc(it.sat)+'</td><td class="mk-r mk-num">'+fmt(it.harga)+'</td><td class="mk-r mk-num">'+fmt(tot)+'</td><td><div class="mk-combo mk-combo-jns" data-jidx="'+i+'"></div></td><td><div class="mk-combo" data-idx="'+i+'"></div></td><td class="mk-muted">'+esc(it.ket||'')+'</td></tr>';
+      h+='<tr class="rr-parent" data-idx="'+i+'">'+(isSwitch?window.mkDariCell(it,esc):'')+'<td><b>'+esc(it.item)+'</b></td><td class="mk-muted">'+esc(it.nama)+window.mkReplacedTag(it,esc)+'</td><td class="mk-r mk-num">'+fmt(it.qty)+'</td><td>'+esc(it.sat)+'</td><td class="mk-r mk-num">'+fmt(it.harga)+'</td><td class="mk-r mk-num">'+fmt(tot)+'</td><td><div class="mk-combo mk-combo-jns" data-jidx="'+i+'"></div></td><td><div class="mk-combo" data-idx="'+i+'"></div></td><td class="mk-muted">'+esc(it.ket||'')+'</td></tr>';
       h+='<tr class="rr-detail" data-det="'+i+'"'+(it.bln==='bertahap'?'':' style="display:none"')+'><td colspan="'+ncol+'"></td></tr>';
     });
     tbody.innerHTML=h;total.textContent=fmt(subTotal(s));
@@ -3072,7 +3109,7 @@ window.mkPhasingDetail=function(td, item, thn){
   }
   function fillDet(i){var it=SUBS[curSub].items[i],d=tbody.querySelector('.rr-detail[data-det="'+i+'"]');if(d)window.mkPhasingDetail(d.querySelector('td'),it,(SUBS[curSub].thn||2026));}
   function toggleDet(i){var it=SUBS[curSub].items[i],d=tbody.querySelector('.rr-detail[data-det="'+i+'"]');if(!d)return;if(it.bln==='bertahap'){d.style.display='';fillDet(i);}else{d.style.display='none';d.querySelector('td').innerHTML='';}}
-  var ibhSub=document.getElementById('ibhSub'),ibDariWrap=document.getElementById('ibDariWrap'),ibDari=document.getElementById('ibDari');
+  var ibhSub=document.getElementById('ibhSub'),ibDariWrap=document.getElementById('ibDariWrap'),ibDari=document.getElementById('ibDari'),ibDariSisa=document.getElementById('ibDariSisa'),ibDariQty=document.getElementById('ibDariQty');
   ibhSub.addEventListener('change',function(){SUBS[curSub].sub=ibhSub.value;loadSub();});
   function loadSub(){var s=SUBS[curSub];ibhJenis.value=s.jenis;ibhSub.value=s.sub||'G';ibhNo.value=s.no;ibhThn.value=String(s.thn);ibhDept.value=s.dept;
     ibDetNo.innerHTML=esc(s.no)+window.mkAsalBadge(s);
@@ -3086,17 +3123,21 @@ window.mkPhasingDetail=function(td, item, thn){
   function syncTot(){var t=(parseInt(ibQty.value||'0',10))*(parseFloat(ibHarga.value||'0'));ibTot.value='Rp '+fmt(t);}
   ibQty.addEventListener('input',syncTot);ibHarga.addEventListener('input',syncTot);
   document.getElementById('ibAddBtn').addEventListener('click',function(){ibItem.selectedIndex=0;ibKet.value='';ibQty.value='12';ibSat.value='Bulan';ibHarga.value='0';ibKetr.value='';ibJns.selectedIndex=0;syncTot();
-    var rl=(SUBS[curSub].sub==='R');ibDariWrap.style.display=rl?'':'none';
+    var rl=(SUBS[curSub].sub==='S');ibDariWrap.style.display=rl?'':'none';
     if(rl){ibDari.innerHTML=window.mkDariOpts(SUBS,curSub,esc)||'<option value="">— tidak ada plan Approved yang bisa dialihkan —</option>';ibDariSync();}
     ov.classList.add('open');setTimeout(function(){(rl?ibDari:ibItem).focus();},60);});
   function ibDariSync(){
-    var v=ibDari.value;if(!v)return;var k=v.split(':'),src=SUBS[+k[0]].items[+k[1]];
+    var v=ibDari.value;if(!v){ibDariSisa.value='—';return;}var k=v.split(':'),src=SUBS[+k[0]].items[+k[1]];
     if(![].some.call(ibItem.options,function(o){return o.value===src.item;}))ibItem.insertAdjacentHTML('afterbegin','<option>'+esc(src.item)+'</option>');
-    ibItem.value=src.item;ibQty.value=src.qty;ibSat.value=src.sat;ibHarga.value=src.harga;syncTot();
+    var sisa=window.mkQtySisa(src);ibDariSisa.value=window.mkFmtQty(sisa)+' '+src.sat;ibDariQty.max=sisa;ibDariQty.value=sisa;
+    ibItem.value=src.item;ibQty.value=sisa;ibSat.value=src.sat;ibHarga.value=src.harga;syncTot();
   }
   ibDari.addEventListener('change',ibDariSync);
+  ibDariQty.addEventListener('input',function(){ibDariQty.classList.remove('is-error');ibQty.value=ibDariQty.value;syncTot();});
   document.getElementById('ibSave').addEventListener('click',function(){
-    var dari=null;if(SUBS[curSub].sub==='R'){if(!ibDari.value){ibDari.classList.add('is-error');toast('Pilih plan yang dialihkan');return;}ibDari.classList.remove('is-error');var k=ibDari.value.split(':'),src=SUBS[+k[0]].items[+k[1]];dari={no:SUBS[+k[0]].no,nama:src.nama};src.replacedBy=SUBS[curSub].no;}
+    var dari=null;if(SUBS[curSub].sub==='S'){if(!ibDari.value){ibDari.classList.add('is-error');toast('Pilih plan yang dialihkan');return;}ibDari.classList.remove('is-error');var k=ibDari.value.split(':'),src=SUBS[+k[0]].items[+k[1]],dq=parseInt(ibDariQty.value||'0',10),sisa=window.mkQtySisa(src);
+      if(!(dq>=1&&dq<=sisa)){ibDariQty.classList.add('is-error');toast('Qty dialihkan harus 1 – '+sisa);return;}ibDariQty.classList.remove('is-error');
+      dari={no:SUBS[+k[0]].no,nama:src.nama,qty:dq,sat:src.sat};src.replaced=(src.replaced||[]).concat([{no:SUBS[curSub].no,qty:dq}]);}
     var it={dari:dari,item:ibItem.value,nama:(ibKet.value.trim()||ibItem.value),qty:parseInt(ibQty.value||'0',10),sat:ibSat.value,harga:parseFloat(ibHarga.value||'0'),jns:ibJns.value,ket:ibKetr.value.trim()};it.bln=(it.sat==='Bulan')?'bertahap':'Jan';SUBS[curSub].items.push(it);ov.classList.remove('open');curItem=SUBS[curSub].items.length-1;renderSubs();renderRincian();toast('Item "'+it.item+'" ditambahkan ke '+SUBS[curSub].no);});
   document.getElementById('ibDraft').addEventListener('click',function(){toast('Draft '+SUBS[curSub].no+' disimpan');});
   document.getElementById('ibAjukan').addEventListener('click',function(){SUBS[curSub].status='A0';ibStatus.textContent='Status: '+window.MK_STS_LBL('A0');window.mkBtnState('ib',SUBS[curSub]);renderSubs();toast('Pengajuan '+SUBS[curSub].no+' diajukan untuk approval berjenjang');});
@@ -3137,14 +3178,13 @@ window.mkPhasingDetail=function(td, item, thn){
     {no:'CX-2026-SPCK-0014',dept:'Information Technology',thn:2026,jenis:'Budget',rev:0,status:'A',items:[
       {item:'Server & Storage',nama:'Server & Storage Datacenter',qty:1,sat:'Paket',harga:750000000,jns:'PERBAIKAN/PENGGANTIAN',ket:'Upgrade kapasitas',bln:'Apr'},
       {item:'Perangkat Jaringan & Lisensi',nama:'Lisensi & Perangkat Jaringan',qty:1,sat:'Paket',harga:180000000,jns:'EFISIENSI',ket:'',bln:'Jan'},
-      {item:'Chiller AC Sentral',nama:'Chiller AC Sentral',qty:2,sat:'Unit',harga:410000000,jns:'PERBAIKAN/PENGGANTIAN',ket:'1 unit Mei, 1 unit Nov',bln:'bertahap',replacedBy:'CX-2026-SPCK-0016',
+      {item:'Chiller AC Sentral',nama:'Chiller AC Sentral',qty:2,sat:'Unit',harga:410000000,jns:'PERBAIKAN/PENGGANTIAN',ket:'1 unit Mei, 1 unit Nov',bln:'bertahap',replaced:[{no:'CX-2026-SPCK-0016',qty:1}],
         phasing:[{bln:'Mei',qty:1},{bln:'Nov',qty:1}]}
     ]},
-    // sub tipe Reallocation: budget chiller (0014) dialihkan ke chiller inverter
-    {no:'CX-2026-SPCK-0016',dept:'Information Technology',thn:2026,jenis:'Budget',sub:'R',rev:0,status:'A',items:[
-      {item:'Chiller AC Sentral',nama:'Chiller AC Sentral Inverter',qty:2,sat:'Unit',harga:410000000,jns:'EFISIENSI',ket:'Ganti spesifikasi, hemat listrik',bln:'bertahap',
-        dari:{no:'CX-2026-SPCK-0014',nama:'Chiller AC Sentral'},
-        phasing:[{bln:'Mei',qty:1},{bln:'Nov',qty:1}]}
+    // sub tipe Switch: 1 dari 2 unit chiller (0014) dialihkan ke chiller inverter
+    {no:'CX-2026-SPCK-0016',dept:'Information Technology',thn:2026,jenis:'Budget',sub:'S',rev:0,status:'A',items:[
+      {item:'Chiller AC Sentral',nama:'Chiller AC Sentral Inverter',qty:1,sat:'Unit',harga:410000000,jns:'EFISIENSI',ket:'Unit Nov ganti spesifikasi, hemat listrik',bln:'Nov',
+        dari:{no:'CX-2026-SPCK-0014',nama:'Chiller AC Sentral',qty:1,sat:'Unit'}}
     ]},
     {no:'CX-2026-SPCK-0015',dept:'HR & GA',thn:2026,jenis:'Budget',rev:0,status:'R0',items:[
       {item:'Furniture Ruang Kerja',nama:'Furniture Ruang Kerja Lantai 5',qty:40,sat:'Unit',harga:3500000,jns:'BARU',ket:'Ekspansi lantai 5, 2 tahap',bln:'bertahap',
@@ -3164,17 +3204,17 @@ window.mkPhasingDetail=function(td, item, thn){
       cxDetNo=document.getElementById('cxDetNo'),cxKatLabel=document.getElementById('cxKatLabel'),cxStatus=document.getElementById('cxStatus'),
       tbody=document.querySelector('#cxTable tbody'),total=document.getElementById('cxTotal');
   function renderRincian(){
-    var s=SUBS[curSub],realloc=(s.sub==='R'),ncol=realloc?10:9,h=window.mkLockRow(s,ncol);
-    document.getElementById('cxThDari').style.display=realloc?'':'none';
-    document.getElementById('cxFootLbl').colSpan=realloc?6:5;
-    document.getElementById('cxTable').style.minWidth=realloc?'1240px':'960px';
+    var s=SUBS[curSub],isSwitch=(s.sub==='S'),ncol=isSwitch?10:9,h=window.mkLockRow(s,ncol);
+    document.getElementById('cxThDari').style.display=isSwitch?'':'none';
+    document.getElementById('cxFootLbl').colSpan=isSwitch?6:5;
+    document.getElementById('cxTable').style.minWidth=isSwitch?'1240px':'960px';
     tbody.classList.toggle('rr-locked',window.mkQtyTerkunci(s));
     tbody.classList.toggle('rr-readonly',window.mkDokReadonly(s));
     (function(){var ab=document.getElementById('cxAddBtn');if(!ab)return;var lk=window.mkQtyTerkunci(s)||window.mkDokReadonly(s);ab.disabled=lk;ab.style.opacity=lk?'.45':'';ab.style.pointerEvents=lk?'none':'';})();
     s.items.forEach(function(it,i){
       if(it.bln===undefined)it.bln=(it.sat==='Bulan')?'bertahap':'Jan';
       var tot=it.qty*it.harga;
-      h+='<tr class="rr-parent" data-idx="'+i+'">'+(realloc?window.mkDariCell(it,esc):'')+'<td><b>'+esc(it.item)+'</b></td><td class="mk-muted">'+esc(it.nama)+window.mkReplacedTag(it,esc)+'</td><td class="mk-r mk-num">'+fmt(it.qty)+'</td><td>'+esc(it.sat)+'</td><td class="mk-r mk-num">'+fmt(it.harga)+'</td><td class="mk-r mk-num">'+fmt(tot)+'</td><td><div class="mk-combo mk-combo-jns" data-jidx="'+i+'"></div></td><td><div class="mk-combo" data-idx="'+i+'"></div></td><td class="mk-muted">'+esc(it.ket||'')+'</td></tr>';
+      h+='<tr class="rr-parent" data-idx="'+i+'">'+(isSwitch?window.mkDariCell(it,esc):'')+'<td><b>'+esc(it.item)+'</b></td><td class="mk-muted">'+esc(it.nama)+window.mkReplacedTag(it,esc)+'</td><td class="mk-r mk-num">'+fmt(it.qty)+'</td><td>'+esc(it.sat)+'</td><td class="mk-r mk-num">'+fmt(it.harga)+'</td><td class="mk-r mk-num">'+fmt(tot)+'</td><td><div class="mk-combo mk-combo-jns" data-jidx="'+i+'"></div></td><td><div class="mk-combo" data-idx="'+i+'"></div></td><td class="mk-muted">'+esc(it.ket||'')+'</td></tr>';
       h+='<tr class="rr-detail" data-det="'+i+'"'+(it.bln==='bertahap'?'':' style="display:none"')+'><td colspan="'+ncol+'"></td></tr>';
     });
     tbody.innerHTML=h;total.textContent=fmt(subTotal(s));
@@ -3201,7 +3241,7 @@ window.mkPhasingDetail=function(td, item, thn){
   }
   function fillDet(i){var it=SUBS[curSub].items[i],d=tbody.querySelector('.rr-detail[data-det="'+i+'"]');if(d)window.mkPhasingDetail(d.querySelector('td'),it,(SUBS[curSub].thn||2026));}
   function toggleDet(i){var it=SUBS[curSub].items[i],d=tbody.querySelector('.rr-detail[data-det="'+i+'"]');if(!d)return;if(it.bln==='bertahap'){d.style.display='';fillDet(i);}else{d.style.display='none';d.querySelector('td').innerHTML='';}}
-  var cxhSub=document.getElementById('cxhSub'),cxDariWrap=document.getElementById('cxDariWrap'),cxDari=document.getElementById('cxDari');
+  var cxhSub=document.getElementById('cxhSub'),cxDariWrap=document.getElementById('cxDariWrap'),cxDari=document.getElementById('cxDari'),cxDariSisa=document.getElementById('cxDariSisa'),cxDariQty=document.getElementById('cxDariQty');
   cxhSub.addEventListener('change',function(){SUBS[curSub].sub=cxhSub.value;loadSub();});
   function loadSub(){var s=SUBS[curSub];cxhJenis.value=s.jenis;cxhSub.value=s.sub||'G';cxhNo.value=s.no;cxhThn.value=String(s.thn);cxhDept.value=s.dept;
     cxDetNo.innerHTML=esc(s.no)+window.mkAsalBadge(s);
@@ -3222,17 +3262,21 @@ window.mkPhasingDetail=function(td, item, thn){
   function syncTot(){var t=(parseInt(cxQty.value||'0',10))*(parseFloat(cxHarga.value||'0'));cxTot.value='Rp '+fmt(t);}
   cxQty.addEventListener('input',syncTot);cxHarga.addEventListener('input',syncTot);
   document.getElementById('cxAddBtn').addEventListener('click',function(){fillCxItems();cxItem.selectedIndex=0;cxKet.value='';cxQty.value='1';cxSat.value='Unit';cxHarga.value='0';cxKetr.value='';cxJns.selectedIndex=0;syncTot();
-    var rl=(SUBS[curSub].sub==='R');cxDariWrap.style.display=rl?'':'none';
+    var rl=(SUBS[curSub].sub==='S');cxDariWrap.style.display=rl?'':'none';
     if(rl){cxDari.innerHTML=window.mkDariOpts(SUBS,curSub,esc)||'<option value="">— tidak ada plan Approved yang bisa dialihkan —</option>';cxDariSync();}
     ov.classList.add('open');setTimeout(function(){(rl?cxDari:cxItem).focus();},60);});
   function cxDariSync(){
-    var v=cxDari.value;if(!v)return;var k=v.split(':'),src=SUBS[+k[0]].items[+k[1]];
+    var v=cxDari.value;if(!v){cxDariSisa.value='—';return;}var k=v.split(':'),src=SUBS[+k[0]].items[+k[1]];
     if(![].some.call(cxItem.options,function(o){return o.value===src.item;}))cxItem.insertAdjacentHTML('afterbegin','<option>'+esc(src.item)+'</option>');
-    cxItem.value=src.item;cxQty.value=src.qty;cxSat.value=src.sat;cxHarga.value=src.harga;syncTot();
+    var sisa=window.mkQtySisa(src);cxDariSisa.value=window.mkFmtQty(sisa)+' '+src.sat;cxDariQty.max=sisa;cxDariQty.value=sisa;
+    cxItem.value=src.item;cxQty.value=sisa;cxSat.value=src.sat;cxHarga.value=src.harga;syncTot();
   }
   cxDari.addEventListener('change',cxDariSync);
+  cxDariQty.addEventListener('input',function(){cxDariQty.classList.remove('is-error');cxQty.value=cxDariQty.value;syncTot();});
   document.getElementById('cxSave').addEventListener('click',function(){
-    var dari=null;if(SUBS[curSub].sub==='R'){if(!cxDari.value){cxDari.classList.add('is-error');toast('Pilih plan yang dialihkan');return;}cxDari.classList.remove('is-error');var k=cxDari.value.split(':'),src=SUBS[+k[0]].items[+k[1]];dari={no:SUBS[+k[0]].no,nama:src.nama};src.replacedBy=SUBS[curSub].no;}
+    var dari=null;if(SUBS[curSub].sub==='S'){if(!cxDari.value){cxDari.classList.add('is-error');toast('Pilih plan yang dialihkan');return;}cxDari.classList.remove('is-error');var k=cxDari.value.split(':'),src=SUBS[+k[0]].items[+k[1]],dq=parseInt(cxDariQty.value||'0',10),sisa=window.mkQtySisa(src);
+      if(!(dq>=1&&dq<=sisa)){cxDariQty.classList.add('is-error');toast('Qty dialihkan harus 1 – '+sisa);return;}cxDariQty.classList.remove('is-error');
+      dari={no:SUBS[+k[0]].no,nama:src.nama,qty:dq,sat:src.sat};src.replaced=(src.replaced||[]).concat([{no:SUBS[curSub].no,qty:dq}]);}
     var it={dari:dari,item:cxItem.value,nama:(cxKet.value.trim()||cxItem.value),qty:parseInt(cxQty.value||'0',10),sat:cxSat.value,harga:parseFloat(cxHarga.value||'0'),jns:cxJns.value,ket:cxKetr.value.trim()};it.bln=(it.sat==='Bulan')?'bertahap':'Jan';SUBS[curSub].items.push(it);ov.classList.remove('open');curItem=SUBS[curSub].items.length-1;renderSubs();renderRincian();toast('Item "'+it.item+'" ditambahkan ke '+SUBS[curSub].no);});
   document.getElementById('cxDraft').addEventListener('click',function(){toast('Draft '+SUBS[curSub].no+' disimpan');});
   document.getElementById('cxAjukan').addEventListener('click',function(){SUBS[curSub].status='A0';cxStatus.textContent='Status: '+window.MK_STS_LBL('A0');window.mkBtnState('cx',SUBS[curSub]);renderSubs();toast('Pengajuan '+SUBS[curSub].no+' diajukan untuk approval berjenjang');});
@@ -3899,8 +3943,8 @@ window.MCX={};   // dipakai Input Budget Capex (item rincian = item capex unit)
 // Kartu Kontrol Budget — Beban asuransi SPCK 2026
 // Memperlihatkan tiga hal sekaligus:
 //  (1) Budget = plan dokumen dengan rev TERTINGGI yang berstatus A (planEfektif)
-//  (2) Realisasi rev LAMA tetap dihitung — bm_budget_usage menempel ke budget_plan_id,
-//      jadi pemakaian sebelum revisi/over budget tidak hilang
+//  (2) Realisasi sebelum revisi tetap dihitung — bm_budget_usage menunjuk no_budget_plan
+//      (ID tetap lintas rev), jadi pemakaiannya otomatis ikut ke plan rev terbaru
 //  (3) Toggle untuk menampilkan budget rev sebelumnya (redup, tidak dijumlahkan)
 // Angka dikunci agar cocok dg Laporan P&L (Beban asuransi SPCK: 75,0 jt / 16,0 jt).
 // ============================================================
@@ -3911,32 +3955,33 @@ window.MCX={};   // dipakai Input Budget Capex (item rincian = item capex unit)
   // Dua dokumen bm_budget_req dengan no_budget SAMA:
   //   rev 0 — status O (permintaan over budget disetujui 20 Mar) → DITUTUP
   //   rev 1 — status A → budget efektif. Harga Maret naik 5,0 jt → 6,25 jt, qty tetap.
-  // id plan: 20xx = rev 0, 21xx = rev 1; dua digit terakhir = bulan.
+  // id plan (budget_plan_id): 20xx = rev 0, 21xx = rev 1; dua digit terakhir = bulan.
+  // no_budget_plan = id rev 0 (saat pertama dibuat = budget_plan_id), dibawa ke rev 1.
   var DOCS=[
     {rev:0,status:'O',plan:[]},
     {rev:1,status:'A',plan:[]}
   ];
   for(var m=1;m<=12;m++){
-    DOCS[0].plan.push({id:2000+m,rev:0,bln:m,harga:(m===3?5000000:6250000)});
-    DOCS[1].plan.push({id:2100+m,rev:1,bln:m,harga:6250000});
+    DOCS[0].plan.push({id:2000+m,nbp:2000+m,rev:0,bln:m,harga:(m===3?5000000:6250000)});
+    DOCS[1].plan.push({id:2100+m,nbp:2000+m,rev:1,bln:m,harga:6250000});
   }
   var EFF=window.planEfektif(DOCS);            // plan rev 1 (status A)
   var OLD=DOCS[0].plan;                        // plan rev 0 (status O) — tidak dijumlahkan
   var REV_EFF=1;
   function blnOf(id){return id%100;}
-  // bm_budget_usage — menempel ke budget_plan_id tertentu, jadi realisasi Jan–Mar
-  // (sebelum over budget disetujui) tetap menempel di baris plan rev 0.
+  // bm_budget_usage — menunjuk no_budget_plan. rev = rev dokumen saat realisasi dicatat
+  // (hanya penanda tampilan); Jan–Mar dicatat sebelum over budget disetujui.
   var USAGE=[
     {plan:2001,rev:0,doc:'PO',no:'PO-2026-000871',tgl:'12 Jan 2026',app:'SIPP',v:4000000},
     {plan:2002,rev:0,doc:'PO',no:'PO-2026-001042',tgl:'10 Feb 2026',app:'SIPP',v:4000000},
     {plan:2003,rev:0,doc:'PR',no:'PR-2026-002315',tgl:'05 Mar 2026',app:'SIPP',v:3000000},
-    {plan:2103,rev:1,doc:'PO',no:'PO-2026-001330',tgl:'22 Mar 2026',app:'SIPP',v:1000000},
-    {plan:2104,rev:1,doc:'PR',no:'PR-2026-002480',tgl:'03 Apr 2026',app:'SIPP',v:4000000}
+    {plan:2003,rev:1,doc:'PO',no:'PO-2026-001330',tgl:'22 Mar 2026',app:'SIPP',v:1000000},
+    {plan:2004,rev:1,doc:'PR',no:'PR-2026-002480',tgl:'03 Apr 2026',app:'SIPP',v:4000000}
   ];
   var docBadge={PO:'success',PR:'warning',UM:'info',PJUM:'info'};
   function effBln(m){var r=null;EFF.forEach(function(p){if(p.bln===m)r=p;});return r;}
   function usageBln(m){return USAGE.filter(function(u){return blnOf(u.plan)===m;});}
-  function revTag(rev){return rev===REV_EFF?'':' <span class="mk-addbadge" title="realisasi ini menempel di baris plan rev '+rev+', sebelum over budget disetujui">rev '+rev+'</span>';}
+  function revTag(rev){return rev===REV_EFF?'':' <span class="mk-addbadge" title="dicatat saat dokumen masih rev '+rev+' — tetap menempel ke no. plan yang sama setelah over budget disetujui">rev '+rev+'</span>';}
   function render(){
     var showOld=document.getElementById('kbShowOld').checked;
     var h='',cb=0,cr=0;
@@ -3993,7 +4038,7 @@ window.MCX={};   // dipakai Input Budget Capex (item rincian = item capex unit)
   var subsBody=document.querySelector('#alkSubs tbody'); if(!subsBody) return;
   var MONTHS=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
   // Ref Budget Plan = nm_budget; `no` = no_budget pengajuan yang memilikinya
-  // (bm_budget_allocation.budget_plan_id → bm_budget_plan.budget_req_id → bm_budget_req.no_budget).
+  // (bm_budget_allocation.no_budget_plan → bm_budget_plan.budget_req_id → bm_budget_req.no_budget).
   // Nomor pengajuannya HARUS ada di menu Input Budget / Approval.
   var REF=[
     {nm:'Event JFFF 2026',   no:'BR-2026-SPCK-0043'},
@@ -4003,20 +4048,22 @@ window.MCX={};   // dipakai Input Budget Capex (item rincian = item capex unit)
   ];
   function refNo(nm){var r='—';REF.forEach(function(x){if(x.nm===nm)r=x.no;});return r;}
   var ALLOC=[
-    {no:'AL-2026-SPCK-0001',nama:'Event JFFF 2026',thn:2026,tipe:'Event',unit:'SSPG',users:['SPCK','SSPG','KSLL'],status:'Draft',items:[
+    {no:'AL-2026-SPCK-0001',nama:'Event JFFF 2026',thn:2026,tipe:'Event',unit:'SSPG',per:['2026-01-01','2026-03-31'],ev:['2026-03-27','2026-03-29'],users:['SPCK','SSPG','KSLL'],status:'N',items:[
       {nama:'Dekor & Panggung',ref:'Event JFFF 2026',bln:'Jan',qty:1,sat:'Paket',harga:200000000},
       {nama:'Sirkus & Aktivasi',ref:'Aktivasi & Hiburan',bln:'Feb',qty:1,sat:'Paket',harga:150000000},
       {nama:'Souvenir Pengunjung',ref:'Souvenir & Hadiah',bln:'Mar',qty:2000,sat:'Pcs',harga:50000}
     ]},
-    {no:'AL-2026-SPCK-0002',nama:'Bazaar Ramadhan 2026',thn:2026,tipe:'Event',unit:'SSPG',users:['SPCK','SBKS'],status:'Diajukan',items:[
+    {no:'AL-2026-SPCK-0002',nama:'Bazaar UMKM 2026',thn:2026,tipe:'Event',unit:'SSPG',per:['2026-04-01','2026-04-30'],ev:['2026-04-17','2026-04-19'],users:['SPCK','SBKS'],status:'N',items:[
       {nama:'Tenant & Dekor',ref:'Event Bazaar',bln:'Apr',qty:1,sat:'Paket',harga:120000000},
       {nama:'Hiburan',ref:'Aktivasi & Hiburan',bln:'Apr',qty:1,sat:'Paket',harga:80000000}
     ]}
   ];
   var cur=0;
   function total(a){var t=0;a.items.forEach(function(it){t+=it.qty*it.harga;});return t;}
-  function stsBadge(st){var c=st==='Approved'?'success':(st==='Diajukan'?'warning':'neutral');return '<span class="ds-badge ds-badge-'+c+'">'+esc(st)+'</span>';}
-  function renderSubs(){var h='';ALLOC.forEach(function(a,i){h+='<tr class="mk-clickrow'+(i===cur?' mk-selrow':'')+'" data-idx="'+i+'"><td><b>'+esc(a.no)+'</b></td><td class="mk-c mk-num">'+a.thn+'</td><td><span class="ds-badge ds-badge-info">'+esc(a.tipe)+'</span></td><td class="mk-muted">'+esc(a.unit)+'</td><td class="mk-muted">'+esc((a.users||[]).join(', ')||'—')+'</td><td class="mk-r mk-num">'+fmt(total(a))+'</td><td class="mk-c">'+stsBadge(a.status)+'</td></tr>';});subsBody.innerHTML=h;}
+  // bm_allocation.status: N Baru (menunggu approval) · A Approved (user_approve + tgl_approve)
+  function stsBadge(st){return st==='A'?'<span class="ds-badge ds-badge-success" title="Approved">A</span>':'<span class="ds-badge ds-badge-warning" title="Baru — menunggu approval">N</span>';}
+  function stsLbl(a){return a.status==='A'?'A — Approved'+(a.apv?' oleh '+a.apv.user+' · '+a.apv.tgl:''):'N — Baru, menunggu approval';}
+  function renderSubs(){var h='';ALLOC.forEach(function(a,i){h+='<tr class="mk-clickrow'+(i===cur?' mk-selrow':'')+'" data-idx="'+i+'"><td><b>'+esc(a.no)+'</b></td><td class="mk-c mk-num">'+a.thn+'</td><td><span class="ds-badge ds-badge-info">'+esc(a.tipe)+'</span></td><td class="mk-muted">'+window.mkRentang(a.ev)+'</td><td class="mk-muted">'+esc(a.unit)+'</td><td class="mk-muted">'+esc((a.users||[]).join(', ')||'—')+'</td><td class="mk-r mk-num">'+fmt(total(a))+'</td><td class="mk-c">'+stsBadge(a.status)+'</td></tr>';});subsBody.innerHTML=h;}
   subsBody.addEventListener('click',function(e){var tr=e.target.closest('tr[data-idx]');if(!tr)return;cur=+tr.dataset.idx;loadAlk();document.getElementById('alkSubsOv').classList.remove('open');});
   var alkSubSearch=document.getElementById('alkSubSearch');
   if(alkSubSearch)alkSubSearch.addEventListener('input',function(){var t=alkSubSearch.value.toLowerCase();[].forEach.call(subsBody.querySelectorAll('tr'),function(r){r.style.display=r.textContent.toLowerCase().indexOf(t)>-1?'':'none';});});
@@ -4026,6 +4073,8 @@ window.MCX={};   // dipakai Input Budget Capex (item rincian = item capex unit)
       alkDetNo=document.getElementById('alkDetNo'),alkStatus=document.getElementById('alkStatus'),
       body=document.querySelector('#alkTable tbody'),totalEl=document.getElementById('alkTotal');
   alkhNama.addEventListener('input',function(){ALLOC[cur].nama=alkhNama.value;});
+  var alkPS=document.getElementById('alkhPerStart'),alkPE=document.getElementById('alkhPerEnd'),alkES=document.getElementById('alkhEvStart'),alkEE=document.getElementById('alkhEvEnd');
+  [[alkPS,'per',0],[alkPE,'per',1],[alkES,'ev',0],[alkEE,'ev',1]].forEach(function(x){x[0].addEventListener('change',function(){ALLOC[cur][x[1]][x[2]]=x[0].value;renderSubs();});});
   function renderRincian(){var a=ALLOC[cur],h='';a.items.forEach(function(it){var tot=it.qty*it.harga;h+='<tr><td><b>'+esc(it.nama)+'</b></td><td><span class="mk-code">'+esc(it.no||refNo(it.ref))+'</span></td><td class="mk-muted">'+esc(it.ref)+'</td><td>'+esc(it.bln)+' '+a.thn+'</td><td class="mk-r mk-num">'+fmt(it.qty)+'</td><td>'+esc(it.sat)+'</td><td class="mk-r mk-num">'+fmt(it.harga)+'</td><td class="mk-r mk-num">'+fmt(tot)+'</td></tr>';});body.innerHTML=h;totalEl.textContent=fmt(total(a));document.getElementById('alkRinCount').textContent=a.items.length;}
   // ---- Tab Rincian / Unit Pengguna ----
   var TAB_META={rincian:'per budget plan &amp; bulan',unit:'unit lain yang boleh memakai budget alokasi ini'};
@@ -4054,7 +4103,9 @@ window.MCX={};   // dipakai Input Budget Capex (item rincian = item capex unit)
     document.getElementById('alkufNo').textContent=a.no;uOv.classList.add('open');
   });
   document.getElementById('alkufSave').addEventListener('click',function(){var kd=ufU.value;if(!kd)return;var a=ALLOC[cur];a.users=a.users||[];a.users.push(kd);uOv.classList.remove('open');renderUnits();renderSubs();toast('Unit '+kd+' boleh memakai budget alokasi '+a.no);});
-  function loadAlk(){var a=ALLOC[cur];alkhNo.value=a.no;alkhNama.value=a.nama||'';alkhThn.value=String(a.thn);alkhUnit.value=a.unit;alkDetNo.textContent=a.no;alkStatus.textContent='Status: '+a.status;renderSubs();renderUnits();renderRincian();}
+  function loadAlk(){var a=ALLOC[cur];alkhNo.value=a.no;alkhNama.value=a.nama||'';alkhThn.value=String(a.thn);alkhUnit.value=a.unit;alkDetNo.textContent=a.no;alkStatus.textContent='Status: '+stsLbl(a);
+    a.per=a.per||['',''];a.ev=a.ev||['',''];alkPS.value=a.per[0];alkPE.value=a.per[1];alkES.value=a.ev[0];alkEE.value=a.ev[1];
+    renderSubs();renderUnits();renderRincian();}
 
   // +Baris Alokasi modal
   var ov=document.getElementById('alkAddOv'),fNama=document.getElementById('alkfNama'),fRef=document.getElementById('alkfRef'),fBln=document.getElementById('alkfBln'),fQty=document.getElementById('alkfQty'),fSat=document.getElementById('alkfSat'),fHarga=document.getElementById('alkfHarga'),fTot=document.getElementById('alkfTot');
@@ -4075,7 +4126,7 @@ window.MCX={};   // dipakai Input Budget Capex (item rincian = item capex unit)
   });
 
   function alkPad(n){return ('000'+n).slice(-4);}
-  function alkNew(){var no='AL-2026-SPCK-'+alkPad(1+ALLOC.length);ALLOC.push({no:no,nama:'',thn:2026,tipe:'Event',unit:window.MK_MST_LOGIN,users:[],status:'Draft',items:[]});cur=ALLOC.length-1;loadAlk();alkhNama.focus();toast('Alokasi baru '+no+' dibuat — isi nama & rincian');}
+  function alkNew(){var no='AL-2026-SPCK-'+alkPad(1+ALLOC.length);ALLOC.push({no:no,nama:'',thn:2026,tipe:'Event',unit:window.MK_MST_LOGIN,per:['',''],ev:['',''],users:[],status:'N',items:[]});cur=ALLOC.length-1;loadAlk();alkhNama.focus();toast('Alokasi baru '+no+' dibuat — isi nama & rincian');}
   document.getElementById('alkNewBtn').addEventListener('click',alkNew);
   document.getElementById('alkSubNew').addEventListener('click',function(){document.getElementById('alkSubsOv').classList.remove('open');alkNew();});
 
@@ -4091,14 +4142,14 @@ window.MCX={};   // dipakai Input Budget Capex (item rincian = item capex unit)
   var body=document.querySelector('#apalk-table tbody'); if(!body) return;
   var waitEl=document.getElementById('apalk-wait'),doneEl=document.getElementById('apalk-done'),rejEl=document.getElementById('apalk-rej');
   var ROWS=[
-    {no:'AL-2026-SPCK-0001',nama:'Event JFFF 2026',unit:'SSPG',users:'SPCK, SSPG, KSLL',thn:2026,total:450000000},
-    {no:'AL-2026-SPCK-0002',nama:'Bazaar Ramadhan 2026',unit:'SSPG',users:'SPCK, SBKS',thn:2026,total:200000000},
-    {no:'AL-2026-SMSF-0001',nama:'Anniversary Kawasan Bekasi',unit:'SBKS',users:'SMSF',thn:2026,total:45000000}
+    {no:'AL-2026-SPCK-0001',nama:'Event JFFF 2026',unit:'SSPG',users:'SPCK, SSPG, KSLL',per:['2026-01-01','2026-03-31'],ev:['2026-03-27','2026-03-29'],total:450000000},
+    {no:'AL-2026-SPCK-0002',nama:'Bazaar UMKM 2026',unit:'SSPG',users:'SPCK, SBKS',per:['2026-04-01','2026-04-30'],ev:['2026-04-17','2026-04-19'],total:200000000},
+    {no:'AL-2026-SMSF-0001',nama:'Anniversary Kawasan Bekasi',unit:'SBKS',users:'SMSF',per:['2026-05-01','2026-06-30'],ev:['2026-06-13','2026-06-14'],total:45000000}
   ];
   function stsCell(r){if(r.st==='ok')return '<span class="ds-badge ds-badge-success">Disetujui</span>';if(r.st==='no')return '<span class="ds-badge ds-badge-danger">Dikembalikan</span>';return '<span class="ds-badge ds-badge-warning">Menunggu Persetujuan</span>';}
   function actCell(r,i){if(r.st)return '<span class="mk-faint">—</span>';return '<button class="ds-btn ds-btn-primary ds-btn-sm apalk-ok" data-i="'+i+'"><i class="bi bi-check-lg"></i> Setujui</button> <button class="ds-btn ds-btn-danger ds-btn-sm apalk-no" data-i="'+i+'"><i class="bi bi-arrow-counterclockwise"></i> Kembalikan</button>';}
   function recount(){var w=0;ROWS.forEach(function(r){if(!r.st)w++;});waitEl.textContent=w;}
-  function render(){var h='';ROWS.forEach(function(r,i){h+='<tr><td><b>'+esc(r.no)+'</b></td><td>'+esc(r.nama)+'</td><td class="mk-muted">'+esc(r.unit)+'</td><td class="mk-muted">'+esc(r.users||'—')+'</td><td class="mk-c mk-num">'+r.thn+'</td><td class="mk-r mk-num">'+fmt(r.total)+'</td><td>'+stsCell(r)+'</td><td class="mk-c">'+actCell(r,i)+'</td></tr>';});body.innerHTML=h;recount();}
+  function render(){var h='';ROWS.forEach(function(r,i){h+='<tr><td><b>'+esc(r.no)+'</b></td><td>'+esc(r.nama)+'</td><td class="mk-muted">'+window.mkRentang(r.per)+'</td><td class="mk-muted">'+window.mkRentang(r.ev)+'</td><td class="mk-muted">'+esc(r.unit)+'</td><td class="mk-muted">'+esc(r.users||'—')+'</td><td class="mk-r mk-num">'+fmt(r.total)+'</td><td>'+stsCell(r)+'</td><td class="mk-c">'+actCell(r,i)+'</td></tr>';});body.innerHTML=h;recount();}
   body.addEventListener('click',function(e){var ok=e.target.closest('.apalk-ok'),no=e.target.closest('.apalk-no');if(!ok&&!no)return;var i=+(ok||no).getAttribute('data-i'),r=ROWS[i];if(ok){r.st='ok';doneEl.textContent=(parseInt(doneEl.textContent,10)||0)+1;toast('Alokasi '+r.no+' disetujui');}else{r.st='no';rejEl.textContent=(parseInt(rejEl.textContent,10)||0)+1;toast('Alokasi '+r.no+' dikembalikan untuk revisi');}render();});
   render();
 })();
